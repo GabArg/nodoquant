@@ -1,0 +1,12 @@
+# Subtask: Translate Homepage Components
+- [ ] components/nodoquant/PlatformStats.tsx
+- [ ] components/nodoquant/Services.tsx
+- [ ] components/nodoquant/StrategyProgrammable.tsx
+- [ ] components/nodoquant/Timeline.tsx
+- [ ] components/nodoquant/WhyQuant.tsx
+- [ ] components/nodoquant/Pricing.tsx
+- [ ] components/nodoquant/Deliverables.tsx
+- [ ] components/nodoquant/BotsSoon.tsx
+- [ ] components/nodoquant/FAQ.tsx
+- [ ] components/nodoquant/LeadForm.tsx
+- [ ] components/nodoquant/FooterNote.tsx

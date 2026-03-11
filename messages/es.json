@@ -1,0 +1,108 @@
+{
+    "navbar": {
+        "home": "Inicio",
+        "product": "Producto",
+        "howItWorks": "Cómo Funciona",
+        "strategyScore": "Score de Estrategia",
+        "faq": "FAQ",
+        "analyzer": "Analyzer",
+        "library": "Biblioteca",
+        "leaderboard": "Leaderboard",
+        "dashboard": "Dashboard",
+        "account": "Mi Cuenta",
+        "services": "Servicios",
+        "login": "Ingresar",
+        "signup": "Registrarse",
+        "analyzeCta": "Analizar Mi Estrategia"
+    },
+    "home": {
+        "title": "Analizá tu Estrategia de Trading con Métricas Cuantitativas",
+        "subtitle": "Subí tu historial de MT4, MT5 o CSV y descubrí si tu estrategia realmente tiene una ventaja estadística.",
+        "description": "NodoQuant analiza tu historial de operaciones con métricas cuantitativas profesionales y genera un Reporte de Edge de Trading completo.",
+        "label": "El Laboratorio Cuantitativo para Traders",
+        "bullet1": "Subí tu historial de operaciones (MT4, MT5, CSV)",
+        "bullet2": "Recibí un Reporte de Edge de Trading completo",
+        "bullet3": "Descubrí tu Strategy Score (0-100)",
+        "trustSignal1": "No requiere conexión al bróker",
+        "trustSignal2": "Toma menos de 30 segundos",
+        "trustSignal3": "Tus datos de trading permanecen privados",
+        "ctaPrimary": "Analizar Mi Estrategia",
+        "ctaSecondary": "Ver Reporte de Ejemplo",
+        "disclaimer": "NodoQuant desarrolla software y realiza análisis cuantitativo. No se garantiza rentabilidad ni resultados futuros. Operar en mercados financieros conlleva riesgo de pérdida."
+    },
+    "whyQuant": {
+        "label": "Metodología",
+        "title": "Por qué importa el análisis cuantitativo",
+        "desc": "Dejá de adivinar. Empezá a medir tu rendimiento con precisión.",
+        "r1_title": "Eliminá el trading emocional",
+        "r1_desc": "Analizá tus resultados usando datos reales de tu historial de trading en lugar de intuición.",
+        "r2_title": "Validá tu estrategia con métricas profesionales",
+        "r2_desc": "Métricas como Expectancy, Profit Factor y Max Drawdown revelan si tu estrategia tiene un edge estadístico real.",
+        "r3_title": "Tomá decisiones basadas en datos",
+        "r3_desc": "Identificá qué mercados, sesiones y condiciones hacen que tu estrategia rinda mejor.",
+        "cta": "Analizar mi estrategia ahora",
+        "cta_note": "Gratis · Archivo CSV, MT4 o MT5"
+    },
+    "socialProof": {
+        "title": "Estrategias analizadas cada día por traders de todo el mundo",
+        "label": "Estrategias Analizadas",
+        "counter": "Miles"
+    },
+    "strategyScore": {
+        "label": "Evaluación",
+        "title": "Tu Score de Estrategia",
+        "desc": "NodoQuant calcula una puntuación de 0 a 100 basada en la rentabilidad, consistencia, control de riesgo y tamaño de la muestra.",
+        "s1_range": "0–40",
+        "s1_desc": "Sin edge estadístico",
+        "s2_range": "40–60",
+        "s2_desc": "Break-even o inconsistente",
+        "s3_range": "60–80",
+        "s3_desc": "Estrategia sólida",
+        "s4_range": "80–100",
+        "s4_desc": "Edge fuerte",
+        "cta": "Analizar Mi Estrategia"
+    },
+    "howItWorks": {
+        "label": "Proceso",
+        "title": "Cómo funciona",
+        "desc": "Cuatro simples pasos para validar tu sistema de trading.",
+        "step1_title": "Subí tu historial de trading",
+        "step1_desc": "Exportá tus trades desde MT4, MT5 o tu broker.",
+        "step2_title": "Conversión a múltiplos de R",
+        "step2_desc": "NodoQuant estandariza todos los trades en unidades de riesgo para análisis cuantitativo.",
+        "step3_title": "Cálculo de métricas cuantitativas",
+        "step3_desc": "Se procesan métricas como Expectancy, Profit Factor y Drawdown.",
+        "step4_title": "Recibí tu Reporte de Edge de Trading",
+        "step4_desc": "Visualizá tu rendimiento, curva de equity y Score de Estrategia."
+    },
+    "faq": {
+        "label": "Preguntas Frecuentes",
+        "title": "Dudas comunes",
+        "q1": "¿Qué es NodoQuant?",
+        "a1": "NodoQuant es una plataforma de análisis cuantitativo para traders. Subí tus trades históricos y la plataforma evalúa si tu estrategia tiene un edge estadístico real.",
+        "q2": "¿Qué archivos puedo subir?",
+        "a2": "Podés subir exportaciones de: MetaTrader 4, MetaTrader 5, Binance y archivos CSV genéricos.",
+        "q3": "¿Cuántos trades necesito?",
+        "a3": "Para resultados confiables recomendamos al menos 100 trades. Con menos de 30 trades el análisis podría no ser estadísticamente válido.",
+        "q4": "¿Qué métricas analiza NodoQuant?",
+        "a4": "Win Rate, Profit Factor, Expectancy (R), Max Drawdown, Score de Estrategia, y rendimiento por sesión, día y símbolo.",
+        "q5": "¿Mis trades son privados?",
+        "a5": "Sí. Tus datos de trading nunca se comparten. Solo las métricas agregadas son visibles si decidís compartir tu reporte públicamente.",
+        "q6": "¿Necesito conectar mi broker?",
+        "a6": "No. Solo necesitás subir tu historial de trading como archivo CSV exportable."
+    },
+    "finalCta": {
+        "label": "Empezá ahora",
+        "title": "Probá tu Estrategia de Trading Gratis",
+        "desc": "Subí tu historial de historial de trading y descubrí si tu estrategia tiene un edge estadístico real.",
+        "cta": "Analizar Mi Estrategia",
+        "note": "Soporte para CSV / MT4 / MT5"
+    },
+    "footerNote": {
+        "d1": "NodoQuant desarrolla software y realiza análisis cuantitativo.",
+        "d2": "No se garantiza rentabilidad ni resultados financieros futuros.",
+        "d3": "Operar en mercados financieros conlleva riesgo real de pérdida de capital.",
+        "rights": "Todos los derechos reservados",
+        "disclaimer": "Los resultados de backtesting son históricos y no garantizan performance futura. Siempre operá con capital que podés permitirte perder."
+    }
+}
