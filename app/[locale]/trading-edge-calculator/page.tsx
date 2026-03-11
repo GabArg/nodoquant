@@ -137,7 +137,7 @@ function CalculatorSection({ locale }: { locale: string }) {
 
                 <h3 className="text-2xl font-bold text-white mt-8 mb-4">Key Metrics for Your Edge Report</h3>
                 <ul className="list-disc pl-6 space-y-3">
-                    <li>**Profit Factor**: Gross Profit / Gross Loss. Needs to be > 1.0.</li>
+                    <li>**Profit Factor**: Gross Profit / Gross Loss. Needs to be {'>'} 1.0.</li>
                     <li>**Standard Deviation of Returns**: Measures how volatile your equity curve is.</li>
                     <li>**System Robustness**: How well your edge holds up during different market conditions.</li>
                     <li>**Kelly Criterion**: A formula to determine the optimal size for each trade to maximize growth without ruining the account.</li>

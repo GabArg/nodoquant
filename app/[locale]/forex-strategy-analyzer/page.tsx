@@ -128,7 +128,7 @@ function ForexContent({ locale }: { locale: string }) {
                 <h2 className="text-3xl font-bold text-white mb-6">Key Quantitative Metrics for FX Trading</h2>
                 <ul className="list-disc pl-6 space-y-4">
                     <li>**Strategy Score (0–100)**: Our proprietary metric for overall edge quality.</li>
-                    <li>**Profit Factor**: Ratio of gross profit vs. gross loss. Target > 1.5.</li>
+                    <li>**Profit Factor**: Ratio of gross profit vs. gross loss. Target {'>'} 1.5.</li>
                     <li>**Recovery Factor**: Net Profit / Max Drawdown. Tells you how fast you bounce back from losses.</li>
                     <li>**Expectancy (R)**: The average return per risk unit taken. 0.2R or higher is excellent.</li>
                 </ul>

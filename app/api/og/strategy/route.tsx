@@ -72,7 +72,7 @@ export async function GET(req: Request) {
                     {/* Main Content */}
                     <div style={{ display: 'flex', flex: 1, alignItems: 'center' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, paddingRight: '40px' }}>
-                            <h1 style={{ fontSize: '64px', fontWeight: '900', marginBottom: '20px', lineHeight: '1.1', tracking: '-2px' }}>
+                            <h1 style={{ fontSize: '64px', fontWeight: '900', marginBottom: '20px', lineHeight: '1.1', letterSpacing: '-2px' }}>
                                 {name}
                             </h1>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

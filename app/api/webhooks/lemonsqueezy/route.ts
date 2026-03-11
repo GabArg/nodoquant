@@ -2,13 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServer } from "@/lib/supabase";
 import crypto from "crypto";
 
-// Disable body parsing so we can read raw text for signature verification
-export const config = {
-    api: {
-        bodyParser: false,
-    },
-};
-
 const webhookSecret = process.env.LEMON_SQUEEZY_WEBHOOK_SECRET;
 
 function verifySignature(payload: string, signature: string, secret: string): boolean {
@@ -21,7 +14,7 @@ function verifySignature(payload: string, signature: string, secret: string): bo
     }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
     // Read raw body for signature verification
     const payload = await req.text();
     const signature = req.headers.get("x-signature") || "";
@@ -29,19 +22,28 @@ export async function POST(req: NextRequest) {
     // Verify signature
     if (!webhookSecret) {
         console.error("[LS Webhook] LEMON_SQUEEZY_WEBHOOK_SECRET not set");
-        return NextResponse.json({ error: "Not configured" }, { status: 500 });
+        return new Response(JSON.stringify({ error: "Not configured" }), {
+            status: 500,
+            headers: { "Content-Type": "application/json" }
+        });
     }
 
     if (!signature || !verifySignature(payload, signature, webhookSecret)) {
         console.error("[LS Webhook] Invalid signature");
-        return NextResponse.json({ error: "Invalid signature" }, { status: 403 });
+        return new Response(JSON.stringify({ error: "Invalid signature" }), {
+            status: 403,
+            headers: { "Content-Type": "application/json" }
+        });
     }
 
     let event: any;
     try {
         event = JSON.parse(payload);
     } catch {
-        return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+        return new Response(JSON.stringify({ error: "Invalid JSON" }), {
+            status: 400,
+            headers: { "Content-Type": "application/json" }
+        });
     }
 
     const eventName: string = event?.meta?.event_name;
@@ -53,7 +55,10 @@ export async function POST(req: NextRequest) {
 
     const supabase = getSupabaseServer();
     if (!supabase) {
-        return NextResponse.json({ error: "DB not available" }, { status: 500 });
+        return new Response(JSON.stringify({ error: "DB not available" }), {
+            status: 500,
+            headers: { "Content-Type": "application/json" }
+        });
     }
 
     console.log(`[LS Webhook] Event: ${eventName}, User: ${userId}, Sub: ${subscriptionId}`);
@@ -124,8 +129,14 @@ export async function POST(req: NextRequest) {
         }
     } catch (err: any) {
         console.error("[LS Webhook] Handler error:", err);
-        return NextResponse.json({ error: "Handler error" }, { status: 500 });
+        return new Response(JSON.stringify({ error: "Handler error" }), {
+            status: 500,
+            headers: { "Content-Type": "application/json" }
+        });
     }
 
-    return NextResponse.json({ received: true });
+    return new Response(JSON.stringify({ received: true }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" }
+    });
 }

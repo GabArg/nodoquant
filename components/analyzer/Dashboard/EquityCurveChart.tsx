@@ -24,7 +24,7 @@ export default function EquityCurveChart({ data }: EquityCurveChartProps) {
                             contentStyle={{ backgroundColor: '#111827', borderColor: '#ffffff20', borderRadius: '8px', color: '#fff' }}
                             itemStyle={{ color: '#818cf8' }}
                             labelStyle={{ color: '#9ca3af', marginBottom: '4px' }}
-                            formatter={(value: number) => [`${value.toFixed(2)} R`, 'Cumulative']}
+                            formatter={(value: any) => [`${parseFloat(value || 0).toFixed(2)} R`, 'Cumulative']}
                             labelFormatter={(label) => `Trade #${label}`}
                         />
                         <Area type="monotone" dataKey="cumulative_r" stroke="#6366f1" strokeWidth={2} fillOpacity={1} fill="url(#colorR)" />
