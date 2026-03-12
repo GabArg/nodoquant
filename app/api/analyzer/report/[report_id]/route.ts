@@ -6,9 +6,9 @@ export async function GET(
     { params }: { params: { report_id: string } }
 ) {
     try {
-        const reportId = params.report_id;
-        if (!reportId) {
-            return NextResponse.json({ ok: false, error: "Missing report_id" }, { status: 400 });
+        const { report_id } = params;
+        if (!report_id) {
+            return NextResponse.json({ ok: false, error: "ID de reporte requerido" }, { status: 400 });
         }
 
         const supabase = getSupabaseServer();
@@ -20,7 +20,7 @@ export async function GET(
         const { data: report, error } = await supabase
             .from("strategy_reports")
             .select("*")
-            .eq("report_id", reportId)
+            .eq("report_id", report_id)
             .single();
 
         if (error || !report) {
