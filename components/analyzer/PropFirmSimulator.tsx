@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import type { Trade } from "@/lib/analyzer/parser";
 import { calcPropFirmChallenge, type PropFirmParams } from "@/lib/analyzer/metrics";
 
@@ -10,28 +11,8 @@ interface Props {
 
 type Mode = "personal" | "challenge" | "funded";
 
-const MODES: { id: Mode; label: string; icon: string; desc: string }[] = [
-    {
-        id: "personal",
-        label: "Cuenta personal",
-        icon: "👤",
-        desc: "Analizá el riesgo de tu cuenta propia sin restricciones externas.",
-    },
-    {
-        id: "challenge",
-        label: "Prop Firm Challenge",
-        icon: "🎯",
-        desc: "Simulá la probabilidad de pasar un desafío de prop firm.",
-    },
-    {
-        id: "funded",
-        label: "Cuenta financiada",
-        icon: "💼",
-        desc: "Evaluá tu estrategia bajo las reglas de una cuenta financiada.",
-    },
-];
-
 export default function PropFirmSimulator({ trades }: Props) {
+    const t = useTranslations("analyzer.simulator");
     const [mode, setMode] = useState<Mode | null>(null);
     const [params, setParams] = useState<PropFirmParams>({
         balance: 10000,
@@ -41,6 +22,27 @@ export default function PropFirmSimulator({ trades }: Props) {
     });
     const [result, setResult] = useState<ReturnType<typeof calcPropFirmChallenge> | null>(null);
     const [running, setRunning] = useState(false);
+
+    const MODES = useMemo(() => [
+        {
+            id: "personal" as const,
+            label: t("modes.personal.label"),
+            icon: "👤",
+            desc: t("modes.personal.desc"),
+        },
+        {
+            id: "challenge" as const,
+            label: t("modes.challenge.label"),
+            icon: "🎯",
+            desc: t("modes.challenge.desc"),
+        },
+        {
+            id: "funded" as const,
+            label: t("modes.funded.label"),
+            icon: "💼",
+            desc: t("modes.funded.desc"),
+        },
+    ], [t]);
 
     function runSim() {
         setRunning(true);
@@ -55,9 +57,9 @@ export default function PropFirmSimulator({ trades }: Props) {
     return (
         <div className="w-full max-w-2xl mx-auto space-y-6">
             <div>
-                <div className="section-label">Simulación de escenario</div>
+                <div className="section-label">{t("title")}</div>
                 <h2 className="text-xl font-bold text-white mb-1">
-                    ¿Cómo querés evaluar tu estrategia?
+                    {t("subtitle")}
                 </h2>
             </div>
 
@@ -85,8 +87,7 @@ export default function PropFirmSimulator({ trades }: Props) {
             {mode === "personal" && (
                 <div className="card rounded-xl p-5">
                     <p className="text-sm" style={{ color: "#9ca3af" }}>
-                        En cuenta personal, los límites los ponés vos. Las métricas clave son el Profit Factor,
-                        la racha perdedora y el riesgo recomendado por operación que ya se calcularon en el informe completo.
+                        {t("modes.personal.info")}
                     </p>
                 </div>
             )}
@@ -95,12 +96,12 @@ export default function PropFirmSimulator({ trades }: Props) {
             {(mode === "challenge" || mode === "funded") && (
                 <div className="card rounded-xl p-5 space-y-4">
                     <p className="text-xs font-semibold text-indigo-400 uppercase tracking-widest mb-1">
-                        Parámetros
+                        {t("params.title")}
                     </p>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="form-label" htmlFor="sim-balance">Balance inicial (USD)</label>
+                            <label className="form-label" htmlFor="sim-balance">{t("params.balance")}</label>
                             <input
                                 id="sim-balance"
                                 type="number"
@@ -112,7 +113,7 @@ export default function PropFirmSimulator({ trades }: Props) {
                             />
                         </div>
                         <div>
-                            <label className="form-label" htmlFor="sim-target">Objetivo de ganancia (%)</label>
+                            <label className="form-label" htmlFor="sim-target">{t("params.target")}</label>
                             <input
                                 id="sim-target"
                                 type="number"
@@ -125,7 +126,7 @@ export default function PropFirmSimulator({ trades }: Props) {
                             />
                         </div>
                         <div>
-                            <label className="form-label" htmlFor="sim-daily">Daily drawdown máx. (%)</label>
+                            <label className="form-label" htmlFor="sim-daily">{t("params.dailyDrawdown")}</label>
                             <input
                                 id="sim-daily"
                                 type="number"
@@ -140,7 +141,7 @@ export default function PropFirmSimulator({ trades }: Props) {
                             />
                         </div>
                         <div>
-                            <label className="form-label" htmlFor="sim-maxdd">Max drawdown total (%)</label>
+                            <label className="form-label" htmlFor="sim-maxdd">{t("params.maxDrawdown")}</label>
                             <input
                                 id="sim-maxdd"
                                 type="number"
@@ -166,10 +167,10 @@ export default function PropFirmSimulator({ trades }: Props) {
                                 <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <path d="M21 12a9 9 0 11-6.219-8.56" />
                                 </svg>
-                                Simulando 2.000 iteraciones...
+                                {t("params.running")}
                             </>
                         ) : (
-                            "Ejecutar simulación"
+                            t("params.run")
                         )}
                     </button>
                 </div>
@@ -179,27 +180,27 @@ export default function PropFirmSimulator({ trades }: Props) {
             {result && (
                 <div className="card rounded-xl p-5 space-y-1 animate-fade-in">
                     <p className="text-xs font-semibold text-indigo-400 uppercase tracking-widest mb-3">
-                        Resultados de simulación
+                        {t("results.title")}
                     </p>
 
                     {[
                         {
-                            label: "Probabilidad de aprobar",
+                            label: t("results.passProb"),
                             value: `${result.passProb.toFixed(1)}%`,
                             good: result.passProb > 50,
                         },
                         {
-                            label: "Probabilidad de fallar por Daily DD",
+                            label: t("results.failDaily"),
                             value: `${result.failDailyDDProb.toFixed(1)}%`,
                             good: result.failDailyDDProb < 20,
                         },
                         {
-                            label: "Probabilidad de fallar por Max DD",
+                            label: t("results.failMax"),
                             value: `${result.failMaxDDProb.toFixed(1)}%`,
                             good: result.failMaxDDProb < 20,
                         },
                         {
-                            label: "Trades necesarios (promedio)",
+                            label: t("results.avgTrades"),
                             value: `${result.expectedTrades}`,
                             good: true,
                         },
@@ -220,8 +221,7 @@ export default function PropFirmSimulator({ trades }: Props) {
                     ))}
 
                     <p className="text-xs mt-3 pt-2" style={{ color: "#374151" }}>
-                        Simulación basada en {trades.length} trades históricos con 2.000 iteraciones de Monte Carlo.
-                        No garantiza resultados futuros.
+                        {t("results.disclaimer", { count: trades.length })}
                     </p>
                 </div>
             )}

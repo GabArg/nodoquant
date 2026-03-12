@@ -11,14 +11,14 @@ interface ImportWizardProps {
 }
 
 const FIELDS = [
-    { key: "dateIdx", label: "Exit Time / Datetime (Required)", group: "required" },
-    { key: "profitIdx", label: "Profit / P&L (Req. if no Entry/Exit)", group: "required" },
-    { key: "entryPriceIdx", label: "Entry Price (Req. if no Profit)", group: "required" },
-    { key: "exitPriceIdx", label: "Exit Price (Req. if no Profit)", group: "required" },
-    { key: "symbolIdx", label: "Symbol / Ticker", group: "optional" },
-    { key: "directionIdx", label: "Direction (Long/Short)", group: "optional" },
-    { key: "volumeIdx", label: "Position Size / Volume", group: "optional" },
-    { key: "entryTimeIdx", label: "Entry Time", group: "optional" },
+    { key: "dateIdx", label: "Hora de Salida / Fecha (Requerido)", group: "required" },
+    { key: "profitIdx", label: "Beneficio / P&L (Req. si no hay Entrada/Salida)", group: "required" },
+    { key: "entryPriceIdx", label: "Precio de Entrada (Req. si no hay Beneficio)", group: "required" },
+    { key: "exitPriceIdx", label: "Precio de Salida (Req. si no hay Beneficio)", group: "required" },
+    { key: "symbolIdx", label: "Símbolo / Ticker", group: "optional" },
+    { key: "directionIdx", label: "Dirección (Compra/Venta)", group: "optional" },
+    { key: "volumeIdx", label: "Tamaño / Volumen", group: "optional" },
+    { key: "entryTimeIdx", label: "Hora de Entrada", group: "optional" },
     { key: "stopLossIdx", label: "Stop Loss", group: "optional" },
     { key: "takeProfitIdx", label: "Take Profit", group: "optional" }
 ];
@@ -304,10 +304,10 @@ export default function ImportWizard({ fileContent, fileName, onComplete, onCanc
                         <table className="w-full text-left text-sm text-gray-300">
                             <thead className="text-xs uppercase bg-white/5 text-gray-400">
                                 <tr>
-                                    <th className="px-4 py-3">Time</th>
-                                    <th className="px-4 py-3">Profit</th>
-                                    <th className="px-4 py-3">Symbol</th>
-                                    <th className="px-4 py-3">Direction</th>
+                                    <th className="px-4 py-3">Tiempo</th>
+                                    <th className="px-4 py-3">Beneficio</th>
+                                    <th className="px-4 py-3">Símbolo</th>
+                                    <th className="px-4 py-3">Dirección</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -332,7 +332,7 @@ export default function ImportWizard({ fileContent, fileName, onComplete, onCanc
                             className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-lg font-medium transition-colors flex items-center shadow-lg shadow-indigo-600/20"
                             disabled={parsedTrades.trades.length < 30}
                         >
-                            Analyze Strategy
+                            Analizar Estrategia
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ml-2">
                                 <path d="M5 12h14M12 5l7 7-7 7" />
                             </svg>

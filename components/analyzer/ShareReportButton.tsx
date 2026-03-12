@@ -17,6 +17,9 @@ export default function ShareReportButton({
     showStrategyName: initialShowStrategy = false,
     showDatasetName: initialShowDataset = false,
 }: Props) {
+    const MARKETS = ["Forex", "Cripto", "Índices", "Acciones", "Futuros"];
+    const TIMEFRAMES = ["M1", "M5", "M15", "H1", "H4", "D1"];
+    const STYLES = ["Scalping", "Swing", "Seguimiento de Tendencia", "Reversión a la Media", "Ruptura", "Arbitraje"];
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [publicUrl, setPublicUrl] = useState(
@@ -75,7 +78,7 @@ export default function ShareReportButton({
                     <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
                     <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
                 </svg>
-                {shared ? "Compartido" : "Share Report"}
+                {shared ? "Compartido" : "Compartir análisis"}
             </button>
 
             {open && (
@@ -129,7 +132,7 @@ export default function ShareReportButton({
                                     className="text-xs font-medium px-3 py-1.5 rounded-lg"
                                     style={{ background: "rgba(99,102,241,0.15)", color: "#818cf8" }}
                                 >
-                                    {copied ? "✓ Copied" : "Copy"}
+                                    {copied ? "✓ Copiado" : "Copiar"}
                                 </button>
                             </div>
                         )}

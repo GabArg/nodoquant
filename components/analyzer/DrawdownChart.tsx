@@ -82,7 +82,7 @@ export default function DrawdownChart({ data }: Props) {
 
     return (
         <div className="w-full">
-            <p className="text-xs font-medium mb-2" style={{ color: "#6b7280" }}>Drawdown Curve (%)</p>
+            <p className="text-xs font-medium mb-2" style={{ color: "#6b7280" }}>Curva de Drawdown (%)</p>
             <canvas ref={canvasRef} style={{ width: "100%", height: "140px", display: "block" }} />
         </div>
     );

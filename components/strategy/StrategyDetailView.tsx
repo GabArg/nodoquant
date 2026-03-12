@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import EquityCurveChart from "@/components/analyzer/Dashboard/EquityCurveChart";
+import { useTranslations } from "next-intl";
 
 interface StrategyDetailViewProps {
     strategy: any;
@@ -9,6 +10,10 @@ interface StrategyDetailViewProps {
 }
 
 export default function StrategyDetailView({ strategy, locale }: StrategyDetailViewProps) {
+    const t = useTranslations("strategies.profile");
+    const tCard = useTranslations("strategies.card");
+    const tCommon = useTranslations("fullReport.publishModal");
+
     const {
         id: strategy_id,
         strategy_name,
@@ -31,7 +36,12 @@ export default function StrategyDetailView({ strategy, locale }: StrategyDetailV
     const wr = win_rate > 1 ? win_rate : win_rate * 100;
 
     const shareUrl = typeof window !== 'undefined' ? window.location.href : `https://nodoquant.com/${locale}/strategy/${strategy.slug}`;
-    const shareText = `My trading strategy scored ${Math.round(score)}/100 on NodoQuant.\n\nWin Rate: ${wr.toFixed(1)}%\nProfit Factor: ${profit_factor.toFixed(2)}\nTrades analyzed: ${trades_count}\n\nAnalyze your own strategy:\n`;
+    const shareText = t("shareText", {
+        score: Math.round(score),
+        wr: wr.toFixed(1),
+        pf: profit_factor.toFixed(2),
+        count: trades_count
+    });
 
     return (
         <main className="min-h-screen bg-[#07090F] pt-24 pb-32 px-4 text-white">
@@ -46,11 +56,11 @@ export default function StrategyDetailView({ strategy, locale }: StrategyDetailV
                         <svg className="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
                         </svg>
-                        Explore Strategies
+                        {t("backLink")}
                     </Link>
                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-600">
                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        Verified Analysis
+                        {t("verifiedLabel")}
                     </div>
                 </div>
 
@@ -59,7 +69,7 @@ export default function StrategyDetailView({ strategy, locale }: StrategyDetailV
                     <div className="flex-1">
                         <div className="flex flex-wrap gap-3 mb-6">
                             <span className="bg-indigo-500/10 text-indigo-400 px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border border-indigo-500/20 shadow-sm">
-                                {market}
+                                {tCommon(`markets.${market}`) || market}
                             </span>
                             <span className="bg-white/5 text-gray-400 px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border border-white/5 shadow-sm">
                                 {symbol}
@@ -71,7 +81,7 @@ export default function StrategyDetailView({ strategy, locale }: StrategyDetailV
                         <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 mb-8 relative group hover:border-indigo-500/30 transition-all">
                             <div className="absolute top-0 right-0 p-6 opacity-10 font-black text-4xl select-none pointer-events-none italic">"</div>
                             <p className="text-gray-300 text-lg leading-relaxed font-medium">
-                                {description || "A quantitative strategy analysis focused on statistical edge and robustness performance metrics."}
+                                {description || t("defaultDescription")}
                             </p>
                         </div>
 
@@ -84,7 +94,7 @@ export default function StrategyDetailView({ strategy, locale }: StrategyDetailV
                                 className="bg-black text-white px-6 py-3 rounded-2xl text-[13px] font-black border border-white/10 hover:border-white/20 transition-all flex items-center gap-3 active:scale-95"
                             >
                                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.843L1.254 2.25H8.08l4.259 5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
-                                Share on X
+                                {t("shareX")}
                             </a>
                             <a
                                 href={`https://www.reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(`Strategy Score: ${Math.round(score)}/100 | ${strategy_name}`)}`}
@@ -98,12 +108,12 @@ export default function StrategyDetailView({ strategy, locale }: StrategyDetailV
                             <button
                                 onClick={() => {
                                     navigator.clipboard.writeText(shareUrl);
-                                    alert('Link copied to clipboard!');
+                                    alert(t("copiedAlert"));
                                 }}
                                 className="bg-white/5 text-gray-300 px-6 py-3 rounded-2xl text-[13px] font-black border border-white/10 hover:bg-white/10 transition-all flex items-center gap-3 active:scale-95"
                             >
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
-                                Copy Link
+                                {t("copyLink")}
                             </button>
                         </div>
                     </div>
@@ -112,7 +122,7 @@ export default function StrategyDetailView({ strategy, locale }: StrategyDetailV
                         <div className="bg-[#0A0D14] border-2 border-indigo-500/20 p-12 rounded-[3rem] flex flex-col items-center justify-center shadow-3xl shadow-indigo-500/20 relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-bl-[100%] pointer-events-none" />
 
-                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-6">Strategy Score</p>
+                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-6">{tCard("score")}</p>
                             <div className="relative mb-6">
                                 <div className="text-9xl font-black text-white tabular-nums tracking-tighter">
                                     {Math.round(score)}
@@ -125,7 +135,7 @@ export default function StrategyDetailView({ strategy, locale }: StrategyDetailV
                             </div>
 
                             <p className="text-[9px] font-black text-gray-600 uppercase tracking-[0.3em] text-center max-w-[150px] leading-relaxed">
-                                Quantitative edge verified by NodoQuant
+                                {t("scoreSub")}
                             </p>
                         </div>
                     </div>
@@ -133,10 +143,10 @@ export default function StrategyDetailView({ strategy, locale }: StrategyDetailV
 
                 {/* Metrics Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-                    <MetricBox label="Win Rate" value={`${wr.toFixed(1)}%`} sub="Accuracy" color="text-white" />
-                    <MetricBox label="Profit Factor" value={profit_factor.toFixed(2)} sub="Yield Quality" color="text-emerald-400" />
-                    <MetricBox label="Expectancy" value={`${expectancy >= 0 ? "+" : ""}${expectancy.toFixed(2)} R`} sub="Market Edge" color="text-indigo-400" />
-                    <MetricBox label="Max Drawdown" value={`${Math.abs(max_drawdown).toFixed(1)}%`} sub="Risk Exposure" color="text-red-400" />
+                    <MetricBox label={tCard("winRate")} value={`${wr.toFixed(1)}%`} sub={t("metrics.accuracy")} color="text-white" />
+                    <MetricBox label={tCard("profitFactor")} value={profit_factor.toFixed(2)} sub={t("metrics.yield")} color="text-emerald-400" />
+                    <MetricBox label="Expectancy" value={`${expectancy >= 0 ? "+" : ""}${expectancy.toFixed(2)} R`} sub={t("metrics.edge")} color="text-indigo-400" />
+                    <MetricBox label="Max Drawdown" value={`${Math.abs(max_drawdown).toFixed(1)}%`} sub={t("metrics.risk")} color="text-red-400" />
                 </div>
 
                 {/* Main Content Area */}
@@ -147,7 +157,7 @@ export default function StrategyDetailView({ strategy, locale }: StrategyDetailV
                         <div className="bg-[#0A0D14] border border-white/5 rounded-[3rem] p-10 overflow-hidden relative shadow-2xl">
                             <h2 className="text-xl font-black mb-12 flex items-center gap-3 tracking-tight">
                                 <span className="w-2 h-7 bg-indigo-600 rounded-full" />
-                                01 PERFORMANCE JOURNEY (CUMULATIVE R)
+                                {t("performanceTitle")}
                             </h2>
                             <div className="h-[450px]">
                                 <EquityCurveChart data={equity_curve.map((val: number, i: number) => ({
@@ -161,15 +171,15 @@ export default function StrategyDetailView({ strategy, locale }: StrategyDetailV
                         {/* Additional Info / Certificate CTA */}
                         <div className="bg-gradient-to-br from-indigo-900/20 to-purple-900/20 border border-indigo-500/20 rounded-[3rem] p-12 flex flex-col md:flex-row items-center gap-10">
                             <div className="flex-1 text-center md:text-left">
-                                <h3 className="text-3xl font-black mb-4 tracking-tight">Official Certificate</h3>
+                                <h3 className="text-3xl font-black mb-4 tracking-tight">{t("certificateTitle")}</h3>
                                 <p className="text-indigo-200/60 font-medium mb-8 leading-relaxed">
-                                    Download the high-resolution certified scorecard for this strategy. Optimized for social sharing and professional portfolios.
+                                    {t("certificateDesc")}
                                 </p>
                                 <Link
                                     href={`/${locale}/certificate/${report_id}`}
                                     className="inline-flex items-center gap-3 bg-white text-indigo-950 font-black px-8 py-4 rounded-2xl hover:bg-indigo-50 transition-all shadow-xl active:scale-95"
                                 >
-                                    View Official Certificate
+                                    {t("certificateBtn")}
                                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
@@ -194,27 +204,27 @@ export default function StrategyDetailView({ strategy, locale }: StrategyDetailV
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 10V3L4 14h7v7l9-11h-7z" />
                                 </svg>
                             </div>
-                            <h3 className="text-3xl font-black mb-6 leading-[1.2] tracking-tight">Test your own strategy</h3>
+                            <h3 className="text-3xl font-black mb-6 leading-[1.2] tracking-tight">{t("ctaTitle")}</h3>
                             <p className="text-indigo-100/70 text-base mb-12 leading-relaxed font-medium">
-                                Do you have a real statistical edge? Get your quantitative report in seconds.
+                                {t("ctaDesc")}
                             </p>
                             <Link
                                 href={`/${locale}/analyzer`}
                                 className="w-full bg-white text-indigo-600 font-black py-5 rounded-3xl shadow-xl hover:bg-indigo-50 transition-all active:scale-[0.97] hover:shadow-2xl text-lg"
                             >
-                                Analyze Free
+                                {t("ctaBtn")}
                             </Link>
                         </div>
 
                         <div className="bg-white/[0.02] border border-white/5 rounded-[3rem] p-10">
-                            <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-8">Metadata Context</h4>
+                            <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-8">{t("metadataTitle")}</h4>
                             <div className="space-y-6">
                                 <div>
-                                    <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mb-1.5">Trades Analyzed</p>
+                                    <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mb-1.5">{t("tradesAnalyzed")}</p>
                                     <p className="text-3xl font-black text-white tabular-nums">{trades_count}</p>
                                 </div>
                                 <div className="pt-6 border-t border-white/5">
-                                    <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mb-2.5">Analysis Fingerprint</p>
+                                    <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mb-2.5">{t("fingerprint")}</p>
                                     <p className="text-[9px] font-mono text-gray-700 break-all select-all leading-relaxed">{strategy_id}</p>
                                 </div>
                             </div>
@@ -235,3 +245,4 @@ function MetricBox({ label, value, sub, color }: { label: string; value: string;
         </div>
     );
 }
+

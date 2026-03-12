@@ -104,9 +104,9 @@ export default function MonteCarloChart({ simulations, averageCaseReturn }: Prop
             ctx.fillStyle = "#374151";
             ctx.font = "9px Inter, sans-serif";
             ctx.textAlign = "left";
-            ctx.fillText("Initial", pad.left, pad.top + chartH + 18);
+            ctx.fillText("Inicial", pad.left, pad.top + chartH + 18);
             ctx.textAlign = "right";
-            ctx.fillText(`Trade ${points}`, pad.left + chartW, pad.top + chartH + 18);
+            ctx.fillText(`Operación ${points}`, pad.left + chartW, pad.top + chartH + 18);
         });
 
     }, [simulations, averageCaseReturn]);

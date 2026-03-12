@@ -1,52 +1,57 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+import { useMemo } from "react";
+
 interface Props {
     importSource?: "csv" | "mt4" | "mt5" | "binance" | null;
 }
 
-const SOURCE_CONFIG = {
-    mt4: {
-        icon: "📁",
-        step1: "Export your MT4 trade history",
-        step1Detail: 'In MetaTrader 4: Account History → right-click → "Save as Detailed Report" (.htm or .csv).',
-        badge: "MT4 / MetaTrader 4",
-    },
-    mt5: {
-        icon: "📁",
-        step1: "Export your MT5 trade history",
-        step1Detail: 'In MetaTrader 5: go to Account History tab → right-click → "Save as Report" to get the CSV.',
-        badge: "MT5 / MetaTrader 5",
-    },
-    binance: {
-        icon: "₿",
-        step1: "Connect your Binance account",
-        step1Detail: "Enter your read-only Binance API key and secret. We fetch your closed trades securely and never store credentials.",
-        badge: "Binance API",
-    },
-    csv: {
-        icon: "📄",
-        step1: "Upload your trade history CSV",
-        step1Detail: "Any CSV with at least a profit column and a date column works. MT5 exports, Binance CSVs, or custom spreadsheets.",
-        badge: "CSV Upload",
-    },
-    default: {
-        icon: "📊",
-        step1: "Upload your trading history",
-        step1Detail: "Export your closed trades from MT4, MT5, Binance, or use any generic CSV with profit data.",
-        badge: "Any format",
-    },
-};
-
-const TRUST_BADGES = [
-    { icon: "🔒", label: "No data stored" },
-    { icon: "⚡", label: "Results in 60s" },
-    { icon: "🆓", label: "100% free" },
-];
-
-const AVATAR_COLORS = ["#6366f1", "#10b981", "#f59e0b", "#f43f5e", "#3b82f6"];
-const AVATAR_INITIALS = ["TR", "AM", "JC", "KL", "PE"];
-
 export default function OnboardingPanel({ importSource }: Props) {
+    const t = useTranslations("analyzer.onboarding");
+
+    const SOURCE_CONFIG = useMemo(() => ({
+        mt4: {
+            icon: "📁",
+            step1: t("sources.mt4.label"),
+            step1Detail: t("sources.mt4.detail"),
+            badge: t("sources.mt4.badge"),
+        },
+        mt5: {
+            icon: "📁",
+            step1: t("sources.mt5.label"),
+            step1Detail: t("sources.mt5.detail"),
+            badge: t("sources.mt5.badge"),
+        },
+        binance: {
+            icon: "₿",
+            step1: t("sources.binance.label"),
+            step1Detail: t("sources.binance.detail"),
+            badge: t("sources.binance.badge"),
+        },
+        csv: {
+            icon: "📄",
+            step1: t("sources.csv.label"),
+            step1Detail: t("sources.csv.detail"),
+            badge: t("sources.csv.badge"),
+        },
+        default: {
+            icon: "📊",
+            step1: t("sources.default.label"),
+            step1Detail: t("sources.default.detail"),
+            badge: t("sources.default.badge"),
+        },
+    }), [t]);
+
+    const TRUST_BADGES = useMemo(() => [
+        { icon: "🔒", label: t("trust.noData") },
+        { icon: "⚡", label: t("trust.fast") },
+        { icon: "🆓", label: t("trust.free") },
+    ], [t]);
+
+    const AVATAR_COLORS = ["#6366f1", "#10b981", "#f59e0b", "#f43f5e", "#3b82f6"];
+    const AVATAR_INITIALS = ["TR", "AM", "JC", "KL", "PE"];
+
     const c = SOURCE_CONFIG[importSource ?? "default"] ?? SOURCE_CONFIG.default;
 
     return (
@@ -62,9 +67,9 @@ export default function OnboardingPanel({ importSource }: Props) {
                         {c.badge}
                     </span>
                 </div>
-                <h3 className="text-lg font-bold text-white mt-2">3 steps to your strategy score</h3>
+                <h3 className="text-lg font-bold text-white mt-2">{t("title")}</h3>
                 <p className="text-sm mt-0.5" style={{ color: "#6b7280" }}>
-                    Get your Win Rate, Profit Factor, Max Drawdown and a Strategy Score in under 60 seconds.
+                    {t("subtitle")}
                 </p>
             </div>
 
@@ -72,8 +77,8 @@ export default function OnboardingPanel({ importSource }: Props) {
             <div className="px-6 py-5 space-y-5">
                 {[
                     { num: "1", label: c.step1, detail: c.step1Detail },
-                    { num: "2", label: "Confirm the data mapping", detail: "We auto-detect columns. You simply verify they match, then hit confirm." },
-                    { num: "3", label: "Get your Strategy Score", detail: "Receive a full quantitative analysis: Score, Equity Curve, Profit Factor, Drawdown, and 4 strategy insight cards." },
+                    { num: "2", label: t("step2.label"), detail: t("step2.detail") },
+                    { num: "3", label: t("step3.label"), detail: t("step3.detail") },
                 ].map((s, i) => (
                     <div key={s.num} className="flex gap-4 items-start"
                         style={{ opacity: 0, animation: `fadeSlideIn 0.4s ease ${i * 0.12}s forwards` }}>
@@ -116,7 +121,7 @@ export default function OnboardingPanel({ importSource }: Props) {
                         ))}
                     </div>
                     <span className="text-xs" style={{ color: "#6b7280" }}>
-                        1,200+ traders analyzed
+                        {t("proof")}
                     </span>
                 </div>
             </div>

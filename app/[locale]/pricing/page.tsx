@@ -2,10 +2,12 @@ import { createClient } from "@/lib/auth/server";
 import { getSupabaseServer } from "@/lib/supabase";
 import PricingPlan from "@/components/pricing/PricingPlan";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
-export default async function PricingPage() {
+export default async function PricingPage({ params }: { params: { locale: string } }) {
+    const t = await getTranslations({ locale: params.locale, namespace: "pricing" });
     const authClient = createClient();
     const { data: { user } } = await authClient.auth.getUser();
 
@@ -29,12 +31,12 @@ export default async function PricingPage() {
                     <div className="w-20 h-20 bg-indigo-500/20 text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
                         ✨
                     </div>
-                    <h1 className="text-3xl font-bold text-white mb-4">¡Ya sos Pro!</h1>
+                    <h1 className="text-3xl font-bold text-white mb-4">{t("alreadyPro.title")}</h1>
                     <p className="text-gray-400 mb-8">
-                        Tenés acceso completo a todas las herramientas avanzadas de NodoQuant Pro.
+                        {t("alreadyPro.desc")}
                     </p>
-                    <Link href="/dashboard" className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold transition-all inline-block">
-                        Ir al Dashboard →
+                    <Link href={`/${params.locale}/dashboard`} className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold transition-all inline-block">
+                        {t("alreadyPro.cta")}
                     </Link>
                 </div>
             </main>

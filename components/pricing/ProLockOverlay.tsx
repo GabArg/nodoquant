@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { useTranslations, useLocale } from "next-intl";
 
 interface Props {
     title: string;
@@ -11,6 +12,9 @@ interface Props {
 }
 
 export default function ProLockOverlay({ title, description, isPro, children }: Props) {
+    const t = useTranslations("pricing");
+    const locale = useLocale();
+
     if (isPro) {
         return <>{children}</>;
     }
@@ -34,9 +38,9 @@ export default function ProLockOverlay({ title, description, isPro, children }: 
                 <p className="text-sm text-gray-300 text-center max-w-sm mb-6">
                     {description}
                 </p>
-                <Link href="/pricing"
+                <Link href={`/${locale}/pricing`}
                     className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition-colors flex items-center gap-2">
-                    Upgrade to Pro ✨
+                    {t("upgradeBtn")}
                 </Link>
             </div>
         </div>

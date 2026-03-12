@@ -12,6 +12,7 @@ export interface BasicMetrics {
     winrate: number; // 0-100
     profitFactor: number;
     maxDrawdown: number; // 0-100 (percentage)
+    maxDrawdownAbs: number; // in currency units
     expectancy: number; // avg profit per trade
     sumProfit: number;
 }
@@ -26,6 +27,37 @@ export interface FullMetrics extends BasicMetrics {
     recommendedRiskPct: number; // % of capital per trade (Kelly-based)
     riskOfRuin: number; // 0-100
     monteCarlo: MonteCarloResult;
+    timeAnalysis: TimeAnalysis;
+    riskAnalysis: RiskMetrics;
+    stabilityAnalysis: StabilityAnalysis;
+    stabilityScore: number; // 0-100
+}
+
+export interface StabilityAnalysis {
+    segments: Array<{
+        segment: string;
+        profitFactor: number;
+        winrate: number;
+        netProfit: number;
+    }>;
+    interpretation: "Estable" | "Degradando" | "Mejorando";
+}
+
+export interface TimeAnalysis {
+    byWeekday: number[]; // Index 0-6 (Sun-Sat)
+    byHour: number[]; // Index 0-23
+    bySession: {
+        asian: number;
+        london: number;
+        ny: number;
+    };
+}
+
+export interface RiskMetrics {
+    maxDrawdown: number;
+    avgDrawdown: number;
+    recoveryFactor: number;
+    profitToDrawdown: number;
 }
 
 export interface MonteCarloResult {
@@ -61,6 +93,7 @@ export function calcBasicMetrics(trades: Trade[]): BasicMetrics {
             winrate: 0,
             profitFactor: 0,
             maxDrawdown: 0,
+            maxDrawdownAbs: 0,
             expectancy: 0,
             sumProfit: 0,
         };
@@ -78,12 +111,14 @@ export function calcBasicMetrics(trades: Trade[]): BasicMetrics {
 
     const equityCurve = buildEquityCurve(trades);
     const maxDrawdown = calcMaxDrawdownFromCurve(equityCurve);
+    const { maxDD: maxDDAbs } = calcMaxDrawdownAbs(equityCurve);
 
     return {
         totalTrades: trades.length,
         winrate: round(winrate, 1),
         profitFactor: round(profitFactor, 2),
         maxDrawdown: round(maxDrawdown, 1),
+        maxDrawdownAbs: round(maxDDAbs, 2),
         expectancy: round(expectancy, 2),
         sumProfit: round(sumProfit, 2),
     };
@@ -116,6 +151,29 @@ export function buildDrawdownCurve(equityCurve: number[]): number[] {
 function calcMaxDrawdownFromCurve(equityCurve: number[]): number {
     const ddCurve = buildDrawdownCurve(equityCurve);
     return Math.max(...ddCurve, 0);
+}
+
+export function calcMaxDrawdownAbs(equityCurve: number[]): { maxDD: number; peakIdx: number; troughIdx: number } {
+    let maxDD = 0;
+    let peak = -Infinity;
+    let peakIdx = 0;
+    let tPeakIdx = 0;
+    let troughIdx = 0;
+
+    equityCurve.forEach((val, i) => {
+        if (val > peak) {
+            peak = val;
+            tPeakIdx = i;
+        }
+        const dd = peak - val;
+        if (dd > maxDD) {
+            maxDD = dd;
+            peakIdx = tPeakIdx;
+            troughIdx = i;
+        }
+    });
+
+    return { maxDD, peakIdx, troughIdx };
 }
 
 // ── Downsampling & Histogram ──────────────────────────────────────────────────
@@ -276,6 +334,10 @@ export function calcFullMetrics(trades: Trade[]): FullMetrics {
     const longestLosingStreak = calcLongestLosingStreak(trades);
     const recommendedRiskPct = calcRecommendedRisk(basic);
     const monteCarlo = calcMonteCarloSimulation(trades, 1000);
+    const timeAnalysis = calcTimeAnalysis(trades);
+    const riskAnalysis = calcRiskMetrics(basic, rawDrawdown);
+    const stabilityAnalysis = calcStabilityAnalysis(trades);
+    const stabilityScore = calcStabilityScore(stabilityAnalysis);
 
     return {
         ...basic,
@@ -286,8 +348,127 @@ export function calcFullMetrics(trades: Trade[]): FullMetrics {
         maxProfit: histogramData.max,
         longestLosingStreak,
         recommendedRiskPct,
-        riskOfRuin: monteCarlo.riskOfRuin,
+        riskOfRuin: calcProbabilisticRiskOfRuin(basic),
         monteCarlo,
+        timeAnalysis,
+        riskAnalysis,
+        stabilityAnalysis,
+        stabilityScore,
+    };
+}
+
+export function calcProbabilisticRiskOfRuin(metrics: BasicMetrics, capitalUnits = 10): number {
+    const { winrate, expectancy } = metrics;
+    // Formula: RiskOfRuin ≈ ((1 - Edge) / (1 + Edge)) ^ CapitalUnits
+    // Normalize edge to a decimal representation based on winrate/expectancy
+    // For simplicity, let's use the provided logic or a robust variant if edge is small.
+    const w = winrate / 100;
+    const l = 1 - w;
+    // Normalized edge relative to average size
+    const edge = expectancy > 0 ? (w - l) : 0; 
+    
+    if (edge <= 0) return 100;
+    if (edge >= 1) return 0.1;
+
+    const r = ((1 - edge) / (1 + edge));
+    const prob = Math.pow(r, capitalUnits) * 100;
+    return round(Math.max(0.1, Math.min(100, prob)), 1);
+}
+
+export function calcStabilityAnalysis(trades: Trade[]): StabilityAnalysis {
+    if (trades.length < 4) {
+        return {
+            segments: [],
+            interpretation: "Estable"
+        };
+    }
+
+    const segmentSize = Math.floor(trades.length / 4);
+    const segments = [];
+
+    for (let i = 0; i < 4; i++) {
+        const start = i * segmentSize;
+        const end = (i === 3) ? trades.length : (i + 1) * segmentSize;
+        const segmentTrades = trades.slice(start, end);
+        const stats = calcBasicMetrics(segmentTrades);
+        
+        segments.push({
+            segment: `${i * 25 + 1}-${(i + 1) * 25}%`,
+            profitFactor: stats.profitFactor,
+            winrate: stats.winrate,
+            netProfit: stats.sumProfit
+        });
+    }
+
+    // Simple interpretation based on Net Profit trend
+    const firstHalf = segments[0].netProfit + segments[1].netProfit;
+    const secondHalf = segments[2].netProfit + segments[3].netProfit;
+    
+    let interpretation: "Estable" | "Degradando" | "Mejorando" = "Estable";
+    if (secondHalf < firstHalf * 0.7) interpretation = "Degradando";
+    else if (secondHalf > firstHalf * 1.3) interpretation = "Mejorando";
+
+    return { segments, interpretation };
+}
+
+export function calcStabilityScore(analysis: StabilityAnalysis): number {
+    if (analysis.segments.length < 4) return 0;
+
+    const pfs = analysis.segments.map(s => s.profitFactor);
+    const mean = pfs.reduce((a, b) => a + b, 0) / pfs.length;
+    const variance = pfs.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / pfs.length;
+    
+    // Convert variance to 0-100 score. Low variance (stable PF) -> 100.
+    // PF variance usually is small, e.g. 0.1 to 1.0. 
+    // Let's say variance 0 is 100, variance 0.5 is 50, variance 1+ is 0.
+    const score = Math.max(0, 100 - (variance * 100));
+    return Math.round(score);
+}
+
+export function calcTimeAnalysis(trades: Trade[]): TimeAnalysis {
+    const byWeekday = new Array(7).fill(0);
+    const byHour = new Array(24).fill(0);
+    let asian = 0, london = 0, ny = 0;
+
+    for (const t of trades) {
+        const d = t.datetime;
+        byWeekday[d.getUTCDay()] += t.profit;
+        const hour = d.getUTCHours();
+        byHour[hour] += t.profit;
+
+        // Simplified sessions (UTC)
+        // Asian: 00:00 - 08:00
+        // London: 08:00 - 16:00
+        // NY: 13:00 - 21:00 (overlap with London)
+        if (hour >= 0 && hour < 8) asian += t.profit;
+        if (hour >= 8 && hour < 16) london += t.profit;
+        if (hour >= 13 && hour < 21) ny += t.profit;
+    }
+
+    return {
+        byWeekday: byWeekday.map(v => round(v, 2)),
+        byHour: byHour.map(v => round(v, 2)),
+        bySession: {
+            asian: round(asian, 2),
+            london: round(london, 2),
+            ny: round(ny, 2)
+        }
+    };
+}
+
+export function calcRiskMetrics(basic: BasicMetrics & { maxDrawdownAbs?: number }, ddCurve: number[]): RiskMetrics {
+    const sumDD = ddCurve.reduce((s, v) => s + v, 0);
+    const avgDrawdown = ddCurve.length > 0 ? sumDD / ddCurve.length : 0;
+    
+    // Recovery Factor = Net Profit / Max Drawdown (Absolute)
+    const maxDDAbs = basic.maxDrawdownAbs || 1;
+    const recoveryFactor = basic.sumProfit / maxDDAbs;
+    
+    return {
+        maxDrawdown: basic.maxDrawdown,
+        avgDrawdown: round(avgDrawdown, 2),
+        recoveryFactor: round(Math.max(0, recoveryFactor), 2),
+        profitToDrawdown: round(Math.max(0, recoveryFactor), 2),
     };
 }
 

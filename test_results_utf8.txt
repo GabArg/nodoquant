@@ -1,0 +1,611 @@
+﻿
+> nodoquant@0.1.0 test:analyzer
+> vitest run tests/analyzer
+
+
+[1m[46m RUN [49m[22m [36mv4.1.0 [39m[90mC:/Users/Admin/Desktop/Proyectos/NodoQuant[39m
+
+[90mstdout[2m | tests/analyzer/analyzer.test.ts[2m > [22m[2mStrategy Analyzer Automated Test Suite[2m > [22m[2mBaseline Strategy Tests[2m > [22m[2mshould correctly analyze baseline_medium_dataset.csv
+[22m[39mParsed mapped trades: [33m25[39m
+[PASS] baseline_medium_dataset.csv | Trades: 25 | Winrate: 56% | Score: 0 | Time: 4.80ms
+
+[90mstdout[2m | tests/analyzer/analyzer.test.ts[2m > [22m[2mStrategy Analyzer Automated Test Suite[2m > [22m[2mBaseline Strategy Tests[2m > [22m[2mshould correctly analyze baseline_small_dataset.csv
+[22m[39mParsed mapped trades: [33m5[39m
+[PASS] baseline_small_dataset.csv | Trades: 5 | Winrate: 60% | Score: 0 | Time: 1.55ms
+
+[90mstdout[2m | tests/analyzer/analyzer.test.ts[2m > [22m[2mStrategy Analyzer Automated Test Suite[2m > [22m[2mBaseline Strategy Tests[2m > [22m[2mshould correctly analyze baseline_strategy_breakeven.csv
+[22m[39mParsed mapped trades: [33m10[39m
+[PASS] baseline_strategy_breakeven.csv | Trades: 10 | Winrate: 50% | Score: 100 | Time: 1.60ms
+
+[90mstdout[2m | tests/analyzer/analyzer.test.ts[2m > [22m[2mStrategy Analyzer Automated Test Suite[2m > [22m[2mBaseline Strategy Tests[2m > [22m[2mshould correctly analyze baseline_strategy_negative.csv
+[22m[39mParsed mapped trades: [33m10[39m
+[PASS] baseline_strategy_negative.csv | Trades: 10 | Winrate: 50% | Score: 97 | Time: 1.05ms
+
+[90mstdout[2m | tests/analyzer/analyzer.test.ts[2m > [22m[2mStrategy Analyzer Automated Test Suite[2m > [22m[2mBaseline Strategy Tests[2m > [22m[2mshould correctly analyze baseline_strategy_profitable.csv
+[22m[39mParsed mapped trades: [33m10[39m
+[PASS] baseline_strategy_profitable.csv | Trades: 10 | Winrate: 60% | Score: 0 | Time: 1.03ms
+
+node.exe : [90mstderr[2m | 
+tests/analyzer/analyzer.test.ts[2m > 
+[22m[2mStrategy Analyzer Automated Test Suite[2m 
+> [22m[2mRisk and Stability Analysis[2m > 
+[22m[2mshould handle high_rr_strategy.csv without 
+breaking
+En línea: 1 Carácter: 1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([90ms 
+   tderr[2m...ithout breaking:String) [], RemoteE  
+  xception
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[22m[39mError parsing dataset 
+high_rr_strategy.csv: Error: No se encontr├│ una 
+cabecera v├ílida en el archivo.
+    at parseTrades (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/lib/analyzer/parser.ts:119:15)
+    at loadDataset (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/tests/analyzer/datasetLoader.ts:20:24)
+    at C:/Users/Admin/Desktop/Proyectos/NodoQuant/te
+sts/analyzer/analyzer.test.ts:41:32
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:296:11
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1258:26
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1681:20
+    at new Promise (<anonymous>)
+    at runWithCancel [90m(file:///C:/Users/Admin/De
+sktop/Proyectos/NodoQuant/[39mnode_modules/[4m@vit
+est/runner[24m/dist/index.js:1678:10[90m)[39m
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1660:20
+    at new Promise (<anonymous>)
+
+[90mstderr[2m | 
+tests/analyzer/analyzer.test.ts[2m > 
+[22m[2mStrategy Analyzer Automated Test Suite[2m 
+> [22m[2mRisk and Stability Analysis[2m > 
+[22m[2mshould handle high_variance_strategy.csv 
+without breaking
+[22m[39mError parsing dataset 
+high_variance_strategy.csv: Error: No se encontr├│ 
+una cabecera v├ílida en el archivo.
+    at parseTrades (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/lib/analyzer/parser.ts:119:15)
+    at loadDataset (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/tests/analyzer/datasetLoader.ts:20:24)
+    at C:/Users/Admin/Desktop/Proyectos/NodoQuant/te
+sts/analyzer/analyzer.test.ts:41:32
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:296:11
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1258:26
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1681:20
+    at new Promise (<anonymous>)
+    at runWithCancel [90m(file:///C:/Users/Admin/De
+sktop/Proyectos/NodoQuant/[39mnode_modules/[4m@vit
+est/runner[24m/dist/index.js:1678:10[90m)[39m
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1660:20
+    at new Promise (<anonymous>)
+
+[90mstderr[2m | 
+tests/analyzer/analyzer.test.ts[2m > 
+[22m[2mStrategy Analyzer Automated Test Suite[2m 
+> [22m[2mRisk and Stability Analysis[2m > 
+[22m[2mshould handle high_winrate_strategy.csv 
+without breaking
+[22m[39mError parsing dataset 
+high_winrate_strategy.csv: Error: No se encontr├│ 
+una cabecera v├ílida en el archivo.
+    at parseTrades (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/lib/analyzer/parser.ts:119:15)
+    at loadDataset (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/tests/analyzer/datasetLoader.ts:20:24)
+    at C:/Users/Admin/Desktop/Proyectos/NodoQuant/te
+sts/analyzer/analyzer.test.ts:41:32
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:296:11
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1258:26
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1681:20
+    at new Promise (<anonymous>)
+    at runWithCancel [90m(file:///C:/Users/Admin/De
+sktop/Proyectos/NodoQuant/[39mnode_modules/[4m@vit
+est/runner[24m/dist/index.js:1678:10[90m)[39m
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1660:20
+    at new Promise (<anonymous>)
+
+[90mstderr[2m | 
+tests/analyzer/analyzer.test.ts[2m > 
+[22m[2mStrategy Analyzer Automated Test Suite[2m 
+> [22m[2mRisk and Stability Analysis[2m > 
+[22m[2mshould handle low_risk_strategy.csv 
+without breaking
+[22m[39mError parsing dataset 
+low_risk_strategy.csv: Error: No se encontr├│ una 
+cabecera v├ílida en el archivo.
+    at parseTrades (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/lib/analyzer/parser.ts:119:15)
+    at loadDataset (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/tests/analyzer/datasetLoader.ts:20:24)
+    at C:/Users/Admin/Desktop/Proyectos/NodoQuant/te
+sts/analyzer/analyzer.test.ts:41:32
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:296:11
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1258:26
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1681:20
+    at new Promise (<anonymous>)
+    at runWithCancel [90m(file:///C:/Users/Admin/De
+sktop/Proyectos/NodoQuant/[39mnode_modules/[4m@vit
+est/runner[24m/dist/index.js:1678:10[90m)[39m
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1660:20
+    at new Promise (<anonymous>)
+
+[90mstderr[2m | 
+tests/analyzer/analyzer.test.ts[2m > 
+[22m[2mStrategy Analyzer Automated Test Suite[2m 
+> [22m[2mRisk and Stability Analysis[2m > 
+[22m[2mshould handle martingale_strategy.csv 
+without breaking
+[22m[39mError parsing dataset 
+martingale_strategy.csv: Error: No se encontr├│ una 
+cabecera v├ílida en el archivo.
+    at parseTrades (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/lib/analyzer/parser.ts:119:15)
+    at loadDataset (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/tests/analyzer/datasetLoader.ts:20:24)
+    at C:/Users/Admin/Desktop/Proyectos/NodoQuant/te
+sts/analyzer/analyzer.test.ts:41:32
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:296:11
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1258:26
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1681:20
+    at new Promise (<anonymous>)
+    at runWithCancel [90m(file:///C:/Users/Admin/De
+sktop/Proyectos/NodoQuant/[39mnode_modules/[4m@vit
+est/runner[24m/dist/index.js:1678:10[90m)[39m
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1660:20
+    at new Promise (<anonymous>)
+
+[90mstderr[2m | 
+tests/analyzer/analyzer.test.ts[2m > 
+[22m[2mStrategy Analyzer Automated Test Suite[2m 
+> [22m[2mRisk and Stability Analysis[2m > 
+[22m[2mshould handle strategy_deteriorating.csv 
+without breaking
+[22m[39mError parsing dataset 
+strategy_deteriorating.csv: Error: No se encontr├│ 
+una cabecera v├ílida en el archivo.
+    at parseTrades (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/lib/analyzer/parser.ts:119:15)
+    at loadDataset (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/tests/analyzer/datasetLoader.ts:20:24)
+    at C:/Users/Admin/Desktop/Proyectos/NodoQuant/te
+sts/analyzer/analyzer.test.ts:41:32
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:296:11
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1258:26
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1681:20
+    at new Promise (<anonymous>)
+    at runWithCancel [90m(file:///C:/Users/Admin/De
+sktop/Proyectos/NodoQuant/[39mnode_modules/[4m@vit
+est/runner[24m/dist/index.js:1678:10[90m)[39m
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1660:20
+    at new Promise (<anonymous>)
+
+[90mstderr[2m | 
+tests/analyzer/analyzer.test.ts[2m > 
+[22m[2mStrategy Analyzer Automated Test Suite[2m 
+> [22m[2mRisk and Stability Analysis[2m > 
+[22m[2mshould handle strategy_improving.csv 
+without breaking
+[22m[39mError parsing dataset 
+strategy_improving.csv: Error: No se encontr├│ una 
+cabecera v├ílida en el archivo.
+    at parseTrades (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/lib/analyzer/parser.ts:119:15)
+    at loadDataset (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/tests/analyzer/datasetLoader.ts:20:24)
+    at C:/Users/Admin/Desktop/Proyectos/NodoQuant/te
+sts/analyzer/analyzer.test.ts:41:32
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:296:11
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1258:26
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1681:20
+    at new Promise (<anonymous>)
+    at runWithCancel [90m(file:///C:/Users/Admin/De
+sktop/Proyectos/NodoQuant/[39mnode_modules/[4m@vit
+est/runner[24m/dist/index.js:1678:10[90m)[39m
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1660:20
+    at new Promise (<anonymous>)
+
+[90mstderr[2m | 
+tests/analyzer/analyzer.test.ts[2m > 
+[22m[2mStrategy Analyzer Automated Test Suite[2m 
+> [22m[2mRisk and Stability Analysis[2m > 
+[22m[2mshould handle strategy_stable.csv without 
+breaking
+[22m[39mError parsing dataset 
+strategy_stable.csv: Error: No se encontr├│ una 
+cabecera v├ílida en el archivo.
+    at parseTrades (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/lib/analyzer/parser.ts:119:15)
+    at loadDataset (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/tests/analyzer/datasetLoader.ts:20:24)
+    at C:/Users/Admin/Desktop/Proyectos/NodoQuant/te
+sts/analyzer/analyzer.test.ts:41:32
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:296:11
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1258:26
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1681:20
+    at new Promise (<anonymous>)
+    at runWithCancel [90m(file:///C:/Users/Admin/De
+sktop/Proyectos/NodoQuant/[39mnode_modules/[4m@vit
+est/runner[24m/dist/index.js:1678:10[90m)[39m
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1660:20
+    at new Promise (<anonymous>)
+
+[90mstdout[2m | tests/analyzer/analyzer.test.ts[2m > [22m[2mStrategy Analyzer Automated Test Suite[2m > [22m[2mPlan Limit Logic[2m > [22m[2mshould allow 500 trades (limit boundary)
+[22m[39mParsed mapped trades: [33m500[39m
+
+[90mstdout[2m | tests/analyzer/analyzer.test.ts[2m > [22m[2mStrategy Analyzer Automated Test Suite[2m > [22m[2mPlan Limit Logic[2m > [22m[2mshould load 501 trades for limit testing
+[22m[39mParsed mapped trades: [33m501[39m
+
+[90mstdout[2m | tests/analyzer/analyzer.test.ts[2m > [22m[2mStrategy Analyzer Automated Test Suite[2m > [22m[2mPerformance Benchmarks[2m > [22m[2mshould analyze 5,000 trades within 2 seconds
+[22m[39mParsed mapped trades: [33m5000[39m
+[PERF] 5000 trades processed in 145.45ms
+
+[90mstdout[2m | tests/analyzer/analyzer.test.ts[2m > [22m[2mStrategy Analyzer Automated Test Suite[2m > [22m[2mRobustness and Error Handling[2m > [22m[2mshould NOT crash and return structured error for corrupted_values.csv
+[22m[39m[SAFE] Handled error in corrupted_values.csv: No se encontr├│ una cabecera v├ílida en el archivo.
+
+[90mstderr[2m | 
+tests/analyzer/analyzer.test.ts[2m > 
+[22m[2mStrategy Analyzer Automated Test Suite[2m 
+> [22m[2mRobustness and Error Handling[2m > 
+[22m[2mshould NOT crash and return structured 
+error for corrupted_values.csv
+[22m[39mError parsing dataset 
+corrupted_values.csv: Error: No se encontr├│ una 
+cabecera v├ílida en el archivo.
+    at parseTrades (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/lib/analyzer/parser.ts:119:15)
+    at loadDataset (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/tests/analyzer/datasetLoader.ts:20:24)
+    at C:/Users/Admin/Desktop/Proyectos/NodoQuant/te
+sts/analyzer/analyzer.test.ts:96:36
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:296:11
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1258:26
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1681:20
+    at new Promise (<anonymous>)
+    at runWithCancel [90m(file:///C:/Users/Admin/De
+sktop/Proyectos/NodoQuant/[39mnode_modules/[4m@vit
+est/runner[24m/dist/index.js:1678:10[90m)[39m
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1660:20
+    at new Promise (<anonymous>)
+
+[90mstdout[2m | tests/analyzer/analyzer.test.ts[2m > [22m[2mStrategy Analyzer Automated Test Suite[2m > [22m[2mRobustness and Error Handling[2m > [22m[2mshould NOT crash and return structured error for duplicate_rows.csv
+[22m[39m[SAFE] Handled error in duplicate_rows.csv: No se encontr├│ una cabecera v├ílida en el archivo.
+
+[90mstderr[2m | 
+tests/analyzer/analyzer.test.ts[2m > 
+[22m[2mStrategy Analyzer Automated Test Suite[2m 
+> [22m[2mRobustness and Error Handling[2m > 
+[22m[2mshould NOT crash and return structured 
+error for duplicate_rows.csv
+[22m[39mError parsing dataset duplicate_rows.csv: 
+Error: No se encontr├│ una cabecera v├ílida en el 
+archivo.
+    at parseTrades (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/lib/analyzer/parser.ts:119:15)
+    at loadDataset (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/tests/analyzer/datasetLoader.ts:20:24)
+    at C:/Users/Admin/Desktop/Proyectos/NodoQuant/te
+sts/analyzer/analyzer.test.ts:96:36
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:296:11
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1258:26
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1681:20
+    at new Promise (<anonymous>)
+    at runWithCancel [90m(file:///C:/Users/Admin/De
+sktop/Proyectos/NodoQuant/[39mnode_modules/[4m@vit
+est/runner[24m/dist/index.js:1678:10[90m)[39m
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1660:20
+    at new Promise (<anonymous>)
+
+[90mstdout[2m | tests/analyzer/analyzer.test.ts[2m > [22m[2mStrategy Analyzer Automated Test Suite[2m > [22m[2mRobustness and Error Handling[2m > [22m[2mshould NOT crash and return structured error for empty_dataset.csv
+[22m[39m[SAFE] Handled error in empty_dataset.csv: El archivo est├í vac├¡o o tiene menos de 2 l├¡neas.
+
+[90mstderr[2m | 
+tests/analyzer/analyzer.test.ts[2m > 
+[22m[2mStrategy Analyzer Automated Test Suite[2m 
+> [22m[2mRobustness and Error Handling[2m > 
+[22m[2mshould NOT crash and return structured 
+error for empty_dataset.csv
+[22m[39mError parsing dataset empty_dataset.csv: 
+Error: El archivo est├í vac├¡o o tiene menos de 2 
+l├¡neas.
+    at parseTrades (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/lib/analyzer/parser.ts:103:15)
+    at loadDataset (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/tests/analyzer/datasetLoader.ts:20:24)
+    at C:/Users/Admin/Desktop/Proyectos/NodoQuant/te
+sts/analyzer/analyzer.test.ts:96:36
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:296:11
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1258:26
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1681:20
+    at new Promise (<anonymous>)
+    at runWithCancel [90m(file:///C:/Users/Admin/De
+sktop/Proyectos/NodoQuant/[39mnode_modules/[4m@vit
+est/runner[24m/dist/index.js:1678:10[90m)[39m
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1660:20
+    at new Promise (<anonymous>)
+
+[90mstdout[2m | tests/analyzer/analyzer.test.ts[2m > [22m[2mStrategy Analyzer Automated Test Suite[2m > [22m[2mRobustness and Error Handling[2m > [22m[2mshould NOT crash and return structured error for header_only.csv
+[22m[39m[SAFE] Handled error in header_only.csv: El archivo est├í vac├¡o o tiene menos de 2 l├¡neas.
+
+[90mstderr[2m | 
+tests/analyzer/analyzer.test.ts[2m > 
+[22m[2mStrategy Analyzer Automated Test Suite[2m 
+> [22m[2mRobustness and Error Handling[2m > 
+[22m[2mshould NOT crash and return structured 
+error for header_only.csv
+[22m[39mError parsing dataset header_only.csv: 
+Error: El archivo est├í vac├¡o o tiene menos de 2 
+l├¡neas.
+    at parseTrades (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/lib/analyzer/parser.ts:103:15)
+    at loadDataset (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/tests/analyzer/datasetLoader.ts:20:24)
+    at C:/Users/Admin/Desktop/Proyectos/NodoQuant/te
+sts/analyzer/analyzer.test.ts:96:36
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:296:11
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1258:26
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1681:20
+    at new Promise (<anonymous>)
+    at runWithCancel [90m(file:///C:/Users/Admin/De
+sktop/Proyectos/NodoQuant/[39mnode_modules/[4m@vit
+est/runner[24m/dist/index.js:1678:10[90m)[39m
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1660:20
+    at new Promise (<anonymous>)
+
+[90mstdout[2m | tests/analyzer/analyzer.test.ts[2m > [22m[2mStrategy Analyzer Automated Test Suite[2m > [22m[2mRobustness and Error Handling[2m > [22m[2mshould NOT crash and return structured error for missing_columns.csv
+[22m[39m[SAFE] Handled error in missing_columns.csv: No se encontr├│ una cabecera v├ílida en el archivo.
+
+[90mstderr[2m | 
+tests/analyzer/analyzer.test.ts[2m > 
+[22m[2mStrategy Analyzer Automated Test Suite[2m 
+> [22m[2mRobustness and Error Handling[2m > 
+[22m[2mshould NOT crash and return structured 
+error for missing_columns.csv
+[22m[39mError parsing dataset 
+missing_columns.csv: Error: No se encontr├│ una 
+cabecera v├ílida en el archivo.
+    at parseTrades (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/lib/analyzer/parser.ts:119:15)
+    at loadDataset (C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/tests/analyzer/datasetLoader.ts:20:24)
+    at C:/Users/Admin/Desktop/Proyectos/NodoQuant/te
+sts/analyzer/analyzer.test.ts:96:36
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:296:11
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1258:26
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1681:20
+    at new Promise (<anonymous>)
+    at runWithCancel [90m(file:///C:/Users/Admin/De
+sktop/Proyectos/NodoQuant/[39mnode_modules/[4m@vit
+est/runner[24m/dist/index.js:1678:10[90m)[39m
+    at [90mfile:///C:/Users/Admin/Desktop/Proyectos
+/NodoQuant/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:1660:20
+    at new Promise (<anonymous>)
+
+ [31mÔØ»[39m tests/analyzer/analyzer.test.ts [2m([22m[2m21 tests[22m[2m | [22m[31m9 failed[39m[2m)[22m[32m 223[2mms[22m[39m
+       [32mÔ£ô[39m should correctly analyze baseline_medium_dataset.csv[32m 12[2mms[22m[39m
+       [32mÔ£ô[39m should correctly analyze baseline_small_dataset.csv[32m 3[2mms[22m[39m
+       [32mÔ£ô[39m should correctly analyze baseline_strategy_breakeven.csv[32m 3[2mms[22m[39m
+       [32mÔ£ô[39m should correctly analyze baseline_strategy_negative.csv[32m 2[2mms[22m[39m
+       [32mÔ£ô[39m should correctly analyze baseline_strategy_profitable.csv[32m 3[2mms[22m[39m
+[31m       [31m├ù[31m should handle high_rr_strategy.csv without breaking[39m[32m 5[2mms[22m[39m
+[31m       [31m├ù[31m should handle high_variance_strategy.csv without breaking[39m[32m 2[2mms[22m[39m
+[31m       [31m├ù[31m should handle high_winrate_strategy.csv without breaking[39m[32m 1[2mms[22m[39m
+[31m       [31m├ù[31m should handle low_risk_strategy.csv without breaking[39m[32m 1[2mms[22m[39m
+[31m       [31m├ù[31m should handle martingale_strategy.csv without breaking[39m[32m 1[2mms[22m[39m
+[31m       [31m├ù[31m should handle strategy_deteriorating.csv without breaking[39m[32m 1[2mms[22m[39m
+[31m       [31m├ù[31m should handle strategy_improving.csv without breaking[39m[32m 1[2mms[22m[39m
+[31m       [31m├ù[31m should handle strategy_stable.csv without breaking[39m[32m 1[2mms[22m[39m
+       [32mÔ£ô[39m should allow 500 trades (limit boundary)[32m 25[2mms[22m[39m
+       [32mÔ£ô[39m should load 501 trades for limit testing[32m 2[2mms[22m[39m
+[31m       [31m├ù[31m should analyze 5,000 trades within 2 seconds[39m[32m 157[2mms[22m[39m
+       [32mÔ£ô[39m should NOT crash and return structured error for corrupted_values.csv[32m 1[2mms[22m[39m
+       [32mÔ£ô[39m should NOT crash and return structured error for duplicate_rows.csv[32m 1[2mms[22m[39m
+       [32mÔ£ô[39m should NOT crash and return structured error for empty_dataset.csv[32m 1[2mms[22m[39m
+       [32mÔ£ô[39m should NOT crash and return structured error for header_only.csv[32m 1[2mms[22m[39m
+       [32mÔ£ô[39m should NOT crash and return structured error for missing_columns.csv[32m 1[2mms[22m[39m
+
+[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m[1m[41m Failed 
+Tests 9 [49m[22m[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m
+
+[41m[1m FAIL [22m[49m 
+tests/analyzer/analyzer.test.ts[2m > [22mStrategy 
+Analyzer Automated Test Suite[2m > [22mRisk and 
+Stability Analysis[2m > [22mshould handle 
+high_rr_strategy.csv without breaking
+[41m[1m FAIL [22m[49m 
+tests/analyzer/analyzer.test.ts[2m > [22mStrategy 
+Analyzer Automated Test Suite[2m > [22mRisk and 
+Stability Analysis[2m > [22mshould handle 
+high_variance_strategy.csv without breaking
+[41m[1m FAIL [22m[49m 
+tests/analyzer/analyzer.test.ts[2m > [22mStrategy 
+Analyzer Automated Test Suite[2m > [22mRisk and 
+Stability Analysis[2m > [22mshould handle 
+high_winrate_strategy.csv without breaking
+[41m[1m FAIL [22m[49m 
+tests/analyzer/analyzer.test.ts[2m > [22mStrategy 
+Analyzer Automated Test Suite[2m > [22mRisk and 
+Stability Analysis[2m > [22mshould handle 
+low_risk_strategy.csv without breaking
+[41m[1m FAIL [22m[49m 
+tests/analyzer/analyzer.test.ts[2m > [22mStrategy 
+Analyzer Automated Test Suite[2m > [22mRisk and 
+Stability Analysis[2m > [22mshould handle 
+martingale_strategy.csv without breaking
+[41m[1m FAIL [22m[49m 
+tests/analyzer/analyzer.test.ts[2m > [22mStrategy 
+Analyzer Automated Test Suite[2m > [22mRisk and 
+Stability Analysis[2m > [22mshould handle 
+strategy_deteriorating.csv without breaking
+[41m[1m FAIL [22m[49m 
+tests/analyzer/analyzer.test.ts[2m > [22mStrategy 
+Analyzer Automated Test Suite[2m > [22mRisk and 
+Stability Analysis[2m > [22mshould handle 
+strategy_improving.csv without breaking
+[41m[1m FAIL [22m[49m 
+tests/analyzer/analyzer.test.ts[2m > [22mStrategy 
+Analyzer Automated Test Suite[2m > [22mRisk and 
+Stability Analysis[2m > [22mshould handle 
+strategy_stable.csv without breaking
+[31m[1mError[22m: No se encontr├│ una cabecera 
+v├ílida en el archivo.[39m
+[36m [2mÔØ»[22m parseTrades 
+lib/analyzer/parser.ts:[2m119:15[22m[39m
+    [90m117|[39m
+    [90m118|[39m     [35mif[39m (headerIdx 
+[33m===[39m [33m-[39m[34m1[39m) {
+    [90m119|[39m         throw new Error("No se 
+encontr├│ una cabecera v├ílida en el archÔÇª
+    [90m   |[39m               [31m^[39m
+    [90m120|[39m     }
+    [90m121|[39m
+[90m [2mÔØ»[22m loadDataset 
+tests/analyzer/datasetLoader.ts:[2m20:24[22m[39m
+[90m [2mÔØ»[22m 
+tests/analyzer/analyzer.test.ts:[2m41:32[22m[39m
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»Ô
+Ä»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[1/9]ÔÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m 
+tests/analyzer/analyzer.test.ts[2m > [22mStrategy 
+Analyzer Automated Test Suite[2m > 
+[22mPerformance Benchmarks[2m > [22mshould 
+analyze 5,000 trades within 2 seconds
+[31m[1mAssertionError[22m: expected 196 to be 
+less than or equal to 100[39m
+[36m [2mÔØ»[22m validateMetricsSanity tests/analy
+zer/metricsValidator.ts:[2m26:33[22m[39m
+    [90m 24|[39m     [90m// Drawdown[39m
+    [90m 25|[39m     [34mexpect[39m(metrics[33m
+.[39mmaxDrawdown)[33m.[39m[34mtoBeGreaterThanOrE
+qual[39m([34m0[39m)[33m;[39m
+    [90m 26|[39m     [34mexpect[39m(metrics[33m
+.[39mmaxDrawdown)[33m.[39m[34mtoBeLessThanOrEqua
+l[39m([34m100[39m)[33m;[39m
+    [90m   |[39m                                 
+[31m^[39m
+    [90m 27|[39m     [34mexpect[39m(metrics[33m
+.[39mmaxDrawdownAbs)[33m.[39m[34mtoBeGreaterThan
+OrEqual[39m([34m0[39m)[33m;[39m
+    [90m 28|[39m
+[90m [2mÔØ»[22m 
+tests/analyzer/analyzer.test.ts:[2m84:13[22m[39m
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»Ô
+Ä»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[2/9]ÔÄ»[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m9 failed[39m[22m[2m | [22m[1m[32m12 passed[39m[22m[90m (21)[39m
+[2m   Start at [22m 14:00:01
+[2m   Duration [22m 856ms[2m (transform 91ms, setup 0ms, import 121ms, tests 223ms, environment 0ms)[22m
+

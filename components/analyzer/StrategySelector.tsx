@@ -55,22 +55,32 @@ export default function StrategySelector({ onSelect, onBack }: Props) {
         setCreating(true);
         setError(null);
         try {
+            const payload = { 
+                name: newName.trim(), 
+                description: newDesc.trim() || null 
+            };
+            console.log("[StrategySelector] Creating strategy with payload:", payload);
+
             const res = await fetch("/api/strategies", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: newName.trim(), description: newDesc.trim() || null }),
+                body: JSON.stringify(payload),
             });
             const data = await res.json();
+            console.log("[StrategySelector] API response:", data);
+
             if (!data.ok) {
                 setError(data.error ?? "Error al crear la estrategia.");
                 return;
             }
+            // Success! Append to list and select it
             setStrategies((prev) => [data.strategy, ...prev]);
             setSelectedId(data.strategy.id);
             setShowCreate(false);
             setNewName("");
             setNewDesc("");
-        } catch {
+        } catch (err) {
+            console.error("[StrategySelector] Fetch error:", err);
             setError("Error de red.");
         } finally {
             setCreating(false);
@@ -206,7 +216,11 @@ export default function StrategySelector({ onSelect, onBack }: Props) {
                     />
                 </div>
 
-                {error && <p className="text-xs text-red-400">{error}</p>}
+                {error && (
+                    <div className="p-3 rounded-lg text-sm bg-red-500/10 border border-red-500/20 text-red-400">
+                        <strong>Error:</strong> {error}
+                    </div>
+                )}
 
                 <div className="flex gap-3 pt-2">
                     <button className="btn-primary flex-1 justify-center" onClick={handleContinue}>

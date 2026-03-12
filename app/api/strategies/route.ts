@@ -49,12 +49,16 @@ export async function POST(req: Request) {
             error: userError,
         } = await supabase.auth.getUser();
 
+        console.log("[API/Strategies] Auth result:", { userId: user?.id, userError });
+
         if (userError || !user) {
             return NextResponse.json({ error: "No autorizado" }, { status: 401 });
         }
 
         const body = await req.json();
-        const { name, description, market, asset, timeframe, strategy_style } = body;
+        console.log("[API/Strategies] POST body:", body);
+
+        const { name, description, market, asset, timeframe, strategy_style, analysis_id } = body;
 
         if (!name || typeof name !== "string") {
             return NextResponse.json({ error: "Falta el nombre de la estrategia" }, { status: 400 });
@@ -62,7 +66,7 @@ export async function POST(req: Request) {
 
         const slug = generateSlug(name.trim(), asset ? asset.trim() : null, timeframe || null);
 
-        const { data, error } = await supabase
+        const { data: strategy, error: stratError } = await supabase
             .from("strategies")
             .insert({
                 user_id: user.id,
@@ -77,15 +81,30 @@ export async function POST(req: Request) {
             .select()
             .single();
 
-        // Check if it's a unique constraint violation error code from Postgres (23505)
-        if (error) {
-            if (error.code === '23505') {
+        console.log("[API/Strategies] DB insert result:", { strategy, stratError });
+
+        if (stratError) {
+            if (stratError.code === '23505') {
                 return NextResponse.json({ error: "Ya existe una estrategia con ese nombre." }, { status: 400 });
             }
-            throw error;
+            throw stratError;
         }
 
-        return NextResponse.json({ ok: true, strategy: data });
+        // Link to analysis if provided
+        if (analysis_id && strategy) {
+            const { error: linkError } = await supabase
+                .from("trade_analysis")
+                .update({ strategy_id: strategy.id })
+                .eq("id", analysis_id)
+                .eq("user_id", user.id); // Security: ensure user owns the analysis
+            
+            if (linkError) {
+                console.error("[API/Strategies] Error linking analysis:", linkError);
+                // We don't fail the whole request because the strategy WAS created
+            }
+        }
+
+        return NextResponse.json({ ok: true, strategy: strategy });
     } catch (err: any) {
         console.error("POST /api/strategies error:", err);
         return NextResponse.json({ error: err.message }, { status: 500 });

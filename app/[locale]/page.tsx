@@ -28,12 +28,12 @@ export default function Home() {
                 }}
             />
             <Hero />
-            <SocialProof />
+            <SampleReport />
             <SupportedPlatforms />
+            <HowItWorks />
+            <SocialProof />
             <WhyQuant />
             <StrategyScoreSection />
-            <HowItWorks />
-            <SampleReport />
             <Testimonials />
             <FAQ />
             <FinalCTA />

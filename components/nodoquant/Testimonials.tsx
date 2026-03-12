@@ -1,44 +1,59 @@
+import { useTranslations } from "next-intl";
+
 export default function Testimonials() {
+    const t = useTranslations("testimonials");
+
     const testimonials = [
         {
-            quote: "This helped me realize my strategy had negative expectancy. I fixed my risk management and everything changed.",
-            author: "Carlos M. — Forex Trader (5 years exp.)",
+            num: 1,
+            author: "Carlos M.",
+            role: "Forex Trader — 5 years",
             icon: "C"
         },
         {
-            quote: "The equity curve analysis alone is worth it. I had never measured my strategy properly before.",
-            author: "Elena R. — Prop Firm Trader",
+            num: 2,
+            author: "Elena R.",
+            role: "Prop Firm Trader",
             icon: "E"
         },
         {
-            quote: "I thought I had an edge. NodoQuant showed me the truth.",
-            author: "David S. — Crypto Day Trader",
+            num: 3,
+            author: "David S.",
+            role: "Crypto Day Trader",
             icon: "D"
         }
     ];
 
     return (
-        <section className="py-[80px] border-t border-white/5" id="testimonials">
+        <section className="py-[120px] border-t border-white/[0.03] bg-[#050505]" id="testimonials">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-16">
-                    <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 leading-tight">
-                        What Traders Are Saying
+                <div className="text-center mb-20 animate-fade-in text-balance">
+                    <h2 className="text-4xl sm:text-5xl font-extrabold text-white mb-6 leading-tight tracking-tight">
+                        {t("title")}
                     </h2>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {testimonials.map((t, idx) => (
-                        <div key={idx} className="bg-white/5 border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-colors flex flex-col justify-between">
-                            <p className="text-gray-300 font-medium leading-relaxed mb-8">
-                                "{t.quote}"
+                    {testimonials.map((test) => (
+                        <div key={test.num} className="bg-white/[0.02] border border-white/[0.05] rounded-[40px] p-10 hover:bg-white/[0.04] transition-all duration-500 group relative overflow-hidden flex flex-col justify-between">
+                            <div className="absolute top-0 left-0 w-full h-1 bg-indigo-500/0 group-hover:bg-indigo-500/20 transition-all" />
+                            
+                            <p className="text-gray-300 font-medium leading-relaxed mb-10 text-lg italic">
+                                "{t(`t${test.num}_quote`)}"
                             </p>
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold">
-                                    {t.icon}
+                            
+                            <div className="flex items-center gap-5">
+                                <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 font-black text-xl shadow-[0_0_15px_rgba(99,102,241,0.1)] group-hover:scale-110 transition-transform">
+                                    {test.icon}
                                 </div>
-                                <span className="text-sm text-gray-400 uppercase tracking-widest font-semibold">
-                                    — {t.author}
-                                </span>
+                                <div className="flex flex-col">
+                                    <span className="text-base text-white font-bold tracking-tight">
+                                        {test.author}
+                                    </span>
+                                    <span className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-black">
+                                        {test.role}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     ))}

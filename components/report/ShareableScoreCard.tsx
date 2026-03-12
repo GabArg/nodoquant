@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
     strategyScore: number;
@@ -13,19 +14,20 @@ interface Props {
     reportUrl: string;
 }
 
-function scoreTier(s: number): { label: string; color: string; bg: string; border: string } {
-    if (s >= 80) return { label: "Strong Edge", color: "#059669", bg: "#ecfdf5", border: "#a7f3d0" };
-    if (s >= 60) return { label: "Positive Edge", color: "#7c3aed", bg: "#f5f3ff", border: "#c4b5fd" };
-    if (s >= 40) return { label: "Marginal Edge", color: "#d97706", bg: "#fffbeb", border: "#fde68a" };
-    return { label: "No Clear Edge", color: "#dc2626", bg: "#fef2f2", border: "#fecaca" };
-}
-
 export default function ShareableScoreCard({
     strategyScore, strategyName, winRate, profitFactor,
     expectancy, maxDrawdown, totalTrades, reportUrl,
 }: Props) {
+    const t = useTranslations("fullReport");
     const cardRef = useRef<HTMLDivElement>(null);
     const [downloading, setDownloading] = useState(false);
+
+    function scoreTier(s: number): { label: string; color: string; bg: string; border: string } {
+        if (s >= 80) return { label: t("score.strongEdge"), color: "#059669", bg: "#ecfdf5", border: "#a7f3d0" };
+        if (s >= 60) return { label: t("score.positiveEdge"), color: "#7c3aed", bg: "#f5f3ff", border: "#c4b5fd" };
+        if (s >= 40) return { label: t("score.marginalEdge"), color: "#d97706", bg: "#fffbeb", border: "#fde68a" };
+        return { label: t("score.noEdge"), color: "#dc2626", bg: "#fef2f2", border: "#fecaca" };
+    }
 
     const tier = scoreTier(strategyScore);
     const score = Math.round(strategyScore);
@@ -89,13 +91,13 @@ export default function ShareableScoreCard({
                         <span style={{ fontSize: "14px", fontWeight: "700", color: "#111827" }}>NodoQuant</span>
                     </div>
                     <span style={{ fontSize: "11px", color: "#6b7280", fontWeight: "500", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                        Strategy Analysis
+                        {t("sharing.analysisLabel")}
                     </span>
                 </div>
 
                 {/* Strategy name */}
                 <p style={{ fontSize: "13px", color: "#6b7280", marginBottom: "6px", fontWeight: "500" }}>
-                    {strategyName || "Trading Strategy"}
+                    {strategyName || t("sharing.tradingStrategy")}
                 </p>
 
                 {/* Score hero */}
@@ -118,7 +120,7 @@ export default function ShareableScoreCard({
                             {tier.label}
                         </div>
                         <div style={{ fontSize: "12px", color: "#6b7280" }}>
-                            Strategy Score · {totalTrades} trades analyzed
+                            {t("score.analyzed", { count: totalTrades })}
                         </div>
                     </div>
                 </div>
@@ -126,10 +128,10 @@ export default function ShareableScoreCard({
                 {/* Metrics grid */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "20px" }}>
                     {[
-                        { label: "Win Rate", value: `${wr.toFixed(1)}%`, good: wr >= 50 },
-                        { label: "Profit Factor", value: profitFactor.toFixed(2), good: profitFactor >= 1.5 },
-                        { label: "Expectancy", value: `${expectancy >= 0 ? "+" : ""}${expectancy.toFixed(2)}R`, good: expectancy > 0 },
-                        { label: "Max Drawdown", value: `${maxDrawdown.toFixed(1)}%`, good: maxDrawdown <= 20 },
+                        { label: t("metrics.winrate.label"), value: `${wr.toFixed(1)}%`, good: wr >= 50 },
+                        { label: t("metrics.profitFactor.label"), value: profitFactor.toFixed(2), good: profitFactor >= 1.5 },
+                        { label: t("metrics.expectancy.label"), value: `${expectancy >= 0 ? "+" : ""}${expectancy.toFixed(2)}R`, good: expectancy > 0 },
+                        { label: t("metrics.maxDrawdown.label"), value: `${maxDrawdown.toFixed(1)}%`, good: maxDrawdown <= 20 },
                     ].map(m => (
                         <div key={m.label} style={{
                             background: "#f9fafb", borderRadius: "12px", padding: "12px 14px",
@@ -182,7 +184,7 @@ export default function ShareableScoreCard({
                         <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
                     </svg>
                 )}
-                {downloading ? "Generating PNG…" : "Download as image"}
+                {downloading ? t("sharing.downloading") : t("sharing.downloadBtn")}
             </button>
         </div>
     );

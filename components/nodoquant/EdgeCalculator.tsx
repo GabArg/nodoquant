@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 
 export default function EdgeCalculator() {
+    const t = useTranslations("edgeCalculator");
     const [winRate, setWinRate] = useState<number>(50);
     const [avgWin, setAvgWin] = useState<number>(2);
     const [avgLoss, setAvgLoss] = useState<number>(1);
@@ -46,7 +48,7 @@ export default function EdgeCalculator() {
                 {/* Inputs */}
                 <div className="space-y-6">
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Win Rate (%)</label>
+                        <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">{t("winRate")}</label>
                         <input
                             type="range" min="0" max="100" value={winRate}
                             onChange={(e) => setWinRate(Number(e.target.value))}
@@ -61,7 +63,7 @@ export default function EdgeCalculator() {
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-bold text-gray-500 mb-2 uppercase">Avg Win ($ or R)</label>
+                            <label className="block text-xs font-bold text-gray-500 mb-2 uppercase">{t("avgWin")}</label>
                             <input
                                 type="number" value={avgWin}
                                 onChange={(e) => setAvgWin(Number(e.target.value))}
@@ -69,7 +71,7 @@ export default function EdgeCalculator() {
                             />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-gray-500 mb-2 uppercase">Avg Loss ($ or R)</label>
+                            <label className="block text-xs font-bold text-gray-500 mb-2 uppercase">{t("avgLoss")}</label>
                             <input
                                 type="number" value={avgLoss}
                                 onChange={(e) => setAvgLoss(Number(e.target.value))}
@@ -79,7 +81,7 @@ export default function EdgeCalculator() {
                     </div>
 
                     <div>
-                        <label className="block text-xs font-bold text-gray-500 mb-2 uppercase">Sample Size (Trades)</label>
+                        <label className="block text-xs font-bold text-gray-500 mb-2 uppercase">{t("sampleSize")}</label>
                         <input
                             type="number" value={trades}
                             onChange={(e) => setTrades(Number(e.target.value))}
@@ -97,18 +99,18 @@ export default function EdgeCalculator() {
                     </div>
 
                     <div className="relative z-10 text-center">
-                        <span className="text-xs font-bold uppercase tracking-widest opacity-80 mb-2 block">Expectancy per Trade</span>
+                        <span className="text-xs font-bold uppercase tracking-widest opacity-80 mb-2 block">{t("expectancyTitle")}</span>
                         <div className="text-5xl font-black mb-6">
                             {results.expectancy > 0 ? "+" : ""}{results.expectancy}
                         </div>
 
                         <div className="grid grid-cols-2 gap-4 mb-8">
                             <div className="bg-white/10 rounded-xl p-3 backdrop-blur-sm">
-                                <span className="text-[10px] font-bold uppercase block opacity-70">Profit Factor</span>
+                                <span className="text-[10px] font-bold uppercase block opacity-70">{t("profitFactor")}</span>
                                 <span className="text-xl font-black">{results.profitFactor}</span>
                             </div>
                             <div className="bg-white/10 rounded-xl p-3 backdrop-blur-sm">
-                                <span className="text-[10px] font-bold uppercase block opacity-70">Edge Score</span>
+                                <span className="text-[10px] font-bold uppercase block opacity-70">{t("edgeScore")}</span>
                                 <span className="text-xl font-black">{results.edgeScore}/100</span>
                             </div>
                         </div>
@@ -116,11 +118,11 @@ export default function EdgeCalculator() {
                         <div className="pt-6 border-t border-white/20">
                             <p className="text-sm font-medium opacity-90 leading-relaxed mb-4">
                                 {results.expectancy > 0
-                                    ? `This system has a positive edge. You expect to earn ${results.expectancy} units for every unit of risk.`
-                                    : "This system has a negative edge. Long term, this strategy will lose money regardless of luck."}
+                                    ? t("positiveEdge", { expectancy: results.expectancy })
+                                    : t("negativeEdge")}
                             </p>
                             <a href="/analyzer" className="inline-block bg-white text-indigo-600 px-6 py-3 rounded-xl font-bold text-sm hover:bg-indigo-50 transition-colors shadow-lg">
-                                Analyze Your Data →
+                                {t("cta")}
                             </a>
                         </div>
                     </div>

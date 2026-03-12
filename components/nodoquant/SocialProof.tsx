@@ -4,19 +4,14 @@ export default function SocialProof() {
     const t = useTranslations("socialProof");
 
     return (
-        <section className="py-20 border-t border-white/5 bg-black/30" id="social-proof">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <p className="text-xl sm:text-2xl font-medium text-gray-300 mb-6">
+        <section className="py-24 bg-black overflow-hidden border-b border-white/[0.02]">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in">
+                <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4 tracking-tight">
                     {t("title")}
+                </h2>
+                <p className="text-gray-500 text-sm font-black uppercase tracking-[0.3em]">
+                    {t("desc")}
                 </p>
-                <div className="flex flex-col items-center justify-center">
-                    <span className="text-sm font-semibold text-indigo-400 uppercase tracking-widest mb-2">
-                        {t("label")}
-                    </span>
-                    <span className="text-5xl sm:text-6xl font-black text-white tracking-tight drop-shadow-md">
-                        {t("counter")}
-                    </span>
-                </div>
             </div>
         </section>
     );

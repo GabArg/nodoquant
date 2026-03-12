@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 
 export default function FooterNote() {
     const t = useTranslations("footerNote");
+    const n = useTranslations("navbar");
 
     return (
         <footer className="border-t border-white/5 py-16 bg-black">
@@ -11,35 +12,35 @@ export default function FooterNote() {
                     <div className="md:col-span-1">
                         <p className="text-lg font-bold text-white mb-4">NodoQuant</p>
                         <p className="text-sm text-gray-500 leading-relaxed pr-4">
-                            The Quantitative Laboratory for Traders. Upload your trades and discover if your strategy actually has statistical edge.
+                            {t("description")}
                         </p>
                     </div>
 
                     {/* Product */}
                     <div>
-                        <p className="text-sm font-semibold text-white mb-5">Product</p>
+                        <p className="text-sm font-semibold text-white mb-5">{t("product")}</p>
                         <ul className="space-y-3">
-                            <li><a href="/analyzer" className="text-sm text-gray-400 hover:text-white transition-colors">Analyzer</a></li>
-                            <li><a href="/#score" className="text-sm text-gray-400 hover:text-white transition-colors">Strategy Score</a></li>
-                            <li><a href="/leaderboard" className="text-sm text-gray-400 hover:text-white transition-colors">Leaderboard</a></li>
+                            <li><a href="/analyzer" className="text-sm text-gray-400 hover:text-white transition-colors">{n("analyzer")}</a></li>
+                            <li><a href="/#score" className="text-sm text-gray-400 hover:text-white transition-colors">{n("strategyScore")}</a></li>
+                            <li><a href="/leaderboard" className="text-sm text-gray-400 hover:text-white transition-colors">{n("leaderboard")}</a></li>
                         </ul>
                     </div>
 
                     {/* Resources */}
                     <div>
-                        <p className="text-sm font-semibold text-white mb-5">Resources</p>
+                        <p className="text-sm font-semibold text-white mb-5">{t("resources")}</p>
                         <ul className="space-y-3">
-                            <li><a href="/#faq" className="text-sm text-gray-400 hover:text-white transition-colors">FAQ</a></li>
-                            <li><a href="/report/example" className="text-sm text-gray-400 hover:text-white transition-colors">Sample Report</a></li>
+                            <li><a href="/#faq" className="text-sm text-gray-400 hover:text-white transition-colors">{n("faq")}</a></li>
+                            <li><a href="/report/example" className="text-sm text-gray-400 hover:text-white transition-colors">{t("cta_sample_report") || "Sample Report"}</a></li>
                         </ul>
                     </div>
 
                     {/* Legal */}
                     <div>
-                        <p className="text-sm font-semibold text-white mb-5">Legal</p>
+                        <p className="text-sm font-semibold text-white mb-5">{t("legal")}</p>
                         <ul className="space-y-3">
-                            <li><a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">Terms of Service</a></li>
-                            <li><a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+                            <li><a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">{t("terms")}</a></li>
+                            <li><a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">{t("privacy")}</a></li>
                         </ul>
                     </div>
                 </div>
@@ -56,3 +57,6 @@ export default function FooterNote() {
         </footer>
     );
 }
+
+// Note: I used n("analyzer") and n("strategyScore") from navbar namespace to avoid duplication.
+// I'll add "cta_sample_report" to footerNote section if needed, or just use a fallback for now.

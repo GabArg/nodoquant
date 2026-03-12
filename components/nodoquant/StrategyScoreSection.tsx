@@ -3,51 +3,54 @@ import { useTranslations } from "next-intl";
 export default function StrategyScoreSection() {
     const t = useTranslations("strategyScore");
 
-    const levels = [
-        { range: t("s1_range"), desc: t("s1_desc"), bg: "rgba(239, 68, 68, 0.1)", border: "rgba(239, 68, 68, 0.3)", color: "#fca5a5" },
-        { range: t("s2_range"), desc: t("s2_desc"), bg: "rgba(245, 158, 11, 0.1)", border: "rgba(245, 158, 11, 0.3)", color: "#fcd34d" },
-        { range: t("s3_range"), desc: t("s3_desc"), bg: "rgba(59, 130, 246, 0.1)", border: "rgba(59, 130, 246, 0.3)", color: "#93c5fd" },
-        { range: t("s4_range"), desc: t("s4_desc"), bg: "rgba(16, 185, 129, 0.1)", border: "rgba(16, 185, 129, 0.3)", color: "#6ee7b7" }
-    ];
-
     return (
-        <section className="py-[80px] border-t border-white/5 relative overflow-hidden" id="score">
+        <section className="py-[120px] border-t border-white/[0.03] relative overflow-hidden bg-black" id="score">
             {/* Background elements */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-full bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
 
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div className="text-center mb-16">
-                    <p className="section-label">{t("label")}</p>
-                    <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6 leading-tight">
+                <div className="text-center mb-20 animate-fade-in text-balance">
+                    <p className="section-label mb-6 inline-block">{t("label")}</p>
+                    <h2 className="text-4xl sm:text-5xl font-extrabold text-white mb-6 leading-tight tracking-tight">
                         {t("title")}
                     </h2>
-                    <p className="text-base max-w-2xl mx-auto text-gray-400">
+                    <p className="text-lg text-gray-400 max-w-2xl mx-auto font-medium">
                         {t("desc")}
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto mb-16">
-                    {levels.map((lvl, i) => (
-                        <div key={i} className="card rounded-2xl p-8 text-center shadow-2xl border-2 relative overflow-hidden transition-all hover:scale-105 group" style={{ borderColor: lvl.border, background: lvl.bg }}>
-                            <div className="absolute top-0 right-0 w-16 h-16 bg-white/5 rounded-bl-full pointer-events-none transition-all group-hover:bg-white/10" />
-                            <div className="text-4xl font-black text-white mb-1 tracking-tighter">
-                                {lvl.range.split('–')[1] || lvl.range} <span className="text-sm font-medium opacity-40">/ 100</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+                    {[1, 2, 3, 4].map((i) => {
+                        let colorClass = "";
+                        let glowClass = "";
+                        
+                        if (i === 1) { colorClass = "text-red-400 border-red-500/20 bg-red-500/5"; glowClass = "shadow-[0_0_30px_rgba(239,68,68,0.05)]"; }
+                        if (i === 2) { colorClass = "text-orange-400 border-orange-500/20 bg-orange-500/5"; glowClass = "shadow-[0_0_30px_rgba(249,115,22,0.05)]"; }
+                        if (i === 3) { colorClass = "text-indigo-400 border-indigo-500/20 bg-indigo-500/5"; glowClass = "shadow-[0_0_30px_rgba(99,102,241,0.05)]"; }
+                        if (i === 4) { colorClass = "text-emerald-400 border-emerald-500/20 bg-emerald-500/5"; glowClass = "shadow-[0_0_30px_rgba(16,185,129,0.05)]"; }
+
+                        return (
+                            <div 
+                                key={i} 
+                                className={`p-8 rounded-[32px] border transition-all duration-500 hover:scale-105 group overflow-hidden relative ${colorClass} ${glowClass} hover:border-current/30`}
+                            >
+                                <div className="absolute top-0 left-0 w-full h-1 bg-current opacity-20" />
+                                <span className="block text-3xl font-black mb-3 tracking-tighter opacity-80 group-hover:opacity-100 transition-opacity">
+                                    {t(`s${i}_range`)}
+                                </span>
+                                <p className="text-sm font-black uppercase tracking-[0.15em] leading-relaxed">
+                                    {t(`s${i}_desc`)}
+                                </p>
                             </div>
-                            <div className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4">
-                                Strategy Score
-                            </div>
-                            <div className="text-sm font-black uppercase tracking-widest py-2 px-4 rounded-lg inline-block" style={{ background: `${lvl.color}15`, border: `1px solid ${lvl.color}30`, color: lvl.color }}>
-                                {lvl.desc}
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
 
-                <div className="text-center">
-                    <a href="/analyzer" className="btn-primary">
+                <div className="mt-20 text-center animate-fade-in">
+                    <a href="/analyzer" className="btn-primary border-none inline-flex items-center gap-3 px-10 py-5 text-sm font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-xl shadow-indigo-500/30">
                         {t("cta")}
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
                     </a>
                 </div>
@@ -55,4 +58,3 @@ export default function StrategyScoreSection() {
         </section>
     );
 }
-

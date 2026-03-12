@@ -1,28 +1,23 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/auth/server";
 import "../globals.css";
-
-export const metadata: Metadata = {
-    title: {
-        default: "NodoQuant — Discover Your Trading Edge",
-        template: "%s | NodoQuant",
-    },
-    description:
-        "Upload your trading history and discover if your strategy has a real statistical edge. Quantitative analysis for serious traders.",
-    keywords: [
-        "backtesting",
-        "trading strategy analysis",
-        "quant trading",
-        "trade analysis",
-        "strategy edge",
-        "quantitative laboratory"
-    ],
-};
-
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
+
+export async function generateMetadata({ params: { locale } }: { params: { locale: string } }): Promise<Metadata> {
+    const t = await getTranslations({ locale, namespace: "layout.metadata" });
+    
+    return {
+        title: {
+            default: t("title"),
+            template: "%s | NodoQuant",
+        },
+        description: t("description"),
+        keywords: t("keywords").split(", "),
+    };
+}
 
 export default async function RootLayout({
     children,
@@ -43,14 +38,14 @@ export default async function RootLayout({
         <html lang={locale} className="dark scroll-smooth">
             <body className="antialiased min-h-screen">
                 <NextIntlClientProvider messages={messages}>
-                    <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 backdrop-blur-md bg-black/50">
+                    <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.03] backdrop-blur-xl bg-black/60">
                         <nav className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-14">
                             {/* Logo */}
                             <Link
                                 href="/"
-                                className="text-sm font-bold text-white tracking-tight hover:text-indigo-400 transition-colors"
+                                className="text-sm font-bold text-white tracking-widest hover:text-indigo-400 transition-all duration-300"
                             >
-                                NodoQuant
+                                NODOQUANT
                             </Link>
 
                             {/* Desktop nav */}
@@ -78,7 +73,7 @@ export default async function RootLayout({
                                         <Link href="/login" className="text-gray-300 hover:text-white transition-colors font-medium">{t("login")}</Link>
                                         <Link
                                             href="/analyzer"
-                                            className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-lg shadow-indigo-500/20"
+                                            className="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded-lg font-bold transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-indigo-500/20 text-xs uppercase tracking-tight"
                                         >
                                             {t("analyzeCta")}
                                         </Link>
@@ -95,7 +90,7 @@ export default async function RootLayout({
                                 {user ? (
                                     <Link
                                         href="/dashboard"
-                                        className="px-3 py-1.5 rounded-lg text-sm font-medium text-white"
+                                        className="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-tight text-white transition-all hover:scale-105 active:scale-95"
                                         style={{ background: "#6366f1" }}
                                     >
                                         {t("dashboard")}
@@ -103,7 +98,7 @@ export default async function RootLayout({
                                 ) : (
                                     <Link
                                         href="/analyzer"
-                                        className="px-3 py-1.5 rounded-lg text-sm font-medium text-white shadow-md shadow-indigo-500/20"
+                                        className="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-tight text-white shadow-md shadow-indigo-500/20 transition-all hover:scale-105 active:scale-95"
                                         style={{ background: "#6366f1" }}
                                     >
                                         {t("analyzeCta")}

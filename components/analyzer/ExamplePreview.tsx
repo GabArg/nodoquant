@@ -92,7 +92,7 @@ function ScoreRing({ score, color }: { score: number; color: string }) {
     return (
         <div className="flex flex-col items-center">
             <div className="text-3xl font-black tabular-nums" style={{ color }}>{score}</div>
-            <div className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#6b7280" }}>Score</div>
+            <div className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#6b7280" }}>Puntaje</div>
         </div>
     );
 }
@@ -127,7 +127,7 @@ export default function ExamplePreview({ onTryWithData }: Props) {
                 <div className="px-5 pt-5 pb-3 flex items-center justify-between flex-wrap gap-3">
                     <div className="flex items-center gap-2">
                         <span className="badge badge-soon text-xs">Demo</span>
-                        <p className="text-sm font-medium text-white">Strategy Examples</p>
+                        <p className="text-sm font-medium text-white">Ejemplos de Estrategias</p>
                     </div>
                     <div className="flex items-center gap-2">
                         {SAMPLE_STRATEGIES.map((s) => (
@@ -178,10 +178,10 @@ export default function ExamplePreview({ onTryWithData }: Props) {
                 {/* CTA */}
                 <div className="px-5 py-4" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
                     <p className="text-xs mb-3" style={{ color: "#6b7280" }}>
-                        Upload your history and discover your real edge:
+                        Subí tu historial y descubrí tu ventaja real:
                     </p>
                     <div className="flex flex-wrap gap-2 mb-4">
-                        {["Win Rate", "Profit Factor", "Max Drawdown", "Monte Carlo", "Prop Firm Sim"].map((f) => (
+                        {["Win Rate", "Profit Factor", "Max Drawdown", "Monte Carlo", "Sim. Prop Firm"].map((f) => (
                             <span key={f} className="text-xs px-2.5 py-1 rounded-full"
                                 style={{
                                     background: "rgba(99,102,241,0.08)",
@@ -193,7 +193,7 @@ export default function ExamplePreview({ onTryWithData }: Props) {
                         ))}
                     </div>
                     <button onClick={onTryWithData} className="btn-primary w-full justify-center">
-                        Try with my own data
+                        Probar con mis propios datos
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M5 12h14M12 5l7 7-7 7" />
                         </svg>

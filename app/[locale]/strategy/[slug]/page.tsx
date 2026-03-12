@@ -2,6 +2,7 @@ import { getSupabaseServer } from "@/lib/supabase";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import StrategyDetailView from "@/components/strategy/StrategyDetailView";
+import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
@@ -57,6 +58,8 @@ export default async function StrategyPublicPage({ params }: Props) {
     const supabase = getSupabaseServer();
     if (!supabase) return notFound();
 
+    const t = await getTranslations({ locale: params.locale, namespace: "strategies.profile" });
+
     // 1) Fetch strategy from public_strategy_profiles
     const { data: strategy, error } = await supabase
         .from("public_strategy_profiles")
@@ -77,7 +80,7 @@ export default async function StrategyPublicPage({ params }: Props) {
         "@context": "https://schema.org",
         "@type": "Dataset",
         "name": strategy.strategy_name,
-        "description": strategy.description || `Trading strategy analysis for ${strategy.symbol}`,
+        "description": strategy.description || t("defaultDescription"),
         "identifier": strategy.slug,
         "keywords": [
             strategy.market,

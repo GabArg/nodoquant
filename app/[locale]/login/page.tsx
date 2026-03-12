@@ -3,8 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/auth/client";
+import { useTranslations, useLocale } from "next-intl";
+import Link from "next/link";
 
 export default function LoginPage() {
+    const t = useTranslations("auth.login");
+    const locale = useLocale();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
@@ -26,7 +30,7 @@ export default function LoginPage() {
             setError(error.message);
             setLoading(false);
         } else {
-            router.push("/dashboard");
+            router.push(`/${locale}/dashboard`);
             router.refresh();
         }
     }
@@ -35,33 +39,33 @@ export default function LoginPage() {
         <div className="min-h-screen pt-28 pb-12 flex flex-col items-center justify-center bg-[#0a0a0f] text-white">
             <div className="w-full max-w-sm px-4">
                 <div className="text-center mb-8">
-                    <h1 className="text-2xl font-bold mb-2">Iniciá sesión</h1>
-                    <p className="text-gray-400 text-sm">Bienvenido de nuevo a NodoQuant.</p>
+                    <h1 className="text-2xl font-bold mb-2">{t("title")}</h1>
+                    <p className="text-gray-400 text-sm">{t("subtitle")}</p>
                 </div>
 
                 <div className="card rounded-2xl p-6 sm:p-8 border border-white/5 bg-[#111118]">
                     <form onSubmit={handleLogin} className="space-y-4">
                         <div>
-                            <label className="form-label" htmlFor="email">Email</label>
+                            <label className="form-label" htmlFor="email">{t("emailLabel")}</label>
                             <input
                                 id="email"
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 className="form-input"
-                                placeholder="tu@email.com"
+                                placeholder={t("emailPlaceholder")}
                                 required
                             />
                         </div>
                         <div>
-                            <label className="form-label" htmlFor="password">Contraseña</label>
+                            <label className="form-label" htmlFor="password">{t("passwordLabel")}</label>
                             <input
                                 id="password"
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="form-input"
-                                placeholder="••••••••"
+                                placeholder={t("passwordPlaceholder")}
                                 required
                             />
                         </div>
@@ -77,15 +81,15 @@ export default function LoginPage() {
                             disabled={loading}
                             className="btn-primary w-full mt-2 justify-center"
                         >
-                            {loading ? "Entrando..." : "Ingresar a mi cuenta"}
+                            {loading ? t("loading") : t("submit")}
                         </button>
                     </form>
 
                     <div className="mt-6 text-center text-sm text-gray-500">
-                        ¿No tenés cuenta?{" "}
-                        <a href="/signup" className="text-indigo-400 hover:text-indigo-300 font-medium">
-                            Registrate acá
-                        </a>
+                        {t("noAccount")}{" "}
+                        <Link href={`/${locale}/signup`} className="text-indigo-400 hover:text-indigo-300 font-medium">
+                            {t("signupLink")}
+                        </Link>
                     </div>
                 </div>
             </div>

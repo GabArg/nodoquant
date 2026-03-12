@@ -1,24 +1,26 @@
 import type { Metadata } from "next";
 import AnalyzerWizard from "@/components/analyzer/AnalyzerWizard";
+import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-    title: "Strategy Analyzer — NodoQuant",
-    description:
-        "Sube tu historial de trading y obtené un análisis cuantitativo de tu estrategia. Compatible con CSV y export de MetaTrader 5. Gratis.",
-    openGraph: {
-        title: "Strategy Analyzer — NodoQuant",
-        description:
-            "Analizá tu estrategia de trading con métricas cuantitativas: Winrate, Profit Factor, Monte Carlo, Equity Curve y simulación de Prop Firm.",
-        type: "website",
-        locale: "es_AR",
-    },
-    twitter: {
-        card: "summary_large_image",
-        title: "Strategy Analyzer — NodoQuant",
-        description:
-            "Subí tu historial CSV o MT5 y recibí un análisis cuantitativo gratuito de tu estrategia.",
-    },
-};
+export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
+    const t = await getTranslations({ locale: params.locale, namespace: "analyzer.metadata" });
+    
+    return {
+        title: t("title"),
+        description: t("description"),
+        openGraph: {
+            title: t("title"),
+            description: t("description"),
+            type: "website",
+            locale: params.locale === "es" ? "es_AR" : "en_US",
+        },
+        twitter: {
+            card: "summary_large_image",
+            title: t("title"),
+            description: t("description"),
+        },
+    };
+}
 
 export default function AnalyzerPage() {
     return <AnalyzerWizard />;

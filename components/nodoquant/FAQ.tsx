@@ -3,38 +3,37 @@ import { useTranslations } from "next-intl";
 export default function FAQ() {
     const t = useTranslations("faq");
 
-    const faqs = [
-        { q: t("q1"), a: t("a1") },
-        { q: t("q2"), a: t("a2") },
-        { q: t("q3"), a: t("a3") },
-        { q: t("q4"), a: t("a4") },
-        { q: t("q5"), a: t("a5") },
-        { q: t("q6"), a: t("a6") },
-    ];
+    const faqs = [1, 2, 3, 4, 5, 6, 7]; // 7 FAQs now
 
     return (
-        <section className="py-[70px] border-t border-white/5" id="faq">
-            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                <p className="section-label">{t("label")}</p>
-                <h2 className="text-3xl sm:text-4xl font-bold text-white mb-12">
-                    {t("title")}
-                </h2>
+        <section className="py-[120px] border-t border-white/[0.03] bg-black" id="faq">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-20 animate-fade-in text-balance">
+                    <p className="section-label mb-6 inline-block">{t("label")}</p>
+                    <h2 className="text-4xl sm:text-5xl font-extrabold text-white mb-6 leading-tight tracking-tight">
+                        {t("title")}
+                    </h2>
+                </div>
 
-                <div className="space-y-4">
-                    {faqs.map((item) => (
+                <div className="space-y-4 max-w-3xl mx-auto">
+                    {faqs.map((i) => (
                         <details
-                            key={item.q}
-                            className="card px-6 py-5 group rounded-2xl"
+                            key={i}
+                            className="group bg-white/[0.02] border border-white/[0.05] hover:border-white/10 rounded-[24px] overflow-hidden transition-all duration-300"
                         >
-                            <summary className="py-1 text-base font-semibold text-gray-200 select-none outline-none flex justify-between items-center cursor-pointer">
-                                {item.q}
-                                <span className="summary-chevron text-gray-500 flex-shrink-0 transition-transform duration-200">
-                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            <summary className="px-8 py-6 text-lg font-bold text-gray-200 select-none outline-none flex justify-between items-center cursor-pointer group-hover:bg-white/[0.02] transition-colors">
+                                {t(`q${i}`)}
+                                <span className="summary-chevron text-indigo-500 flex-shrink-0 transition-transform duration-500 group-open:rotate-180">
+                                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </span>
                             </summary>
-                            <p className="mt-4 text-base text-gray-400 leading-relaxed pb-1">{item.a}</p>
+                            <div className="px-8 pb-8">
+                                <p className="text-gray-400 leading-relaxed font-medium pt-2 border-t border-white/[0.03]">
+                                    {t(`a${i}`)}
+                                </p>
+                            </div>
                         </details>
                     ))}
                 </div>
@@ -42,4 +41,3 @@ export default function FAQ() {
         </section>
     );
 }
-
