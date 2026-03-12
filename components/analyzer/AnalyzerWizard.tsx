@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import FileUpload from "@/components/analyzer/FileUpload";
 import ImportWizard from "@/components/analyzer/ImportWizard";
 import BasicResults from "@/components/analyzer/BasicResults";
+import EquityChart from "@/components/analyzer/EquityChart";
 import EmailGate from "@/components/analyzer/EmailGate";
 import FullReport from "@/components/analyzer/FullReport";
 import PropFirmSimulator from "@/components/analyzer/PropFirmSimulator";
@@ -31,26 +33,17 @@ import type { NormalizedTrade } from "@/lib/import/normalizedTrade";
 import { trackEvent } from "@/lib/analytics";
 
 
-type Step = "source" | "upload" | "importing" | "confirm" | "basic" | "strategy" | "context" | "gate" | "full" | "sim";
+type Step = "source" | "upload" | "importing" | "confirm" | "basic" | "gate" | "full" | "sim";
 
-const STEPS: { id: Step; label: string }[] = [
-    { id: "source", label: "Source" },
-    { id: "upload", label: "Upload" },
-    { id: "importing", label: "Mapping" },
-    { id: "confirm", label: "Confirm" },
-    { id: "basic", label: "Analysis" },
-    { id: "strategy", label: "Strategy" },
-    { id: "context", label: "Context" },
-    { id: "gate", label: "Full report" },
-    { id: "full", label: "Report" },
-    { id: "sim", label: "Simulation" },
-];
-
-function stepIndex(s: Step) {
-    return STEPS.findIndex((x) => x.id === s);
+function getUIStepIndex(s: Step) {
+    if (s === "source" || s === "upload") return 0;
+    if (s === "importing" || s === "confirm") return 1;
+    if (s === "basic") return 2;
+    return 3; // gate, full, sim
 }
 
 export default function AnalyzerWizard() {
+    const t = useTranslations("analyzer.wizard");
     const [step, setStep] = useState<Step>("source");
     const [importSource, setImportSource] = useState<ImportSource | null>(null);
     const [fileState, setFileState] = useState<{ content: string; name: string } | null>(null);
@@ -61,10 +54,17 @@ export default function AnalyzerWizard() {
     const [loading, setLoading] = useState(false);
     const [unlockedEmail, setUnlockedEmail] = useState("");
     const [strategyId, setStrategyId] = useState("");
+    const [analysisId, setAnalysisId] = useState<string | null>(null);
     const [datasetName, setDatasetName] = useState("");
     const [pendingNormalized, setPendingNormalized] = useState<{ trades: NormalizedTrade[]; source: ImportSource } | null>(null);
     const uploadRef = useRef<HTMLDivElement>(null);
 
+    const UI_STEPS = useMemo(() => [
+        { id: "upload", label: t("steps.upload") },
+        { id: "mapping", label: t("steps.mapping") },
+        { id: "analysis", label: t("steps.analysis") },
+        { id: "report", label: t("steps.report") },
+    ], [t]);
 
     const handleFile = useCallback((content: string, fileName: string) => {
         setParseError(null);
@@ -76,13 +76,11 @@ export default function AnalyzerWizard() {
         }, 50);
     }, []);
 
-    /** Called when any NON-CSV source returns NormalizedTrade[] — goes to confirm step first */
     const handleNormalizedImport = useCallback((trades: NormalizedTrade[], source: ImportSource) => {
         setPendingNormalized({ trades, source });
         setStep("confirm");
     }, []);
 
-    /** Called from TradeSummaryPreview confirm button — generates metrics and shows report */
     const confirmAndGenerate = useCallback(() => {
         if (!pendingNormalized) return;
         try {
@@ -134,9 +132,10 @@ export default function AnalyzerWizard() {
         setStep("upload");
     }, []);
 
-    function handleEmailUnlocked(email: string) {
+    function handleEmailUnlocked(email: string, id: string) {
         if (!parseResult) return;
         setUnlockedEmail(email);
+        setAnalysisId(id);
         setStep("full");
     }
 
@@ -149,31 +148,24 @@ export default function AnalyzerWizard() {
         setParseError(null);
     };
 
-    const currentIdx = stepIndex(step);
-
-    // Determine which importing panel to show based on source
-    const showingNonCsvPanel = importSource === "mt4" || importSource === "mt5" || importSource === "binance-spot";
-
+    const currentIdx = getUIStepIndex(step);
 
     return (
         <div
             className="min-h-screen pt-20 pb-24"
             style={{ background: "var(--bg)" }}
         >
-            {/* Page header */}
             <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
-                <div className="section-label mt-8">Free tool</div>
+                <div className="section-label mt-8">{t("freeTool")}</div>
                 <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-3 leading-tight">
-                    Strategy Analyzer
+                    {t("title")}
                 </h1>
                 <p className="text-base" style={{ color: "#9ca3af" }}>
-                    Import your trading history and get a complete quantitative analysis of your strategy.
-                    Supports CSV, MT4/MT5 statements and Binance API.
+                    {t("description")}
                 </p>
 
-                {/* Progress stepper */}
                 <div className="flex items-center gap-0 mt-8">
-                    {STEPS.map((s, i) => (
+                    {UI_STEPS.map((s, i) => (
                         <div key={s.id} className="flex items-center flex-1 min-w-0">
                             <div className="flex flex-col items-center flex-shrink-0">
                                 <div
@@ -216,7 +208,7 @@ export default function AnalyzerWizard() {
                                     {s.label}
                                 </span>
                             </div>
-                            {i < STEPS.length - 1 && (
+                            {i < UI_STEPS.length - 1 && (
                                 <div
                                     className="h-px flex-1 mx-1 transition-all duration-300"
                                     style={{
@@ -232,21 +224,14 @@ export default function AnalyzerWizard() {
                 </div>
             </div>
 
-            {/* Step content */}
             <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 
-                {/* ── Source selector ── */}
                 {step === "source" && (
                     <div className="rounded-2xl p-6" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
                         <ImportSourceSelector
                             onSelect={(src) => {
                                 setImportSource(src);
-                                if (src === "csv" || src === "generic") {
-                                    setStep("upload");
-                                } else {
-                                    // mt4 / mt5 / binance-spot go to their own panel via "upload" step
-                                    setStep("upload");
-                                }
+                                setStep("upload");
                             }}
                         />
                     </div>
@@ -254,7 +239,6 @@ export default function AnalyzerWizard() {
 
                 {step === "upload" && (
                     <div className="space-y-6">
-                        {/* MT4 panel */}
                         {importSource === "mt4" && (
                             <div className="rounded-2xl p-6 animate-fade-in" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
                                 <MT4ImportPanel
@@ -264,7 +248,6 @@ export default function AnalyzerWizard() {
                             </div>
                         )}
 
-                        {/* MT5 panel */}
                         {importSource === "mt5" && (
                             <div className="rounded-2xl p-6 animate-fade-in" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
                                 <MT5ImportPanel
@@ -274,7 +257,6 @@ export default function AnalyzerWizard() {
                             </div>
                         )}
 
-                        {/* Binance panel */}
                         {importSource === "binance-spot" && (
                             <div className="rounded-2xl p-6 animate-fade-in" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
                                 <BinanceImportPanel
@@ -284,7 +266,6 @@ export default function AnalyzerWizard() {
                             </div>
                         )}
 
-                        {/* CSV / generic panel */}
                         {(!importSource || importSource === "csv" || importSource === "generic") && (
                             <div className="space-y-6">
                                 <OnboardingPanel importSource={importSource as "csv" | "mt4" | "mt5" | "binance" | null} />
@@ -297,7 +278,7 @@ export default function AnalyzerWizard() {
                                         className="text-sm px-4 py-2 rounded-lg font-medium transition-colors"
                                         style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "#9ca3af" }}
                                     >
-                                        Try with sample data
+                                        {t("sampleDataCta")}
                                     </button>
                                 </div>
                             </div>
@@ -305,14 +286,13 @@ export default function AnalyzerWizard() {
 
                         {parseError && (
                             <div className="mt-4 p-4 rounded-xl text-sm" style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", color: "#fca5a5" }}>
-                                <strong>Error reading file:</strong> {parseError}
+                                <strong>{t("errorReading")}</strong> {parseError}
                             </div>
                         )}
                     </div>
                 )}
 
 
-                {/* ── Confirm step (trade summary preview) ── */}
                 {step === "confirm" && pendingNormalized && (
                     <div className="rounded-2xl p-6 animate-fade-in" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
                         <TradeSummaryPreview
@@ -326,7 +306,6 @@ export default function AnalyzerWizard() {
                     </div>
                 )}
 
-                {/* Import Wizard Mapping Step */}
                 {step === "importing" && fileState && (
                     <div className="mt-8 animate-fade-in">
                         <ImportWizard
@@ -338,70 +317,124 @@ export default function AnalyzerWizard() {
                     </div>
                 )}
 
-                {/* Basic results */}
-                {step === "basic" && basicMetrics && parseResult && (
-                    <div className="space-y-6">
-                        <BasicResults
-                            metrics={basicMetrics}
-                            format={parseResult.format}
-                            fileName={parseResult.fileName}
-                            trades={parseResult.trades}
-                        />
-                        {/* Strategy insight with CTA */}
-                        <StrategyInsight
-                            profitFactor={basicMetrics.profitFactor}
-                            winrate={basicMetrics.winrate}
-                            maxDrawdown={basicMetrics.maxDrawdown}
-                            totalTrades={basicMetrics.totalTrades}
-                            trades={parseResult.trades}
-                        />
-                        <div className="text-center">
-                            <button
-                                onClick={() => setStep("strategy")}
-                                className="btn-primary"
-                            >
-                                View full report
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M5 12h14M12 5l7 7-7 7" />
-                                </svg>
-                            </button>
-                            <p className="text-xs mt-2" style={{ color: "#374151" }}>
-                                Monte Carlo · Equity Curve · Prop Firm Simulator
-                            </p>
+                {step === "basic" && basicMetrics && parseResult && fullMetrics && (
+                    <div className="space-y-12 animate-fade-in">
+                        {/* 1. Strategy Score */}
+                        <div className="order-1">
+                            <BasicResults
+                                metrics={basicMetrics}
+                                format={parseResult.format}
+                                fileName={parseResult.fileName}
+                                trades={parseResult.trades}
+                                hideMetrics={true}
+                            />
                         </div>
-                        <div className="text-center">
-                            <button
-                                onClick={resetToSource}
-                                style={{ background: "none", border: "none", cursor: "pointer", color: "#4b5563", fontSize: "0.85rem" }}
-                            >
-                                ← Import another file
-                            </button>
+
+                        {/* 2. Equity Curve */}
+                        <div className="order-2 animate-fade-in" style={{ animationDelay: "200ms" }}>
+                            <EquityChart data={fullMetrics.equityCurve} />
+                        </div>
+
+                        {/* 3. Key Metrics */}
+                        <div className="order-3 animate-fade-in" style={{ animationDelay: "300ms" }}>
+                            <BasicResults
+                                metrics={basicMetrics}
+                                format={parseResult.format}
+                                trades={parseResult.trades}
+                                hideScore={true}
+                            />
+                        </div>
+
+                        {/* 4. Strategy Insights */}
+                        <div className="order-4 animate-fade-in" style={{ animationDelay: "400ms" }}>
+                            <StrategyInsight
+                                profitFactor={basicMetrics.profitFactor}
+                                winrate={basicMetrics.winrate}
+                                maxDrawdown={basicMetrics.maxDrawdown}
+                                totalTrades={basicMetrics.totalTrades}
+                                trades={parseResult.trades}
+                            />
+                        </div>
+
+                        {/* 5. Next Actions Panel */}
+                        <div className="order-5 pt-16 border-t border-white/[0.05] animate-fade-in" style={{ animationDelay: "600ms" }}>
+                            <div className="text-center mb-10">
+                                <h3 className="text-2xl font-black text-white mb-2 tracking-tight italic uppercase">{t("nextStepsTitle")}</h3>
+                                <p className="text-sm text-gray-500 font-medium max-w-md mx-auto">{t("nextStepsDesc")}</p>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-12">
+                                {/* Monte Carlo - Upgrade Trigger */}
+                                <div className="rounded-[32px] p-6 flex flex-col justify-between border border-indigo-500/30 bg-gradient-to-br from-indigo-500/[0.1] to-transparent shadow-[0_20px_40px_rgba(99,102,241,0.1)] relative overflow-hidden group hover:scale-[1.02] transition-transform">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-[50px] pointer-events-none" />
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-4">
+                                            <div className="w-8 h-8 rounded-xl bg-indigo-500/20 flex items-center justify-center text-lg">🎲</div>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400">{t("monteCarlo.label")}</span>
+                                        </div>
+                                        <h4 className="text-base font-black text-white mb-2">{t("monteCarlo.title")}</h4>
+                                        <p className="text-[11px] text-gray-400 leading-relaxed mb-8">{t("monteCarlo.desc")}</p>
+                                    </div>
+                                    <button onClick={() => setStep("gate")} className="w-full py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-black uppercase tracking-widest transition-all shadow-lg shadow-indigo-600/25 active:scale-[0.98]">
+                                        {t("monteCarlo.cta")}
+                                    </button>
+                                </div>
+
+                                {/* Prop Firm Simulator */}
+                                <div className="rounded-[32px] p-6 flex flex-col justify-between hover:border-white/20 transition-all bg-white/[0.02] border border-white/[0.06] hover:scale-[1.02]">
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-4">
+                                            <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-lg">🏦</div>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{t("propFirm.label")}</span>
+                                        </div>
+                                        <h4 className="text-base font-black text-white mb-2">{t("propFirm.title")}</h4>
+                                        <p className="text-[11px] text-gray-500 leading-relaxed mb-8">{t("propFirm.desc")}</p>
+                                    </div>
+                                    <button onClick={() => setStep("gate")} className="w-full py-3.5 rounded-2xl bg-white/5 hover:bg-white/10 text-white text-[11px] font-black uppercase tracking-widest border border-white/10 transition-all active:scale-[0.98]">
+                                        {t("propFirm.cta")}
+                                    </button>
+                                </div>
+
+                                {/* Save Strategy - PRO ONLY */}
+                                <div className="rounded-[32px] p-6 flex flex-col justify-between hover:border-white/20 transition-all bg-white/[0.01] border border-white/[0.04] opacity-80 hover:opacity-100 hover:scale-[1.02]">
+                                    <div>
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-lg">💎</div>
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{t("saveStrategy.label")}</span>
+                                            </div>
+                                            <span className="text-[8px] font-black px-2 py-1 rounded bg-indigo-500/20 text-indigo-400 tracking-widest border border-indigo-500/30 uppercase">PRO</span>
+                                        </div>
+                                        <h4 className="text-base font-black text-white mb-2">{t("saveStrategy.title")}</h4>
+                                        <p className="text-[11px] text-gray-600 leading-relaxed mb-8">{t("saveStrategy.desc")}</p>
+                                    </div>
+                                    <button onClick={() => setStep("gate")} className="w-full py-3.5 rounded-2xl bg-white/5 hover:bg-white/10 text-gray-500 text-[11px] font-black uppercase tracking-widest border border-white/5 transition-all active:scale-[0.98]">
+                                        {t("saveStrategy.cta")}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col items-center gap-6">
+                                <button
+                                    onClick={() => setStep("gate")}
+                                    className="btn-primary px-12 py-4 w-full sm:w-auto text-[11px] font-black uppercase tracking-widest shadow-[0_20px_40px_-5px_rgba(99,102,241,0.4)] group rounded-2xl"
+                                >
+                                    {t("viewReport")}
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="group-hover:translate-x-1 transition-transform">
+                                        <path d="M5 12h14M12 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                                <button
+                                    onClick={resetToSource}
+                                    className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-600 hover:text-gray-400 transition-colors py-2 flex items-center gap-2"
+                                >
+                                    <span>←</span> {t("importAnother")}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
 
-                {/* Strategy selector */}
-                {step === "strategy" && parseResult && basicMetrics && (
-                    <StrategySelector
-                        onSelect={(sid, dname) => {
-                            setStrategyId(sid);
-                            setDatasetName(dname);
-                            setStep("context");
-                        }}
-                        onBack={() => setStep("basic")}
-                    />
-                )}
-
-                {/* Strategy Context Form */}
-                {step === "context" && strategyId && (
-                    <StrategyContextForm
-                        strategyId={strategyId}
-                        onContinue={() => setStep("gate")}
-                        onBack={() => setStep("strategy")}
-                    />
-                )}
-
-                {/* Email gate */}
                 {step === "gate" && parseResult && basicMetrics && (
                     <div className="space-y-4">
                         <BasicResults
@@ -433,21 +466,21 @@ export default function AnalyzerWizard() {
                     </div>
                 )}
 
-                {/* Full report */}
                 {step === "full" && fullMetrics && parseResult && (
                     <div className="space-y-10">
                         <FullReport
                             metrics={fullMetrics}
                             trades={parseResult.trades}
                             email={unlockedEmail}
+                            analysisId={analysisId}
+                            onSimulate={() => setStep("sim")}
                         />
 
-                        {/* Monte Carlo Section */}
                         <div className="pt-10 border-t" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
                             <div className="text-center mb-10">
-                                <h2 className="text-2xl font-bold text-white mb-3">Monte Carlo Strategy Simulation</h2>
+                                <h2 className="text-2xl font-bold text-white mb-3">{t("monteCarlo.title")}</h2>
                                 <p className="text-sm max-w-lg mx-auto" style={{ color: "#9ca3af" }}>
-                                    1000 randomized future paths based on your historical trades.
+                                    {t("monteCarlo.desc")}
                                 </p>
                             </div>
 
@@ -456,10 +489,6 @@ export default function AnalyzerWizard() {
                                     simulations={fullMetrics.monteCarlo.simulations}
                                     averageCaseReturn={fullMetrics.monteCarlo.averageCase}
                                 />
-                                <p className="text-xs text-center mt-5 mb-2 leading-relaxed" style={{ color: "#6b7280" }}>
-                                    Monte Carlo simulation randomizes the order of trades to estimate the range of possible future outcomes.<br />
-                                    This helps evaluate strategy robustness and risk exposure.
-                                </p>
                             </div>
 
                             <MonteCarloSummary
@@ -475,7 +504,7 @@ export default function AnalyzerWizard() {
                                 onClick={() => setStep("sim")}
                                 className="btn-primary"
                             >
-                                Simular escenarios Prop Firm
+                                {t("propFirm.cta")}
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <path d="M5 12h14M12 5l7 7-7 7" />
                                 </svg>
@@ -484,13 +513,11 @@ export default function AnalyzerWizard() {
                     </div>
                 )}
 
-                {/* Prop firm simulator */}
                 {step === "sim" && parseResult && (
                     <PropFirmSimulator trades={parseResult.trades} />
                 )}
             </div>
 
-            {/* Cross-sell CTA */}
             {(step === "full" || step === "sim") && (
                 <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
                     <div
@@ -501,17 +528,16 @@ export default function AnalyzerWizard() {
                         }}
                     >
                         <p className="text-xs font-semibold text-indigo-400 uppercase tracking-widest mb-2">
-                            ¿Querés automatizarla?
+                            {t("crossSell.label")}
                         </p>
                         <h3 className="text-lg font-bold text-white mb-2">
-                            Convertimos tu estrategia en un bot para MT5
+                            {t("crossSell.title")}
                         </h3>
                         <p className="text-sm mb-4" style={{ color: "#6b7280" }}>
-                            Backtesting profesional, optimización de parámetros y entrega del
-                            .ex5 sin exponer tu código.
+                            {t("crossSell.desc")}
                         </p>
                         <a href="/nodoquant#contacto" className="btn-primary">
-                            Ver servicios y precios
+                            {t("crossSell.cta")}
                         </a>
                     </div>
                 </div>
