@@ -15,6 +15,9 @@
         "signup": "Sign Up",
         "analyzeCta": "Analyze My Strategy"
     },
+    "common": {
+        "analyzeCta": "Analyze My Strategy"
+    },
     "home": {
         "title": "Upload your trades. Discover if your strategy really has an edge.",
         "subtitle": "Analyze your trading history with quantitative metrics, risk diagnostics and strategy stability insights.",
@@ -30,7 +33,27 @@
         "ctaSample": "Try Demo Strategy",
         "ctaSecondary": "View Demo Report",
         "disclaimer": "NodoQuant develops software and performs quantitative analysis. No profitability or future results are guaranteed. Trading in financial markets carries risk of loss.",
-        "downloadSample": "Download Sample CSV"
+        "downloadSample": "Download Sample CSV",
+        "mockupAccuracy": "Strategy Accuracy",
+        "mockupHighProb": "High Probability",
+        "mockupPf": "Profit Factor",
+        "mockupWinRate": "Win Rate"
+    },
+    "platformStats": {
+        "label": "Growing Metrics",
+        "title": "The Preferred Analysis Platform for Quantitative Traders",
+        "analysisCount": "Analyses Performed",
+        "backtests": "Edge Backtests",
+        "automationProjects": "Automation Projects",
+        "forwardTests": "Active Forward Tests"
+    },
+    "credibility": {
+        "marketSupportTitle": "Multi-market support",
+        "marketSupportDesc": "Forex • Crypto • Futures • Stocks",
+        "dataImportsTitle": "Flexible data imports",
+        "dataImportsDesc": "MT4 • MT5 • CSV • Exchange exports",
+        "statsTitle": "Advanced statistical analysis",
+        "statsDesc": "Edge • Expectancy • Drawdown • Monte Carlo"
     },
     "whyQuant": {
         "label": "Methodology",

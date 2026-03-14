@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 
 export default function StrategyScoreSection() {
     const t = useTranslations("strategyScore");
+    const tCommon = useTranslations("common");
 
     return (
         <section className="py-24 border-t border-white/[0.03] relative overflow-hidden bg-black" id="score">
@@ -50,7 +51,7 @@ export default function StrategyScoreSection() {
 
                 <div className="mt-20 text-center animate-fade-in">
                     <a href="/analyzer" className="btn-primary border-none inline-flex items-center gap-3 px-10 py-5 text-sm font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-xl shadow-indigo-500/30">
-                        {t("cta")}
+                        {tCommon("analyzeCta")}
                         <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>

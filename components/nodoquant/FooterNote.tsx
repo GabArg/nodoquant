@@ -32,7 +32,7 @@ export default function FooterNote() {
                         <p className="text-sm font-semibold text-white mb-5">{t("resources")}</p>
                         <ul className="space-y-3">
                             <li><Link href="/#faq" className="text-sm text-gray-400 hover:text-white transition-colors">{n("faq")}</Link></li>
-                            <li><Link href="/report/example" className="text-sm text-gray-400 hover:text-white transition-colors">{t("cta_sample_report") || "Sample Report"}</Link></li>
+                            <li><Link href="/report/example" className="text-sm text-gray-400 hover:text-white transition-colors">{t("cta_sample_report")}</Link></li>
                         </ul>
                     </div>
 

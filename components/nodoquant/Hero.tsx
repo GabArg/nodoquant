@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 
 export default function Hero() {
     const t = useTranslations("home");
+    const tCommon = useTranslations("common");
 
     return (
         <section className="relative min-h-[80vh] flex flex-col justify-center pt-20 overflow-hidden bg-black" id="hero">
@@ -36,7 +37,7 @@ export default function Hero() {
                         {/* CTAs (Order matters for mobile) */}
                         <div className="flex flex-col sm:flex-row items-center gap-4 animate-fade-in mb-10 w-full sm:w-auto">
                             <a href="/analyzer" className="btn-primary w-full sm:w-auto px-10 py-5 text-sm font-black uppercase tracking-widest transition-all hover:scale-[1.05] active:scale-[0.95] group shadow-[0_20px_40px_-5px_rgba(99,102,241,0.5)] rounded-[14px]">
-                                {t("ctaPrimary")}
+                                {tCommon("analyzeCta")}
                                 <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                 </svg>
@@ -97,8 +98,8 @@ export default function Hero() {
                             {/* Score Card Mockup */}
                             <div className="absolute top-10 left-10 right-10 p-6 bg-black/60 border border-emerald-500/20 rounded-3xl backdrop-blur-3xl transform group-hover:-translate-y-2 transition-transform duration-700">
                                 <div className="flex justify-between items-center mb-4">
-                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Strategy Accuracy</span>
-                                    <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest bg-emerald-500/10 px-2 py-0.5 rounded">High Probability</span>
+                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{t("mockupAccuracy")}</span>
+                                    <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest bg-emerald-500/10 px-2 py-0.5 rounded">{t("mockupHighProb")}</span>
                                 </div>
                                 <div className="flex items-baseline gap-2">
                                     <span className="text-5xl font-black text-white">82</span>
@@ -116,11 +117,11 @@ export default function Hero() {
                             {/* Floating Stats */}
                             <div className="absolute top-1/2 left-10 right-10 grid grid-cols-2 gap-4">
                                 <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl transform -rotate-2 group-hover:rotate-0 transition-transform duration-500">
-                                    <span className="block text-[8px] font-black text-gray-600 uppercase mb-1">Profit Factor</span>
+                                    <span className="block text-[8px] font-black text-gray-600 uppercase mb-1">{t("mockupPf")}</span>
                                     <span className="text-lg font-bold text-white">1.84</span>
                                 </div>
                                 <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl transform rotate-3 group-hover:rotate-0 transition-transform duration-500 delay-150">
-                                    <span className="block text-[8px] font-black text-gray-600 uppercase mb-1">Win Rate</span>
+                                    <span className="block text-[8px] font-black text-gray-600 uppercase mb-1">{t("mockupWinRate")}</span>
                                     <span className="text-lg font-bold text-white">45%</span>
                                 </div>
                             </div>

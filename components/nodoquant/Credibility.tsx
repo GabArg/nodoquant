@@ -1,23 +1,26 @@
 "use client";
 
 import React from 'react';
-
-const credibilityItems = [
-  {
-    title: "Multi-market support",
-    description: "Forex • Crypto • Futures • Stocks"
-  },
-  {
-    title: "Flexible data imports",
-    description: "MT4 • MT5 • CSV • Exchange exports"
-  },
-  {
-    title: "Advanced statistical analysis",
-    description: "Edge • Expectancy • Drawdown • Monte Carlo"
-  }
-];
+import { useTranslations } from 'next-intl';
 
 export default function Credibility() {
+  const t = useTranslations("credibility");
+
+  const credibilityItems = [
+    {
+      title: t("marketSupportTitle"),
+      description: t("marketSupportDesc")
+    },
+    {
+      title: t("dataImportsTitle"),
+      description: t("dataImportsDesc")
+    },
+    {
+      title: t("statsTitle"),
+      description: t("statsDesc")
+    }
+  ];
+
   return (
     <section className="py-14 border-y border-white/[0.03]">
       <div className="max-w-4xl mx-auto px-4">

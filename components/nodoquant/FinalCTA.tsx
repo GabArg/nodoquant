@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 
 export default function FinalCTA() {
     const t = useTranslations("finalCta");
+    const tCommon = useTranslations("common");
 
     return (
         <section className="py-[120px] relative overflow-hidden bg-black" id="start">
@@ -25,7 +26,7 @@ export default function FinalCTA() {
 
                 <div className="flex flex-col items-center justify-center gap-6 animate-fade-in">
                     <a href="/analyzer" className="btn-primary inline-flex items-center gap-4 px-12 py-5 text-lg font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-[0_20px_50px_rgba(79,70,229,0.3)] hover:shadow-[0_25px_60px_rgba(79,70,229,0.4)]">
-                        {t("cta")}
+                        {tCommon("analyzeCta")}
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>

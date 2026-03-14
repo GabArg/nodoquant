@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 
 export default function WhyQuant() {
     const t = useTranslations("whyQuant");
+    const tCommon = useTranslations("common");
 
     return (
         <section className="py-24 border-t border-white/[0.03] bg-[#050505]" id="why">
@@ -50,7 +51,7 @@ export default function WhyQuant() {
 
                 <div className="mt-20 text-center animate-fade-in scale-110">
                     <a href="/analyzer" className="btn-primary inline-flex items-center gap-3 px-10 py-5 text-sm font-black uppercase tracking-[0.15em] transition-all hover:scale-105 active:scale-95 shadow-[0_20px_40px_-10px_rgba(99,102,241,0.4)]">
-                        {t("cta")}
+                        {tCommon("analyzeCta")}
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
