@@ -2,10 +2,10 @@
 
 import { useTranslations } from "next-intl";
 
+import { brokers } from '@/data/brokers';
+
 const PLATFORMS = [
-    { name: "MetaTrader 4", logo: "/mt4.png" },
-    { name: "MetaTrader 5", logo: "/mt5.png" },
-    { name: "Binance", logo: "/binance.png" },
+    ...brokers,
     { name: "CSV", logo: null } 
 ];
 
