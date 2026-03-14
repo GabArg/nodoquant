@@ -31,6 +31,11 @@ export interface FullMetrics extends BasicMetrics {
     riskAnalysis: RiskMetrics;
     stabilityAnalysis: StabilityAnalysis;
     stabilityScore: number; // 0-100
+    evolution?: {
+        last100?: BasicMetrics;
+        last50?: BasicMetrics;
+        last30?: BasicMetrics;
+    };
 }
 
 export interface StabilityAnalysis {
@@ -136,13 +141,15 @@ export function buildEquityCurve(trades: Trade[], initialBalance = 0): number[] 
     return curve;
 }
 
-export function buildDrawdownCurve(equityCurve: number[]): number[] {
+export function buildDrawdownCurve(equityCurve: number[], baseBalance = 10000): number[] {
     const dd: number[] = [];
     let peak = -Infinity;
     for (const val of equityCurve) {
-        if (val > peak) peak = val;
-        // User's formula: dd = (peak - e) / peak
-        const drawdown = peak === 0 ? 0 : ((peak - val) / peak) * 100;
+        // Use a base balance to prevent division by zero or very small numbers
+        const currentEquity = val + baseBalance;
+        if (currentEquity > peak) peak = currentEquity;
+        
+        const drawdown = peak <= 0 ? 0 : ((peak - currentEquity) / peak) * 100;
         dd.push(round(drawdown, 2));
     }
     return dd;
@@ -354,6 +361,11 @@ export function calcFullMetrics(trades: Trade[]): FullMetrics {
         riskAnalysis,
         stabilityAnalysis,
         stabilityScore,
+        evolution: {
+            last100: trades.length >= 100 ? calcBasicMetrics(trades.slice(-100)) : undefined,
+            last50: trades.length >= 50 ? calcBasicMetrics(trades.slice(-50)) : undefined,
+            last30: trades.length >= 30 ? calcBasicMetrics(trades.slice(-30)) : undefined,
+        }
     };
 }
 

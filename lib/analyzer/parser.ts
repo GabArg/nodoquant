@@ -17,8 +17,11 @@ export interface Trade {
     take_profit?: number;
     entry_time?: Date;
     exit_time?: Date;
+    open_time?: Date; // Alias for entry_time or specific open time
     risk_reward?: number;
     duration_minutes?: number;
+    ticket?: string;
+    account_id?: string;
 }
 
 export type FormatType = "mt5" | "csv-generic" | "unknown";
@@ -159,6 +162,8 @@ function parseMT5(normHeaders: string[], dataLines: string[], fileName?: string)
     const volumeIdx = normHeaders.indexOf("volume");
     const typeIdx = normHeaders.findIndex((h) => h === "type");
     const directionIdx = normHeaders.findIndex((h) => h === "direction");
+    const dealIdx = normHeaders.indexOf("deal");
+    const ticketIdx = normHeaders.indexOf("ticket"); // sometimes called ticket in other platforms
 
     const trades: Trade[] = [];
 
@@ -186,6 +191,7 @@ function parseMT5(normHeaders: string[], dataLines: string[], fileName?: string)
             profit,
             symbol: symbolIdx >= 0 ? cols[symbolIdx] || undefined : undefined,
             volume: volumeIdx >= 0 ? parseFloat(cols[volumeIdx] ?? "") || undefined : undefined,
+            ticket: dealIdx >= 0 ? cols[dealIdx] : (ticketIdx >= 0 ? cols[ticketIdx] : undefined),
         });
     }
 

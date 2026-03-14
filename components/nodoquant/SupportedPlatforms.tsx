@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 const PLATFORMS = [
     { name: "MetaTrader 4", logo: "/mt4.png" },
     { name: "MetaTrader 5", logo: "/mt5.png" },
-    { name: "Binance", logo: "/binance.svg" },
+    { name: "Binance", logo: "/binance.png" },
     { name: "CSV", logo: null } 
 ];
 

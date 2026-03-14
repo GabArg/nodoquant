@@ -281,3 +281,15 @@ select.form-input option:disabled {
   width: 1px;
   background: linear-gradient(to bottom, rgba(99, 102, 241, 0.4), transparent);
 }
+
+/* Broker Logos Slider Animation (Deprecated for static grid) */
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+

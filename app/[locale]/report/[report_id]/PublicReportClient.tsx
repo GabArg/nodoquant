@@ -12,6 +12,10 @@ import ProLockOverlay from "@/components/pricing/ProLockOverlay";
 const ShareableScoreCard = dynamic(() => import("@/components/report/ShareableScoreCard"), { ssr: false });
 import PublishModal from "@/components/strategy/PublishModal";
 import { useTranslations } from "next-intl";
+import ScoreExplanation from "@/components/analyzer/ScoreExplanation";
+import StrategyDiagnostics from "@/components/analyzer/StrategyDiagnostics";
+import { calcBasicMetrics } from "@/lib/analyzer/metrics";
+import { toTradeArray } from "@/lib/import/normalizedTrade";
 
 interface ReportData {
     id: string;
@@ -40,6 +44,7 @@ interface ReportData {
 interface Props {
     reportId: string;
     locale: string;
+    initialData?: ReportData;
 }
 
 /** Score badge with tier label */
@@ -139,23 +144,23 @@ function ShareBar({ twitterUrl, whatsappUrl, onCopy, copied }: {
     );
 }
 
-export default function PublicReportClient({ reportId, locale }: Props) {
+export default function PublicReportClient({ reportId, locale, initialData }: Props) {
     const t = useTranslations("fullReport");
-    const [data, setData] = useState<ReportData | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [data, setData] = useState<ReportData | null>(initialData || null);
+    const [loading, setLoading] = useState(!initialData);
     const [error, setError] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
     const [showScoreCard, setShowScoreCard] = useState(false);
     const [showPublishModal, setShowPublishModal] = useState(false);
 
     useEffect(() => {
-        if (!reportId) return;
+        if (initialData || !reportId) return;
         fetch(`/api/report/${reportId}`)
             .then(r => { if (!r.ok) throw new Error("Report not found"); return r.json(); })
             .then(j => setData(j.data))
             .catch(e => setError(e.message ?? "Could not load report"))
             .finally(() => setLoading(false));
-    }, [reportId]);
+    }, [reportId, initialData]);
 
     const reportUrl = typeof window !== "undefined"
         ? window.location.href
@@ -312,7 +317,10 @@ export default function PublicReportClient({ reportId, locale }: Props) {
                     style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.06)" }}>
                     <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "#6b7280" }}>{t("score.label")}</p>
                     <ScoreBadge score={metrics.strategy_score} />
-                    <p className="text-sm mt-4" style={{ color: "#6b7280" }}>{t("score.basedOn", { count: metrics.total_trades })}</p>
+                    <p className="text-sm mt-4 mb-8" style={{ color: "#6b7280" }}>{t("score.basedOn", { count: metrics.total_trades })}</p>
+                    
+                    {/* Score Explanation Integration */}
+                    <ScoreExplanation />
                 </div>
 
                 {/* ── Social Sharing Bar ── */}
@@ -357,17 +365,33 @@ export default function PublicReportClient({ reportId, locale }: Props) {
                     )}
                 </div>
 
+                {/* ── Strategy Diagnostics (NEW) ── */}
+                <div className="mb-8">
+                     <StrategyDiagnostics 
+                        metrics={{
+                            totalTrades: metrics.total_trades,
+                            winrate: wr,
+                            profitFactor: metrics.profit_factor,
+                            maxDrawdown: metrics.max_drawdown,
+                            sumProfit: 0, // Not used in diagnostics
+                        } as any}
+                        trades={toTradeArray(data.raw_metrics_json?.trades || [])}
+                     />
+                </div>
+
                 {/* ── Edge Alerts ── */}
                 <div className="mb-8">
                     <ProLockOverlay title={t("alerts.title")} description={t("alerts.proLock")} isPro={data.is_pro}>
-                        <EdgeAlerts
-                            latestReport={{
-                                winrate: data.metrics.win_rate,
-                                profit_factor: data.metrics.profit_factor,
-                                max_drawdown: data.metrics.max_drawdown,
-                                metrics_json: data.raw_metrics_json,
-                            }}
-                        />
+                        <div className={!data.is_pro ? "blur-sm grayscale opacity-50 transition-all" : ""}>
+                            <EdgeAlerts
+                                latestReport={{
+                                    winrate: data.metrics.win_rate,
+                                    profit_factor: data.metrics.profit_factor,
+                                    max_drawdown: data.metrics.max_drawdown,
+                                    metrics_json: data.raw_metrics_json,
+                                }}
+                            />
+                        </div>
                     </ProLockOverlay>
                 </div>
 
@@ -396,7 +420,7 @@ export default function PublicReportClient({ reportId, locale }: Props) {
                 {equity_curve.length > 1 && (
                     <section className="mb-8">
                         <ProLockOverlay title={t("equity.title")} description={t("equity.proLock")} isPro={data.is_pro}>
-                            <div className="rounded-2xl p-6 border" style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.06)" }}>
+                            <div className={!data.is_pro ? "blur-md grayscale opacity-40 rounded-2xl p-6 border" : "rounded-2xl p-6 border"} style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.06)" }}>
                                 <h2 className="text-sm font-semibold uppercase tracking-widest mb-4" style={{ color: "#6b7280" }}>{t("equity.title")}</h2>
                                 <EquityCurveChart data={equity_curve.map((val, i) => ({
                                     index: i + 1,

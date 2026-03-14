@@ -4,12 +4,13 @@ export default function SampleReport() {
     const t = useTranslations("sampleReport");
 
     return (
-        <section className="py-[100px] border-t border-white/5 bg-[#050505]" id="sample-report">
+        <section className="mt-16 md:mt-24 py-[100px] border-t border-white/5 bg-[#050505]" id="sample-report">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-20 animate-fade-in">
-                    <h2 className="text-4xl sm:text-5xl font-extrabold text-white mb-6 leading-tight tracking-tight">
+                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-6 leading-tight">
                         {t("title")}
                     </h2>
+
                     <p className="text-lg text-gray-400 max-w-2xl mx-auto font-medium">
                         {t("desc")}
                     </p>

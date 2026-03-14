@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Hero from "@/components/nodoquant/Hero";
+import Credibility from "@/components/nodoquant/Credibility";
 import SocialProof from "@/components/nodoquant/SocialProof";
+
 import SupportedPlatforms from "@/components/nodoquant/SupportedPlatforms";
 import WhyQuant from "@/components/nodoquant/WhyQuant";
 import StrategyScoreSection from "@/components/nodoquant/StrategyScoreSection";
@@ -28,7 +30,9 @@ export default function Home() {
                 }}
             />
             <Hero />
+            <Credibility />
             <SampleReport />
+
             <SupportedPlatforms />
             <HowItWorks />
             <SocialProof />

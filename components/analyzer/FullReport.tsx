@@ -7,6 +7,9 @@ import DrawdownChart from "./DrawdownChart";
 import TradeHistogram from "./TradeHistogram";
 import type { Trade } from "@/lib/analyzer/parser";
 import SaveStrategyAction from "./SaveStrategyAction";
+import MonteCarloChart from "./MonteCarloChart";
+import MonteCarloSummary from "./MonteCarloSummary";
+import StrategyEvolution from "./Dashboard/StrategyEvolution";
 
 interface Props {
     metrics: FullMetrics;
@@ -14,6 +17,7 @@ interface Props {
     email: string;
     analysisId?: string | null;
     onSimulate?: () => void;
+    isPro?: boolean;
 }
 
 function MetricRow({ label, value, tooltip, highlight = false, locked = false }: { label: string; value: string; tooltip?: string; highlight?: boolean; locked?: boolean }) {
@@ -49,8 +53,10 @@ function MetricRow({ label, value, tooltip, highlight = false, locked = false }:
     );
 }
 
-function LockedSection({ title, children, cta }: { title: string; children: React.ReactNode; cta: string }) {
+function LockedSection({ title, children, cta, isPro = false }: { title: string; children: React.ReactNode; cta: string; isPro?: boolean }) {
     const t = useTranslations("analyzer.report.pro");
+    if (isPro) return <div className="animate-fade-in">{children}</div>;
+
     return (
         <div className="relative group">
             <div className="blur-md pointer-events-none select-none opacity-40 transition-all duration-700 group-hover:opacity-60">
@@ -64,16 +70,16 @@ function LockedSection({ title, children, cta }: { title: string; children: Reac
                         <h4 className="text-sm font-black text-white mb-1 uppercase tracking-tight">{t("lockedTitle")}</h4>
                         <p className="text-[10px] text-gray-400 font-medium leading-relaxed">{t("lockedDesc")}</p>
                     </div>
-                    <button className="mt-2 px-6 py-2.5 rounded-full bg-white text-black text-[10px] font-black uppercase tracking-widest hover:scale-[1.05] transition-all shadow-xl shadow-white/5">
+                    <a href="/pricing" className="mt-2 px-6 py-2.5 rounded-full bg-white text-black text-[10px] font-black uppercase tracking-widest hover:scale-[1.05] transition-all shadow-xl shadow-white/5 text-center">
                         {t("upgradeCta")}
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
     );
 }
 
-export default function FullReport({ metrics, trades, email, analysisId, onSimulate }: Props) {
+export default function FullReport({ metrics, trades, email, analysisId, onSimulate, isPro = false }: Props) {
     const t = useTranslations("analyzer.report");
     const { monteCarlo } = metrics;
 
@@ -105,6 +111,40 @@ export default function FullReport({ metrics, trades, email, analysisId, onSimul
                 <MetricRow label={t("performance.profitFactor")} value={metrics.profitFactor.toFixed(2)} />
             </div>
 
+            {/* Strategy Evolution Samples */}
+            <StrategyEvolution evolution={metrics.evolution} />
+
+            {/* Edge Health Status */}
+            <div className="card rounded-2xl p-6 border border-white/5 bg-white/[0.01]">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">{t("health.title")}</h4>
+                        <div className="flex items-center gap-3">
+                            {metrics.stabilityScore >= 70 ? (
+                                <>
+                                    <span className="text-xl">✅</span>
+                                    <span className="text-sm font-black text-green-400 uppercase tracking-tight">{t("health.stable")}</span>
+                                </>
+                            ) : metrics.stabilityScore >= 40 ? (
+                                <>
+                                    <span className="text-xl">⚠️</span>
+                                    <span className="text-sm font-black text-yellow-500 uppercase tracking-tight">{t("health.moderate")}</span>
+                                </>
+                            ) : (
+                                <>
+                                    <span className="text-xl">❌</span>
+                                    <span className="text-sm font-black text-red-500 uppercase tracking-tight">{t("health.drift")}</span>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                    <div className="text-right">
+                        <span className="text-[10px] font-bold text-gray-600 block mb-1">{t("health.score")}</span>
+                        <span className="text-2xl font-black text-white italic">{Math.round(metrics.stabilityScore)}%</span>
+                    </div>
+                </div>
+            </div>
+
             {/* Risk metrics (Partially locked) */}
             <div className="card rounded-xl p-5 space-y-1 relative overflow-hidden">
                 <p className="text-xs font-semibold text-indigo-400 uppercase tracking-widest mb-3">
@@ -126,8 +166,8 @@ export default function FullReport({ metrics, trades, email, analysisId, onSimul
                 />
                 
                 {/* Advanced locked risk metrics */}
-                <MetricRow label={t("risk.recoveryFactor")} value="" locked />
-                <MetricRow label={t("risk.profitToDrawdown")} value="" locked />
+                <MetricRow label={t("risk.recoveryFactor")} value={metrics.riskAnalysis.recoveryFactor.toFixed(2)} locked={!isPro} />
+                <MetricRow label={t("risk.profitToDrawdown")} value={metrics.riskAnalysis.profitToDrawdown.toFixed(2)} locked={!isPro} />
                 
                 <MetricRow
                     label={t("risk.recommendedRisk")}
@@ -139,18 +179,31 @@ export default function FullReport({ metrics, trades, email, analysisId, onSimul
             {/* Monte Carlo (Fully Locked) */}
             <div className="card rounded-xl p-0 overflow-hidden">
                 <div className="p-5 border-b border-white/[0.05]">
-                    <p className="text-xs font-semibold text-indigo-400 uppercase tracking-widest">
-                        {t("monteCarlo.title")}
-                    </p>
+                    <div className="flex items-center justify-between">
+                        <p className="text-xs font-semibold text-indigo-400 uppercase tracking-widest">
+                            {t("monteCarlo.title")}
+                        </p>
+                        {!isPro && (
+                            <span className="text-[10px] font-black px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 uppercase tracking-widest">
+                                PRO
+                            </span>
+                        )}
+                    </div>
                 </div>
-                <LockedSection title={t("monteCarlo.title")} cta={t("pro.upgradeCta")}>
-                    <div className="p-5 space-y-1">
-                        <MetricRow label={t("monteCarlo.worstCase")} value={`$${monteCarlo.worstCase.toFixed(2)}`} />
-                        <MetricRow label={t("monteCarlo.averageCase")} value={`$${monteCarlo.averageCase.toFixed(2)}`} highlight />
-                        <MetricRow label={t("monteCarlo.bestCase")} value={`$${monteCarlo.bestCase.toFixed(2)}`} />
-                        <MetricRow
-                            label={t("monteCarlo.maxDrawdown")}
-                            value={`${monteCarlo.drawdownAt5Pct.toFixed(1)}%`}
+                <LockedSection title={t("monteCarlo.title")} cta={t("pro.upgradeCta")} isPro={isPro}>
+                    <div className="p-5 space-y-6">
+                        <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.05]">
+                            <MonteCarloChart
+                                simulations={monteCarlo.simulations}
+                                averageCaseReturn={monteCarlo.averageCase}
+                            />
+                        </div>
+                        
+                        <MonteCarloSummary
+                            worstCase={monteCarlo.worstCase}
+                            averageCase={monteCarlo.averageCase}
+                            bestCase={monteCarlo.bestCase}
+                            riskOfRuin={monteCarlo.riskOfRuin}
                         />
                     </div>
                 </LockedSection>

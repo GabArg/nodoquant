@@ -99,20 +99,26 @@ export function normalizeDirection(raw: string): "long" | "short" | "unknown" {
 /**
  * Convert NormalizedTrade to the legacy Trade format consumed by `calcBasicMetrics` etc.
  */
-export function toTrade(n: NormalizedTrade): Trade {
+export function toTrade(n: any): Trade {
+    const rawOpen = n.open_time || n.entry_date || n.entry_time;
+    const rawClose = n.close_time || n.exit_date || n.exit_time || n.datetime;
+
+    const openDate = rawOpen ? new Date(rawOpen) : undefined;
+    const closeDate = rawClose ? new Date(rawClose) : new Date();
+
     return {
-        datetime: n.close_time,
-        exit_time: n.close_time,
-        entry_time: n.open_time ?? undefined,
-        profit: n.profit_loss,
+        datetime: closeDate,
+        exit_time: closeDate,
+        entry_time: openDate,
+        profit: n.profit_loss ?? n.profit ?? 0,
         symbol: n.symbol || undefined,
         direction: n.direction === "unknown" ? undefined : n.direction,
         entry_price: n.entry_price ?? undefined,
         exit_price: n.exit_price ?? undefined,
         stop_loss: n.stop_loss ?? undefined,
         take_profit: n.take_profit ?? undefined,
-        volume: n.position_size ?? undefined,
-        risk_reward: n.risk_multiple ?? undefined,
+        volume: n.position_size ?? n.volume ?? undefined,
+        risk_reward: n.risk_multiple ?? n.risk_reward ?? undefined,
     };
 }
 

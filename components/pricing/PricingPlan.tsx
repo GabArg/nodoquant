@@ -13,21 +13,8 @@ export default function PricingPlan({ isPro = false }: PricingPlanProps) {
     const [error, setError] = useState<string | null>(null);
 
     const handleUpgrade = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const res = await fetch("/api/payments/create-checkout", { method: "POST" });
-            const data = await res.json();
-            if (data.checkout_url) {
-                window.location.href = data.checkout_url;
-            } else {
-                setError(data.error || t("errorCheckout"));
-                setLoading(false);
-            }
-        } catch (e) {
-            setError(t("errorNetwork"));
-            setLoading(false);
-        }
+        // UI only for now - payments disabled
+        alert("Payments are coming soon! Enjoy your 30-day Pro trial when you run your first analysis.");
     };
 
     return (

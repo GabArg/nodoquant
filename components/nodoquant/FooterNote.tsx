@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 
 export default function FooterNote() {
     const t = useTranslations("footerNote");
@@ -20,9 +21,9 @@ export default function FooterNote() {
                     <div>
                         <p className="text-sm font-semibold text-white mb-5">{t("product")}</p>
                         <ul className="space-y-3">
-                            <li><a href="/analyzer" className="text-sm text-gray-400 hover:text-white transition-colors">{n("analyzer")}</a></li>
-                            <li><a href="/#score" className="text-sm text-gray-400 hover:text-white transition-colors">{n("strategyScore")}</a></li>
-                            <li><a href="/leaderboard" className="text-sm text-gray-400 hover:text-white transition-colors">{n("leaderboard")}</a></li>
+                            <li><Link href="/analyzer" className="text-sm text-gray-400 hover:text-white transition-colors">{n("analyzer")}</Link></li>
+                            <li><Link href="/#score" className="text-sm text-gray-400 hover:text-white transition-colors">{n("strategyScore")}</Link></li>
+                            <li><Link href="/leaderboard" className="text-sm text-gray-400 hover:text-white transition-colors">{n("leaderboard")}</Link></li>
                         </ul>
                     </div>
 
@@ -30,8 +31,8 @@ export default function FooterNote() {
                     <div>
                         <p className="text-sm font-semibold text-white mb-5">{t("resources")}</p>
                         <ul className="space-y-3">
-                            <li><a href="/#faq" className="text-sm text-gray-400 hover:text-white transition-colors">{n("faq")}</a></li>
-                            <li><a href="/report/example" className="text-sm text-gray-400 hover:text-white transition-colors">{t("cta_sample_report") || "Sample Report"}</a></li>
+                            <li><Link href="/#faq" className="text-sm text-gray-400 hover:text-white transition-colors">{n("faq")}</Link></li>
+                            <li><Link href="/report/example" className="text-sm text-gray-400 hover:text-white transition-colors">{t("cta_sample_report") || "Sample Report"}</Link></li>
                         </ul>
                     </div>
 
@@ -39,8 +40,8 @@ export default function FooterNote() {
                     <div>
                         <p className="text-sm font-semibold text-white mb-5">{t("legal")}</p>
                         <ul className="space-y-3">
-                            <li><a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">{t("terms")}</a></li>
-                            <li><a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">{t("privacy")}</a></li>
+                            <li><Link href="/terms" className="text-sm text-gray-400 hover:text-white transition-colors">{t("terms")}</Link></li>
+                            <li><Link href="/privacy" className="text-sm text-gray-400 hover:text-white transition-colors">{t("privacy")}</Link></li>
                         </ul>
                     </div>
                 </div>

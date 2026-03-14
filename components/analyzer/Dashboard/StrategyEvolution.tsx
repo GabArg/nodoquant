@@ -1,98 +1,66 @@
 "use client";
 
 import React from "react";
-
-interface ReportData {
-    winrate: number;
-    profit_factor: number;
-    max_drawdown: number;
-    quant_score?: number; // Calculated elsewhere, but if passed down
-}
+import { useTranslations } from "next-intl";
+import { BasicMetrics } from "@/lib/analyzer/metrics";
 
 interface Props {
-    latest: ReportData | null;
-    previous: ReportData | null;
+    evolution?: {
+        last100?: BasicMetrics;
+        last50?: BasicMetrics;
+        last30?: BasicMetrics;
+    };
 }
 
-function StatRow({ label, latestVal, prevVal, isHigherBetter, format }: {
-    label: string; latestVal: number; prevVal: number; isHigherBetter: boolean;
-    format: (v: number) => string;
-}) {
-    const diff = latestVal - prevVal;
-    const isBetter = isHigherBetter ? diff > 0 : diff < 0;
-    const isWorse = isHigherBetter ? diff < 0 : diff > 0;
-    const isSame = diff === 0;
-
-    let color = "#9ca3af";
-    let arrow = "—";
-
-    if (isBetter) { color = "#34d399"; arrow = "↑"; }
-    else if (isWorse) { color = "#f87171"; arrow = "↓"; }
-
-    return (
-        <div className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-            <span className="text-sm text-gray-400">{label}</span>
-            <div className="flex items-center gap-3">
-                <span className="text-xs text-gray-500 line-through">{format(prevVal)}</span>
-                <span className="text-xs text-gray-500">→</span>
-                <span className="text-sm font-bold text-white">{format(latestVal)}</span>
-                <span className="text-sm font-black w-4 text-center" style={{ color }}>{arrow}</span>
-            </div>
-        </div>
-    );
-}
-
-export default function StrategyEvolution({ latest, previous }: Props) {
-    if (!latest || !previous) {
+function EvolColumn({ label, metrics, req }: { label: string; metrics?: BasicMetrics; req: number }) {
+    const t = useTranslations("analyzer.report");
+    if (!metrics) {
         return (
-            <div className="card rounded-2xl p-6 border border-white/5 bg-[#111118]">
-                <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-2">Evolución de Estrategia</h3>
-                <p className="text-sm text-gray-500 mt-4">Analiza al menos dos reportes para ver tu evolución aquí.</p>
+            <div className="flex-1 p-4 rounded-2xl bg-white/[0.02] border border-white/5 flex flex-col items-center justify-center opacity-40">
+                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{label}</span>
+                <span className="text-[9px] font-medium text-gray-600 mt-2 italic text-center">
+                    {t("evolution.reqTrades", { count: req })}
+                </span>
             </div>
         );
     }
 
     return (
-        <div className="card rounded-2xl p-6 border border-indigo-500/20 bg-indigo-500/5">
-            <div className="flex items-center gap-2 mb-4">
-                <span className="text-lg">📈</span>
-                <h3 className="text-sm font-bold text-indigo-400 uppercase tracking-wider">Evolución de Estrategia</h3>
+        <div className="flex-1 p-4 rounded-2xl bg-white/[0.03] border border-indigo-500/20 flex flex-col items-center">
+            <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-3">{label}</span>
+            <div className="space-y-2 w-full">
+                <div className="flex justify-between items-center text-[10px]">
+                    <span className="text-gray-500 font-bold">PF</span>
+                    <span className={`font-black ${metrics.profitFactor >= 1 ? 'text-green-400' : 'text-red-400'}`}>{metrics.profitFactor}</span>
+                </div>
+                <div className="flex justify-between items-center text-[10px]">
+                    <span className="text-gray-500 font-bold">WR</span>
+                    <span className="text-white font-black">{metrics.winrate}%</span>
+                </div>
+                <div className="flex justify-between items-center text-[10px]">
+                    <span className="text-gray-500 font-bold">DD</span>
+                    <span className="text-red-400 font-black">{metrics.maxDrawdown}%</span>
+                </div>
             </div>
-            <p className="text-sm text-gray-400 mb-4">
-                Comparando tu último análisis con el anterior.
-            </p>
+        </div>
+    );
+}
 
-            <div className="space-y-1">
-                {latest.quant_score !== undefined && previous.quant_score !== undefined && (
-                    <StatRow
-                        label="Strategy Score"
-                        latestVal={latest.quant_score}
-                        prevVal={previous.quant_score}
-                        isHigherBetter={true}
-                        format={v => Math.round(v).toString()}
-                    />
-                )}
-                <StatRow
-                    label="Profit Factor"
-                    latestVal={latest.profit_factor}
-                    prevVal={previous.profit_factor}
-                    isHigherBetter={true}
-                    format={v => v.toFixed(2)}
-                />
-                <StatRow
-                    label="Win Rate"
-                    latestVal={latest.winrate > 1 ? latest.winrate : latest.winrate * 100}
-                    prevVal={previous.winrate > 1 ? previous.winrate : previous.winrate * 100}
-                    isHigherBetter={true}
-                    format={v => `${v.toFixed(1)}%`}
-                />
-                <StatRow
-                    label="Max Drawdown"
-                    latestVal={Math.abs(latest.max_drawdown)}
-                    prevVal={Math.abs(previous.max_drawdown)}
-                    isHigherBetter={false}
-                    format={v => `${v.toFixed(1)}%`}
-                />
+export default function StrategyEvolution({ evolution }: Props) {
+    const t = useTranslations("analyzer.report");
+    return (
+        <div className="card rounded-[32px] p-8 border border-white/[0.06] bg-white/[0.01] relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-[60px] rounded-full -mr-16 -mt-16" />
+            
+            <div className="flex flex-col mb-8">
+                <h3 className="text-xl font-black text-white italic uppercase tracking-tight">{t("evolution.title")}</h3>
+                <p className="text-[11px] text-gray-500 font-medium">{t("evolution.desc")}</p>
+            </div>
+
+            <div className="flex gap-3">
+                <EvolColumn label="Last 100" metrics={evolution?.last100} req={100} />
+                <EvolColumn label="Last 50" metrics={evolution?.last50} req={50} />
+                <EvolColumn label="Last 30" metrics={evolution?.last30} req={30} />
             </div>
         </div>
     );

@@ -10,6 +10,7 @@ import WeeklySummary from "@/components/analyzer/Dashboard/WeeklySummary";
 import { getUserSubscription, isProUser } from "@/lib/payments/subscription";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import TrialBanner from "@/components/nodoquant/TrialBanner";
 
 export const dynamic = "force-dynamic";
 
@@ -27,11 +28,13 @@ export default async function DashboardPage({ params }: { params: { locale: stri
 
     const dbClient = getSupabaseServer();
 
-    // Check Pro Status
+    // Check Plan Status
     let isPro = false;
+    let planStatus: any = null;
     if (user) {
-        const sub = await getUserSubscription(user.id);
-        isPro = isProUser(sub);
+        const { getUserPlanStatus } = await import("@/lib/payments/subscription");
+        planStatus = await getUserPlanStatus(user.id);
+        isPro = planStatus.isPro;
     }
 
     let statsList = { projects: 0, analyses: 0, winrateAvg: 0, strategies: 0, bestPF: 0, bestPFName: '' };
@@ -109,6 +112,11 @@ export default async function DashboardPage({ params }: { params: { locale: stri
 
     return (
         <div className="space-y-8">
+            {planStatus?.isTrial && (
+                <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-8 mb-8">
+                    <TrialBanner daysRemaining={planStatus.trialDaysRemaining} plan={planStatus.plan} />
+                </div>
+            )}
             <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
@@ -150,7 +158,9 @@ export default async function DashboardPage({ params }: { params: { locale: stri
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">
                     <ScoreEvolutionChart data={chartData} />
-                    <StrategyEvolution latest={latestReport} previous={previousReport} />
+                    <StrategyEvolution 
+                        evolution={(latestReport?.metrics_json as any)?.evolution} 
+                    />
                 </div>
                 <div className="space-y-6">
                     <EdgeAlerts latestReport={latestReport} />

@@ -123,24 +123,49 @@ export default function FileUpload({ onFile, loading = false }: Props) {
                     </div>
 
                     {/* Trust Signals & Limits */}
-                    <div className="flex flex-col items-center gap-6 mt-6">
-                        <div className="flex flex-wrap justify-center gap-x-6 gap-y-3">
+                    <div className="flex flex-col items-center gap-6 mt-10 pt-8 border-t border-white/[0.05]">
+                        <div className="flex flex-wrap justify-center gap-x-8 gap-y-4">
                             {[
-                                { icon: "🛡️", text: t("signalNoStorage") },
-                                { icon: "⚡", text: t("signalFast") },
-                                { icon: "✔", text: t("signalPrivacy") }
+                                { 
+                                    icon: (
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                        </svg>
+                                    ), 
+                                    text: t("signalNoStorage") 
+                                },
+                                { 
+                                    icon: (
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                                        </svg>
+                                    ), 
+                                    text: t("signalFast") 
+                                },
+                                { 
+                                    icon: (
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                        </svg>
+                                    ), 
+                                    text: t("signalPrivacy") 
+                                }
                             ].map((s, idx) => (
-                                <div key={idx} className="flex items-center gap-2">
-                                    <span className="text-[10px]">{s.icon}</span>
-                                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 whitespace-nowrap">{s.text}</span>
+                                <div key={idx} className="flex items-center gap-2.5 opacity-60 hover:opacity-100 transition-opacity">
+                                    <span className="text-indigo-400">{s.icon}</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 whitespace-nowrap">{s.text}</span>
                                 </div>
                             ))}
                         </div>
-                        <div className="py-2 px-4 rounded-full bg-white/[0.03] border border-white/[0.06]">
-                            <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">
-                                {t("freeLimitNotice")}
+                        <div className="py-2 px-5 rounded-full bg-white/[0.03] border border-white/[0.06] shadow-sm">
+                            <p className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.25em]">
+                                🛡️ {t("freeLimitNotice")}
                             </p>
                         </div>
+                        <p className="text-[9px] font-bold text-gray-600 uppercase tracking-widest mt-1">
+                            {t("signalSupport")}
+                        </p>
                     </div>
                 </div>
             )}

@@ -12,6 +12,7 @@ interface Props {
     fileName?: string;
     trades?: Trade[];
     onViewFullReport?: () => void;
+    onReset?: () => void;
     hideScore?: boolean;
     hideMetrics?: boolean;
 }
@@ -112,6 +113,7 @@ function ScoreRing({ score, color, size = 200 }: { score: number; displayScore: 
     );
 }
 
+
 /** Compute R-based expectancy from trades if risk_reward available, else null */
 function computeExpectancyR(trades: Trade[]): number | null {
     const withRR = trades.filter(t => t.risk_reward != null && t.risk_reward > 0);
@@ -140,8 +142,9 @@ function buildNarrative(metrics: BasicMetrics, trades: Trade[], t: any): string 
     return t("narrative.lowPf");
 }
 
-export default function BasicResults({ metrics, format, fileName, trades = [], onViewFullReport, hideScore, hideMetrics }: Props) {
+export default function BasicResults({ metrics, format, fileName, trades = [], onViewFullReport, onReset, hideScore, hideMetrics }: Props) {
     const t = useTranslations("analyzer.results");
+    const wizT = useTranslations("analyzer.wizard");
     const [copied, setCopied] = useState(false);
     // Compute 0-100 score from calcEdgeScore (0-10) × 10
     const edgeRaw = calcEdgeScore(metrics.winrate, metrics.profitFactor, metrics.maxDrawdown, metrics.totalTrades);
@@ -158,7 +161,15 @@ export default function BasicResults({ metrics, format, fileName, trades = [], o
     const wr = metrics.winrate;
 
     const copySummary = () => {
-        const text = `${t("scoreTitle")}: ${rawScore} / 100\n${tier.label}\n${t("basedOn", { count: metrics.totalTrades })}\n${t("metrics.winrate")}: ${wr.toFixed(1)}%\n${t("metrics.profitFactor")}: ${metrics.profitFactor.toFixed(2)}\n\nAnalizado con NodoQuant`;
+        const edgeLabel = rawScore >= 60 ? t("tiers.promising") : rawScore >= 40 ? t("tiers.unstable") : t("tiers.none");
+        const text = `${t("summaryLabels.score")}: ${rawScore}
+${t("summaryLabels.edge")}: ${edgeLabel}
+${t("summaryLabels.trades")}: ${metrics.totalTrades}
+${t("summaryLabels.winRate")}: ${wr.toFixed(1)}%
+${t("summaryLabels.pf")}: ${metrics.profitFactor.toFixed(2)}
+${t("summaryLabels.dd")}: ${Math.min(99.9, Math.abs(metrics.maxDrawdown)).toFixed(1)}%
+${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProfit.toFixed(2)}`;
+
         navigator.clipboard.writeText(text);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
@@ -181,10 +192,10 @@ export default function BasicResults({ metrics, format, fileName, trades = [], o
                     </p>
 
                     {/* Ring + number (The Gauge) */}
-                    <div className="relative mb-10 group z-10">
-                        <ScoreRing score={animatedScore} displayScore={animatedScore} color={tier.ring} size={220} />
+                    <div className="relative mb-10 group z-10 scale-110 sm:scale-125">
+                        <ScoreRing score={animatedScore} displayScore={animatedScore} color={tier.ring} size={200} />
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <span className="text-[120px] font-black tabular-nums tracking-tighter leading-none" style={{ color: tier.color, textShadow: `0 0 40px ${tier.color}40` }}>
+                            <span className="text-8xl sm:text-9xl font-black tabular-nums tracking-tighter leading-none" style={{ color: tier.color, textShadow: `0 0 40px ${tier.color}40` }}>
                                 {animatedScore}
                             </span>
                         </div>
@@ -224,27 +235,42 @@ export default function BasicResults({ metrics, format, fileName, trades = [], o
                                 </p>
                             </div>
 
-                            <button 
-                                onClick={copySummary}
-                                className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-white text-black text-[10px] font-black uppercase tracking-widest hover:bg-gray-200 transition-all shadow-xl shadow-black/20"
-                            >
-                                {copied ? (
-                                    <>
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                                            <polyline points="20 6 9 17 4 12" />
-                                        </svg>
-                                        {t("copied")}
-                                    </>
-                                ) : (
-                                    <>
+                            <div className="flex flex-wrap justify-center gap-4">
+                                <button 
+                                    onClick={copySummary}
+                                    className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-white text-black text-[10px] font-black uppercase tracking-widest hover:bg-gray-200 transition-all shadow-xl shadow-black/20"
+                                >
+                                    {copied ? (
+                                        <>
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                                <polyline points="20 6 9 17 4 12" />
+                                            </svg>
+                                            {t("copied")}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                                            </svg>
+                                            {t("copySummary")}
+                                        </>
+                                    )}
+                                </button>
+
+                                {onReset && (
+                                    <button 
+                                        onClick={onReset}
+                                        className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/[0.05] border border-white/[0.1] text-gray-400 text-[10px] font-black uppercase tracking-widest hover:bg-white/[0.1] hover:text-white transition-all"
+                                    >
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-                                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                                            <path d="M3 3v5h5" />
                                         </svg>
-                                        {t("copySummary")}
-                                    </>
+                                        {wizT("importAnother")}
+                                    </button>
                                 )}
-                            </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -254,20 +280,67 @@ export default function BasicResults({ metrics, format, fileName, trades = [], o
             {!hideMetrics && (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     {[
-                        { label: t("metrics.winrate"), value: `${wr.toFixed(1)}%`, good: wr >= 50, neutral: wr >= 40 },
-                        { label: t("metrics.profitFactor"), value: metrics.profitFactor.toFixed(2), good: metrics.profitFactor >= 1.5, neutral: metrics.profitFactor >= 1 },
-                        { label: t("metrics.maxDrawdown"), value: `${Math.abs(metrics.maxDrawdown).toFixed(1)}%`, good: false, neutral: metrics.maxDrawdown <= 20 },
-                        { label: t("metrics.netPnl"), value: `${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProfit.toFixed(2)}`, good: metrics.sumProfit > 0, neutral: metrics.sumProfit >= 0 },
+                        { 
+                            label: t("metrics.winrate"), 
+                            value: `${wr.toFixed(1)}%`, 
+                            good: wr >= 50, 
+                            neutral: wr >= 40,
+                            gradient: "from-emerald-400 to-teal-500" 
+                        },
+                        { 
+                            label: t("metrics.profitFactor"), 
+                            value: metrics.profitFactor.toFixed(2), 
+                            good: metrics.profitFactor >= 1.5, 
+                            neutral: metrics.profitFactor >= 1,
+                            gradient: "from-cyan-400 to-blue-500"
+                        },
+                        { 
+                            label: t("metrics.maxDrawdown"), 
+                            value: `${Math.min(99.9, Math.abs(metrics.maxDrawdown)).toFixed(1)}%`, 
+                            subValue: `($${Math.round(metrics.maxDrawdownAbs)})`,
+                            good: Math.abs(metrics.maxDrawdown) <= 15, 
+                            neutral: Math.abs(metrics.maxDrawdown) <= 30,
+                            gradient: "from-emerald-400 to-emerald-600" // Always green for low draws
+                        },
+                        { 
+                            label: t("metrics.netPnl"), 
+                            value: `${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProfit.toFixed(2)}`, 
+                            good: metrics.sumProfit > 0, 
+                            neutral: metrics.sumProfit >= 0,
+                            gradient: "from-green-400 to-emerald-500"
+                        },
                     ].map(m => {
+                        const isBad = !m.good && !m.neutral;
                         const color = m.good ? "#10b981" : m.neutral ? "#fb923c" : "#f87171";
+                        const gradientClass = isBad ? "from-rose-400 to-red-500" : m.gradient;
+                        
                         return (
-                            <div key={m.label} className="group rounded-[24px] px-5 py-8 text-center transition-all duration-300 bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.12] hover:shadow-2xl hover:shadow-black/50 [@media(hover:hover)]:hover:-translate-y-1 [@media(hover:hover)]:hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)]">
-                                <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 text-gray-600 group-hover:text-gray-400 transition-colors">
-                                    {m.label}
-                                </p>
-                                <p className="text-4xl font-black tabular-nums transition-all group-hover:scale-105" style={{ color, textShadow: `0 0 20px ${color}20` }}>
+                            <div key={m.label} className="group relative flex flex-col items-center rounded-[32px] px-5 py-9 text-center transition-all duration-500 bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.15] hover:-translate-y-2 overflow-hidden">
+                                
+                                {/* Background Glow Effect on Hover */}
+                                <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500 blur-[40px] pointer-events-none"
+                                    style={{ background: `radial-gradient(circle, ${color} 0%, transparent 70%)` }} />
+
+                                <div className="min-h-[2.5rem] flex items-center justify-center mb-1 relative z-10">
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 group-hover:text-gray-300 transition-colors">
+                                        {m.label}
+                                    </p>
+                                </div>
+
+                                <p className={`text-3xl sm:text-4xl font-black tabular-nums transition-all duration-500 group-hover:scale-110 bg-gradient-to-br ${gradientClass} bg-clip-text text-transparent relative z-10`}
+                                   style={{ filter: `drop-shadow(0 0 15px ${color}30)` }}>
                                     {m.value}
                                 </p>
+
+                                {"subValue" in m && m.subValue && (
+                                    <p className="text-[10px] font-bold tracking-widest mt-2 opacity-60 tabular-nums relative z-10" style={{ color }}>
+                                        {m.subValue}
+                                    </p>
+                                )}
+
+                                {/* Subtle Bottom Light Streak */}
+                                <div className="absolute bottom-0 left-1/4 right-1/4 h-[1px] opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+                                     style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }} />
                             </div>
                         );
                     })}

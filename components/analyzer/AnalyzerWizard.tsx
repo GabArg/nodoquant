@@ -1,7 +1,10 @@
 "use client";
 
-import { useState, useCallback, useRef, useMemo } from "react";
+import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
+import ScoreExplanation from "@/components/analyzer/ScoreExplanation";
+import StrategyDiagnostics from "@/components/analyzer/StrategyDiagnostics";
 import FileUpload from "@/components/analyzer/FileUpload";
 import ImportWizard from "@/components/analyzer/ImportWizard";
 import BasicResults from "@/components/analyzer/BasicResults";
@@ -53,11 +56,105 @@ export default function AnalyzerWizard() {
     const [parseError, setParseError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [unlockedEmail, setUnlockedEmail] = useState("");
+    const [isPro, setIsPro] = useState(false);
     const [strategyId, setStrategyId] = useState("");
     const [analysisId, setAnalysisId] = useState<string | null>(null);
     const [datasetName, setDatasetName] = useState("");
     const [pendingNormalized, setPendingNormalized] = useState<{ trades: NormalizedTrade[]; source: ImportSource } | null>(null);
+    const [isHydrated, setIsHydrated] = useState(false);
+    const searchParams = useSearchParams();
     const uploadRef = useRef<HTMLDivElement>(null);
+    const isRestoring = useRef(false);
+
+    // Persistence: Load from sessionStorage on mount
+    useEffect(() => {
+        if (isRestoring.current) return;
+        isRestoring.current = true;
+
+        const saved = sessionStorage.getItem("nodoquant_analyzer_state");
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+
+                // Deeply hydrate Dates specifically where we expect them
+                const hydrateState = (obj: any): any => {
+                    if (!obj || typeof obj !== 'object') return obj;
+
+                    const newObj = Array.isArray(obj) ? [...obj] : { ...obj };
+
+                    for (const key in newObj) {
+                        const val = newObj[key];
+                        // Match ISO date strings
+                        if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(val)) {
+                            newObj[key] = new Date(val);
+                        } else if (typeof val === 'object' && val !== null) {
+                            newObj[key] = hydrateState(val);
+                        }
+                    }
+                    return newObj;
+                };
+
+                const hydrated = hydrateState(parsed);
+                
+                // Batch updates by using functional updates or just setting them
+                // React 18 batches these anyway
+                if (hydrated.step) setStep(hydrated.step);
+                if (hydrated.importSource) setImportSource(hydrated.importSource);
+                if (hydrated.fileState) setFileState(hydrated.fileState);
+                if (hydrated.parseResult) setParseResult(hydrated.parseResult);
+                if (hydrated.basicMetrics) setBasicMetrics(hydrated.basicMetrics);
+                if (hydrated.fullMetrics) setFullMetrics(hydrated.fullMetrics);
+                if (hydrated.unlockedEmail) setUnlockedEmail(hydrated.unlockedEmail);
+                if (hydrated.analysisId) setAnalysisId(hydrated.analysisId);
+                if (hydrated.datasetName) setDatasetName(hydrated.datasetName);
+                if (hydrated.pendingNormalized) setPendingNormalized(hydrated.pendingNormalized);
+
+                // Ensure isHydrated is set AFTER state updates have been queued
+                // This prevents the save effect from firing immediately with stale state
+                setTimeout(() => setIsHydrated(true), 100);
+            } catch (e) {
+                console.error("Failed to restore session", e);
+                setIsHydrated(true); 
+            }
+        } else {
+            setIsHydrated(true);
+        }
+    }, []);
+
+    // Persistence: Save to sessionStorage on state change
+    useEffect(() => {
+        // Stop saving until hydration is complete to prevent overwriting with initial state
+        if (!isHydrated) return;
+
+        const stateToSave = {
+            step,
+            importSource,
+            fileState,
+            parseResult,
+            basicMetrics,
+            fullMetrics,
+            unlockedEmail,
+            analysisId,
+            datasetName,
+            pendingNormalized
+        };
+
+        // Debounce saving to avoid excessive writes and potential race conditions
+        const timer = setTimeout(() => {
+            sessionStorage.setItem("nodoquant_analyzer_state", JSON.stringify(stateToSave));
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [step, importSource, fileState, parseResult, basicMetrics, fullMetrics, unlockedEmail, analysisId, datasetName, pendingNormalized, isHydrated]);
+
+    // Auto-trigger sample data if ?sample=true (only if no session data)
+    useEffect(() => {
+        if (!isHydrated) return;
+        const saved = sessionStorage.getItem("nodoquant_analyzer_state");
+        if (searchParams.get("sample") === "true" && !saved) {
+            handleFile(sampleCsvData, "sample_data.csv");
+        }
+    }, [searchParams, isHydrated]);
 
     const UI_STEPS = useMemo(() => [
         { id: "upload", label: t("steps.upload") },
@@ -86,10 +183,24 @@ export default function AnalyzerWizard() {
         try {
             const { trades, source } = pendingNormalized;
             const legacyTrades = toTradeArray(trades);
+            
+            // Deduplication
+            const seen = new Set<string>();
+            const uniqueTrades = legacyTrades.filter(t => {
+                const key = `${t.account_id ?? 'default'}-${t.ticket ?? 'noticket'}-${(t.open_time ?? t.datetime).getTime()}-${t.symbol ?? 'nosym'}`;
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
+
             const fakeResult = buildParseResult(trades, source);
-            const basic = calcBasicMetrics(legacyTrades);
-            const full = calcFullMetrics(legacyTrades);
-            setParseResult(fakeResult as any);
+            const basic = calcBasicMetrics(uniqueTrades);
+            const full = calcFullMetrics(uniqueTrades);
+            
+            setParseResult({
+                ...fakeResult,
+                trades: uniqueTrades
+            } as any);
             setBasicMetrics(basic);
             setFullMetrics(full);
             setStep("basic");
@@ -98,7 +209,8 @@ export default function AnalyzerWizard() {
                 source,
                 total_trades: basic.totalTrades,
                 win_rate: basic.winrate,
-                profit_factor: basic.profitFactor
+                profit_factor: basic.profitFactor,
+                removed_duplicates: legacyTrades.length - uniqueTrades.length
             });
         } catch (err: unknown) {
             setParseError(err instanceof Error ? err.message : "Error calculating metrics.");
@@ -108,9 +220,23 @@ export default function AnalyzerWizard() {
 
     const handleImportComplete = useCallback((result: ParseResult) => {
         try {
-            const basic = calcBasicMetrics(result.trades);
-            const full = calcFullMetrics(result.trades);
-            setParseResult(result);
+            // Trade Deduplication logic
+            // Deterministic key: account_id + ticket + open_time + symbol
+            const seen = new Set<string>();
+            const uniqueTrades = result.trades.filter(t => {
+                const key = `${t.account_id ?? 'default'}-${t.ticket ?? 'noticket'}-${(t.open_time ?? t.datetime).getTime()}-${t.symbol ?? 'nosym'}`;
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
+
+            const basic = calcBasicMetrics(uniqueTrades);
+            const full = calcFullMetrics(uniqueTrades);
+            
+            setParseResult({
+                ...result,
+                trades: uniqueTrades
+            });
             setBasicMetrics(basic);
             setFullMetrics(full);
             setStep("basic");
@@ -119,7 +245,8 @@ export default function AnalyzerWizard() {
                 source: result.format,
                 total_trades: basic.totalTrades,
                 win_rate: basic.winrate,
-                profit_factor: basic.profitFactor
+                profit_factor: basic.profitFactor,
+                removed_duplicates: result.trades.length - uniqueTrades.length
             });
         } catch (err: unknown) {
             setParseError(err instanceof Error ? err.message : "Error calculando métricas.");
@@ -132,14 +259,43 @@ export default function AnalyzerWizard() {
         setStep("upload");
     }, []);
 
-    function handleEmailUnlocked(email: string, id: string) {
+    async function handleEmailUnlocked(email: string, id: string) {
         if (!parseResult) return;
         setUnlockedEmail(email);
         setAnalysisId(id);
+
+        // Trial Activation Logic
+        try {
+            const { data: { user } } = await (await import("@/lib/auth/client")).createClient().auth.getUser();
+            if (user) {
+                const { getUserPlanStatus } = await import("@/lib/payments/subscription");
+                const plan = await getUserPlanStatus(user.id);
+                
+                if (plan.plan === "free" && !plan.trial_start) {
+                    // Activate 30-day trial
+                    const supabase = (await import("@/lib/auth/client")).createClient();
+                    const trialStart = new Date();
+                    const trialEnd = new Date();
+                    trialEnd.setDate(trialStart.getDate() + 30);
+                    
+                    await supabase.from("user_plans").upsert({
+                        user_id: user.id,
+                        plan_type: "pro_trial",
+                        trial_start: trialStart.toISOString(),
+                        trial_end: trialEnd.toISOString()
+                    });
+                    console.log("Pro trial activated for user:", user.id);
+                }
+            }
+        } catch (e) {
+            console.error("Trial activation failed:", e);
+        }
+
         setStep("full");
     }
 
     const resetToSource = () => {
+        sessionStorage.removeItem("nodoquant_analyzer_state");
         setStep("source");
         setImportSource(null);
         setFileState(null);
@@ -326,6 +482,7 @@ export default function AnalyzerWizard() {
                                 format={parseResult.format}
                                 fileName={parseResult.fileName}
                                 trades={parseResult.trades}
+                                onReset={resetToSource}
                                 hideMetrics={true}
                             />
                         </div>
@@ -341,12 +498,18 @@ export default function AnalyzerWizard() {
                                 metrics={basicMetrics}
                                 format={parseResult.format}
                                 trades={parseResult.trades}
+                                onReset={resetToSource}
                                 hideScore={true}
                             />
                         </div>
 
+                        {/* 2.5 Score Explanation (NEW) */}
+                        <div className="order-3 animate-fade-in" style={{ animationDelay: "350ms" }}>
+                            <ScoreExplanation />
+                        </div>
+
                         {/* 4. Strategy Insights */}
-                        <div className="order-4 animate-fade-in" style={{ animationDelay: "400ms" }}>
+                        <div className="order-4 animate-fade-in" style={{ animationDelay: "450ms" }}>
                             <StrategyInsight
                                 profitFactor={basicMetrics.profitFactor}
                                 winrate={basicMetrics.winrate}
@@ -356,11 +519,21 @@ export default function AnalyzerWizard() {
                             />
                         </div>
 
+                        {/* 4.5 Strategy Diagnostics (NEW) */}
+                        <div className="order-5 animate-fade-in" style={{ animationDelay: "500ms" }}>
+                            <StrategyDiagnostics 
+                                metrics={basicMetrics}
+                                trades={parseResult.trades}
+                            />
+                        </div>
+
                         {/* 5. Next Actions Panel */}
                         <div className="order-5 pt-16 border-t border-white/[0.05] animate-fade-in" style={{ animationDelay: "600ms" }}>
                             <div className="text-center mb-10">
                                 <h3 className="text-2xl font-black text-white mb-2 tracking-tight italic uppercase">{t("nextStepsTitle")}</h3>
-                                <p className="text-sm text-gray-500 font-medium max-w-md mx-auto">{t("nextStepsDesc")}</p>
+                                <p className="text-sm text-gray-400 font-medium max-w-lg mx-auto leading-relaxed">
+                                    {(basicMetrics?.profitFactor ?? 0) >= 1.05 ? t("nextStepsDescGood") : t("nextStepsDescBad")}
+                                </p>
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-12">
@@ -441,6 +614,8 @@ export default function AnalyzerWizard() {
                             metrics={basicMetrics}
                             format={parseResult.format}
                             fileName={parseResult.fileName}
+                            trades={parseResult.trades}
+                            onReset={resetToSource}
                         />
                         <EmailGate
                             metricsPayload={{
@@ -468,36 +643,28 @@ export default function AnalyzerWizard() {
 
                 {step === "full" && fullMetrics && parseResult && (
                     <div className="space-y-10">
+                        <div className="flex justify-center mb-6">
+                            <button
+                                onClick={() => setIsPro(!isPro)}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${
+                                    isPro 
+                                    ? "bg-indigo-500/20 border-indigo-500 text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.3)]" 
+                                    : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
+                                }`}
+                            >
+                                <span className="text-sm font-bold uppercase tracking-widest">
+                                    {isPro ? "PRO VIEW ACTIVE 💎" : "PREVIEW PRO VIEW ✨"}
+                                </span>
+                            </button>
+                        </div>
                         <FullReport
                             metrics={fullMetrics}
                             trades={parseResult.trades}
                             email={unlockedEmail}
                             analysisId={analysisId}
                             onSimulate={() => setStep("sim")}
+                            isPro={isPro}
                         />
-
-                        <div className="pt-10 border-t" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
-                            <div className="text-center mb-10">
-                                <h2 className="text-2xl font-bold text-white mb-3">{t("monteCarlo.title")}</h2>
-                                <p className="text-sm max-w-lg mx-auto" style={{ color: "#9ca3af" }}>
-                                    {t("monteCarlo.desc")}
-                                </p>
-                            </div>
-
-                            <div className="p-5 rounded-2xl mb-8" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                                <MonteCarloChart
-                                    simulations={fullMetrics.monteCarlo.simulations}
-                                    averageCaseReturn={fullMetrics.monteCarlo.averageCase}
-                                />
-                            </div>
-
-                            <MonteCarloSummary
-                                worstCase={fullMetrics.monteCarlo.worstCase}
-                                averageCase={fullMetrics.monteCarlo.averageCase}
-                                bestCase={fullMetrics.monteCarlo.bestCase}
-                                riskOfRuin={fullMetrics.monteCarlo.riskOfRuin}
-                            />
-                        </div>
 
                         <div className="text-center pt-8 border-t" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
                             <button
@@ -514,7 +681,29 @@ export default function AnalyzerWizard() {
                 )}
 
                 {step === "sim" && parseResult && (
-                    <PropFirmSimulator trades={parseResult.trades} />
+                    <div className="space-y-10">
+                        <PropFirmSimulator trades={parseResult.trades} />
+                        <div className="flex flex-col items-center gap-6">
+                            <div className="flex flex-wrap justify-center gap-4">
+                                <button 
+                                    onClick={() => setStep("full")}
+                                    className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/[0.05] border border-white/[0.1] text-gray-400 text-[10px] font-black uppercase tracking-widest hover:bg-white/[0.1] hover:text-white transition-all"
+                                >
+                                    <span>←</span> {t("steps.report")}
+                                </button>
+                                <button 
+                                    onClick={resetToSource}
+                                    className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/[0.05] border border-white/[0.1] text-gray-400 text-[10px] font-black uppercase tracking-widest hover:bg-white/[0.1] hover:text-white transition-all"
+                                >
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                                        <path d="M3 3v5h5" />
+                                    </svg>
+                                    {t("importAnother")}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 )}
             </div>
 
