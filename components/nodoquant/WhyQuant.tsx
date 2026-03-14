@@ -4,21 +4,21 @@ export default function WhyQuant() {
     const t = useTranslations("whyQuant");
 
     return (
-        <section className="py-[120px] border-t border-white/[0.03] bg-[#050505]" id="why">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-20 animate-fade-in text-balance">
+        <section className="py-24 border-t border-white/[0.03] bg-[#050505]" id="why">
+            <div className="container">
+                <div className="max-w-[720px] mx-auto mb-20 text-center text-balance">
                     <p className="section-label mb-6 inline-block">{t("label")}</p>
                     <h2 className="text-4xl sm:text-5xl font-extrabold text-white mb-6 leading-tight tracking-tight">
                         {t("title")}
                     </h2>
-                    <p className="text-lg text-gray-400 max-w-2xl mx-auto font-medium">
+                    <p className="text-lg text-gray-300 font-medium">
                         {t("desc")}
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch single-row-grid">
                     {[1, 2, 3].map((i) => (
-                        <div key={i} className="bg-white/[0.02] border border-white/[0.05] p-10 rounded-[40px] group hover:bg-white/[0.04] hover:border-white/10 transition-all duration-500 relative overflow-hidden">
+                        <div key={i} className="flex flex-col h-full bg-white/[0.02] border border-white/[0.05] p-6 sm:p-10 rounded-[40px] group hover:bg-white/[0.04] hover:border-white/10 transition-all duration-500 relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-full h-1 bg-indigo-500/0 group-hover:bg-indigo-500/20 transition-all" />
                             
                             <div className="w-16 h-16 bg-indigo-500/10 rounded-[24px] flex items-center justify-center mb-10 border border-indigo-500/20 shadow-[0_0_30px_rgba(99,102,241,0.1)] group-hover:scale-110 group-hover:bg-indigo-500/20 transition-all duration-500">

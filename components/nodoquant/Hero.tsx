@@ -4,23 +4,23 @@ export default function Hero() {
     const t = useTranslations("home");
 
     return (
-        <section className="relative min-h-[90vh] flex flex-col justify-center pt-20 overflow-hidden bg-black" id="hero">
+        <section className="relative min-h-[80vh] flex flex-col justify-center pt-20 overflow-hidden bg-black" id="hero">
             {/* Background Glows */}
             <div className="absolute top-0 left-1/4 w-full h-full bg-indigo-600/5 blur-[120px] rounded-full pointer-events-none" />
             <div className="absolute bottom-0 right-1/4 w-full h-full bg-purple-600/5 blur-[120px] rounded-full pointer-events-none" />
 
-            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-20">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+            <div className="relative z-10 container py-10 sm:py-20">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                     
                     {/* Text Content Column */}
-                    <div className="lg:col-span-7 flex flex-col items-start text-left">
+                    <div className="flex flex-col items-start text-left">
                         {/* Label */}
                         <p className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.3em] mb-8 bg-white/5 border border-white/10 text-indigo-400 animate-fade-in inline-block">
                             {t("label")}
                         </p>
 
                         {/* H1 */}
-                        <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter text-white mb-8 animate-slide-up leading-[0.95]">
+                        <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter text-white mb-8 animate-slide-up leading-[0.95] max-w-[760px]">
                             {t("title").split(".").map((part, i) => (
                                 <span key={i} className={i === 1 ? "text-indigo-500 block sm:inline" : ""}>
                                     {part}{i === 0 ? ". " : ""}
@@ -29,7 +29,7 @@ export default function Hero() {
                         </h1>
 
                         {/* Subtitle / H2 */}
-                        <h2 className="text-lg sm:text-2xl text-gray-400 font-medium mb-10 max-w-xl animate-slide-up leading-relaxed text-balance">
+                        <h2 className="text-lg sm:text-2xl text-gray-300 font-medium mb-10 max-w-xl animate-slide-up leading-relaxed text-balance">
                             {t("subtitle")}
                         </h2>
 
@@ -90,7 +90,7 @@ export default function Hero() {
                     </div>
 
                     {/* Visual Column / Mockup (Appears after Trust Signals on mobile) */}
-                    <div className="lg:col-span-5 relative animate-fade-in sm:mt-0 mt-8 order-last lg:order-none">
+                    <div className="relative animate-fade-in sm:mt-0 mt-8 order-last lg:order-none max-w-[520px] lg:max-w-[600px] mx-auto lg:mx-0 w-full">
                         <div className="relative z-10 w-full aspect-[4/3] sm:aspect-square bg-gradient-to-br from-white/[0.05] to-transparent rounded-[40px] border border-white/10 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)] backdrop-blur-2xl overflow-hidden p-8 group">
                             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
                             

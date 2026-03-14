@@ -2,6 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Global Safety Rules */
+html, body {
+  overflow-x: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Container System */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {

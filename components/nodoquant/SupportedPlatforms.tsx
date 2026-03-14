@@ -13,22 +13,22 @@ export default function SupportedPlatforms() {
     const t = useTranslations("platforms");
 
     return (
-        <section className="py-20 border-y border-white/[0.03] bg-black">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-12 border-y border-white/[0.03] bg-black">
+            <div className="container">
                 <div className="flex flex-col items-center">
                     <h3 className="text-gray-500 text-[10px] font-black uppercase tracking-[0.3em] mb-12 text-center">
                         {t("title")}
                     </h3>
                     
-                    <div className="flex flex-wrap justify-center items-center gap-10 sm:gap-20 opacity-40 hover:opacity-100 transition-opacity duration-700">
+                    <div className="flex flex-wrap justify-center items-center gap-10 sm:gap-20 transition-opacity duration-700">
                         {PLATFORMS.map((platform) => (
                             <div key={platform.name} className="flex items-center group">
                                 {platform.logo ? (
-                                    <div className="relative h-7 sm:h-9 w-auto flex items-center grayscale group-hover:grayscale-0 transition-all duration-500 transform group-hover:scale-110">
+                                    <div className="relative h-6 sm:h-8 w-auto flex items-center transition-all duration-500 transform group-hover:scale-110">
                                         <img 
                                             src={platform.logo} 
                                             alt={platform.name}
-                                            className="h-full w-auto object-contain"
+                                            className={`h-full w-auto object-contain ${platform.name === 'OANDA' ? 'max-w-[100px]' : 'max-w-[120px]'}`}
                                             onError={(e) => {
                                                 e.currentTarget.style.display = 'none';
                                                 e.currentTarget.parentElement?.querySelector('.fallback-text')?.classList.remove('hidden');

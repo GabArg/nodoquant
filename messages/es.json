@@ -26,7 +26,7 @@
         "trustSignal1": "Funciona con exportaciones de MT4, MT5 y Binance",
         "trustSignal2": "No requiere conexión al bróker",
         "trustSignal3": "Tus datos se mantienen privados",
-        "ctaPrimary": "Analizar Mis Trades",
+        "ctaPrimary": "Analizar Mi Estrategia",
         "ctaSample": "Probar Estrategia Demo",
         "ctaSecondary": "Ver Reporte Demo",
         "disclaimer": "NodoQuant desarrolla software y realiza análisis cuantitativo. No se garantiza rentabilidad ni resultados futuros. Operar en mercados financieros conlleva riesgo de pérdida.",
@@ -1017,8 +1017,9 @@
                 "rr": "relación riesgo-beneficio (ganancias grandes)",
                 "tip": "Asegúrate de respetar siempre tus stop losses para proteger esta ventaja."
             }
-        },
-        "fullReport": {
+        }
+    },
+    "fullReport": {
             "metadata": {
                 "title": "Informe de Estrategia — NodoQuant",
                 "description": "Mira el edge estadístico de esta estrategia: tasa de acierto, factor de beneficio, drawdown máximo, expectancia y puntaje — analizado con NodoQuant."
@@ -1270,9 +1271,8 @@
                 "loginLink": "Ingresa aquí",
                 "success": "¡Cuenta creada! Redirigiendo..."
             }
-        }
-    },
-    "layout": {
+        },
+        "layout": {
         "metadata": {
             "title": "NodoQuant — Descubre tu ventaja en el trading",
             "description": "Sube tu historial de trading y descubre si tu estrategia tiene una verdadera ventaja estadística. Análisis cuantitativo para traders serios.",

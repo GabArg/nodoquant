@@ -17,11 +17,11 @@ export default function BrokerLogos() {
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-12 gap-y-12 items-center justify-items-center">
         {brokers.map((broker) => (
-          <div key={broker.name} className="flex items-center justify-center w-full h-16 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 transform hover:scale-110">
+          <div key={broker.name} className="flex items-center justify-center w-full h-12 transition-all duration-500 transform hover:scale-110">
             <img
               src={broker.logo}
               alt={broker.name}
-              className="max-h-full max-w-[140px] w-auto object-contain"
+              className={`max-h-full w-auto object-contain ${broker.name === 'OANDA' ? 'max-w-[120px]' : 'max-w-[140px]'}`}
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
