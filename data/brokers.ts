@@ -1,1 +1,1 @@
-export const brokers = []
+export const brokers: { name: string; logo: string }[] = []
