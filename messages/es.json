@@ -16,13 +16,13 @@
         "analyzeCta": "Analizar Mi Estrategia"
     },
     "home": {
-        "title": "Subí tus Trades. Descubrí si tu Estrategia Realmente tiene un Edge.",
-        "subtitle": "Analizá tu historial de trading con métricas cuantitativas, diagnósticos de riesgo e insights de estabilidad de estrategia.",
+        "title": "Sube tus Trades. Descubre si tu Estrategia Realmente tiene un Edge.",
+        "subtitle": "Analiza tu historial de trading con métricas cuantitativas, diagnósticos de riesgo e insights de estabilidad de estrategia.",
         "description": "NodoQuant analiza tus operaciones históricas y calcula métricas profesionales incluyendo Strategy Score, Profit Factor, Expectancy y Drawdown.",
         "label": "El Laboratorio Cuantitativo para Traders",
-        "bullet1": "Subí tu historial (MT4 / MT5 / CSV)",
-        "bullet2": "Recibí un Reporte de Edge de Trading completo",
-        "bullet3": "Descubrí tu Strategy Score (0–100)",
+        "bullet1": "Sube tu historial (MT4 / MT5 / CSV)",
+        "bullet2": "Recibe un Reporte de Edge de Trading completo",
+        "bullet3": "Descubre tu Strategy Score (0–100)",
         "trustSignal1": "Funciona con exportaciones de MT4, MT5 y Binance",
         "trustSignal2": "No requiere conexión al bróker",
         "trustSignal3": "Tus datos se mantienen privados",
@@ -35,12 +35,12 @@
     "whyQuant": {
         "label": "Metodología",
         "title": "Por qué importa el análisis cuantitativo",
-        "desc": "Dejá de adivinar. Empezá a medir tu rendimiento con precisión.",
-        "r1_title": "Eliminá el Trading Emocional",
-        "r1_desc": "Analizá datos reales de tu historial de trading en lugar de confiar en tu intuición.",
-        "r2_title": "Validá tu Estrategia",
+        "desc": "Deja de adivinar. Empieza a medir tu rendimiento con precisión.",
+        "r1_title": "Elimina el Trading Emocional",
+        "r1_desc": "Analiza datos reales de tu historial de trading en lugar de confiar en tu intuición.",
+        "r2_title": "Valida tu Estrategia",
         "r2_desc": "Métricas como Expectancy, Profit Factor y Drawdown revelan si tu estrategia realmente tiene edge.",
-        "r3_title": "Tomá Decisiones Basadas en Datos",
+        "r3_title": "Toma Decisiones Basadas en Datos",
         "r3_desc": "Identificá qué mercados, sesiones y condiciones hacen que tu estrategia rinda mejor.",
         "cta": "Analizar Mi Estrategia",
         "cta_note": "Gratis · Archivo CSV, MT4 o MT5"
@@ -69,20 +69,20 @@
         "label": "Proceso",
         "title": "Cómo funciona NodoQuant",
         "desc": "Tres simples pasos para validar tu sistema de trading.",
-        "step1_title": "1. Subí tu historial",
-        "step1_desc": "Subí tu historial de trading desde MT4, MT5 o CSV.",
+        "step1_title": "1. Sube tu historial",
+        "step1_desc": "Sube tu historial de trading desde MT4, MT5 o CSV.",
         "step2_title": "2. Análisis automático",
         "step2_desc": "NodoQuant analiza tus operaciones automáticamente en segundos.",
-        "step3_title": "3. Descubrí tu ventaja",
-        "step3_desc": "Obtené tu Strategy Score y métricas de ventaja profesional."
+        "step3_title": "3. Descubre tu ventaja",
+        "step3_desc": "Obtén tu Strategy Score y métricas de ventaja profesional."
     },
     "faq": {
         "label": "Preguntas Frecuentes",
         "title": "Dudas comunes",
         "q1": "¿Qué es NodoQuant?",
-        "a1": "NodoQuant es una plataforma de análisis cuantitativo para traders. Subí tus trades históricos y la plataforma evalúa si tu estrategia tiene un edge estadístico real.",
+        "a1": "NodoQuant es una plataforma de análisis cuantitativo para traders. Sube tus trades históricos y la plataforma evalúa si tu estrategia tiene un edge estadístico real.",
         "q2": "¿Qué archivos puedo subir?",
-        "a2": "Podés subir exportaciones de: MetaTrader 4, MetaTrader 5, Binance y archivos CSV genéricos.",
+        "a2": "Puedes subir exportaciones de: MetaTrader 4, MetaTrader 5, Binance y archivos CSV genéricos.",
         "q3": "¿Cuáles son los límites del plan gratuito?",
         "a3": "Los usuarios gratuitos pueden analizar hasta 500 trades. Guardar y publicar estrategias está disponible en el plan Pro.",
         "q4": "¿Cuántos trades necesito?",
@@ -90,23 +90,23 @@
         "q5": "¿Mis trades son privados?",
         "a5": "Sí. Tus datos de trading nunca se comparten. Solo las métricas agregadas son visibles si decidís compartir tu reporte públicamente.",
         "q6": "¿Necesito conectar mi broker?",
-        "a6": "No. Solo necesitás subir tu historial de trading como archivo CSV exportable.",
+        "a6": "No. Solo necesitas subir tu historial de trading como archivo CSV exportable.",
         "q7": "¿Qué pasa si mi archivo no es compatible?",
-        "a7": "Si tu archivo no es detectado automáticamente, podés contactarnos y lo añadiremos manualmente a nuestros parsers."
+        "a7": "Si tu archivo no es detectado automáticamente, puedes contactarnos y lo añadiremos manualmente a nuestros parsers."
     },
     "finalCta": {
-        "label": "Empezá ahora",
+        "label": "Empieza ahora",
         "title": "Probá tu Estrategia de Trading Gratis",
-        "desc": "Subí tu historial de trading y descubrí si tu estrategia realmente tiene un edge.",
+        "desc": "Sube tu historial de trading y descubre si tu estrategia realmente tiene un edge.",
         "cta": "Analizar Mi Estrategia",
         "note": "Soporte para CSV / MT4 / MT5"
     },
     "platforms": {
-        "title": "Funciona con las plataformas que ya usás",
-        "helper": "Subí exportaciones de MT4, MT5, Binance o archivos CSV de tu bróker."
+        "title": "Funciona con las plataformas que ya usas",
+        "helper": "Sube exportaciones de MT4, MT5, Binance o archivos CSV de tu bróker."
     },
     "footerNote": {
-        "description": "El Laboratorio Cuantitativo para Traders. Subí tus trades y descubrí si tu estrategia realmente tiene un edge estadístico.",
+        "description": "El Laboratorio Cuantitativo para Traders. Sube tus trades y descubre si tu estrategia realmente tiene un edge estadístico.",
         "product": "Producto",
         "resources": "Recursos",
         "legal": "Legal",
@@ -117,7 +117,7 @@
         "d2": "No se garantiza rentabilidad ni resultados financieros futuros.",
         "d3": "Operar en mercados financieros conlleva riesgo real de pérdida de capital.",
         "rights": "Todos los derechos reservados",
-        "disclaimer": "Los resultados de backtesting son históricos y no garantizan performance futura. Siempre operá con capital que podés permitirte perder."
+        "disclaimer": "Los resultados de backtesting son históricos y no garantizan performance futura. Siempre operá con capital que puedes permitirte perder."
     },
     "testimonials": {
         "title": "Lo que dicen los traders",
@@ -126,8 +126,8 @@
         "t3_quote": "Las métricas de Monte Carlo me dieron la confianza para aumentar el tamaño de mis posiciones de forma segura."
     },
     "sampleReport": {
-        "title": "Mirá un Reporte de Edge de Trading Real",
-        "desc": "Explorá un ejemplo del reporte cuantitativo generado por NodoQuant y descubrí el verdadero potencial de tu estrategia.",
+        "title": "Mira un Reporte de Edge de Trading Real",
+        "desc": "Explorá un ejemplo del reporte cuantitativo generado por NodoQuant y descubre el verdadero potencial de tu estrategia.",
         "scoreLabel": "Strategy Score",
         "scoreStatus": "Edge Fuerte",
         "metrics": {
@@ -150,7 +150,7 @@
         "edgeScore": "Edge Score",
         "positiveEdge": "Este sistema tiene un edge positivo. Esperás ganar {expectancy} unidades por cada unidad de riesgo.",
         "negativeEdge": "Este sistema tiene un edge negativo. A largo plazo, esta estrategia perderá dinero sin importar la suerte.",
-        "cta": "Analizá Tus Datos →"
+        "cta": "Analiza Tus Datos →"
     },
     "seoTemplate": {
         "defaultCta": "Analizar mi estrategia — gratis",
@@ -158,52 +158,91 @@
         "whatYouGet": "Lo que obtenés",
         "faqTitle": "Preguntas frecuentes",
         "readyTitle": "¿Listo para descubrir tu edge?",
-        "readyDesc": "Subí tu historial de trades y obtené un reporte cuantitativo completo en menos de 60 segundos.",
+        "readyDesc": "Sube tu historial de trades y obtén un reporte cuantitativo completo en menos de 60 segundos.",
         "noCreditCard": "Sin tarjeta de crédito · Resultados en 60 segundos"
     },
     "pages": {
         "strategyAnalyzer": {
             "metadata": {
-                "title": "Analizador de Estrategias de Trading — Descubrí tu Real Trading Edge | NodoQuant",
-                "description": "Analizá cualquier estrategia de trading al instante. Subí tu historial de trades de MT4, MT5 o cualquier CSV. Calculá Win Rate, Profit Factor, Expectancy y Max Drawdown gratis.",
+                "title": "Analizador de Estrategias de Trading — Descubre tu Real Trading Edge | NodoQuant",
+                "description": "Analiza cualquier estrategia de trading al instante. Sube tu historial de trades de MT4, MT5 o cualquier CSV. Calculá Win Rate, Profit Factor, Expectancy y Max Drawdown gratis.",
                 "keywords": "analizador de estrategias de trading, analizar estrategia de trading, analizador forex, analizador crypto, análisis de performance de estrategia, analizador de backtesting"
             },
             "hero": {
                 "badge": "💎 Analizador Profesional",
-                "headline": "Analizador de Estrategias — Descubrí tu Real Trading Edge",
-                "subheadline": "Dejá de adivinar si tu estrategia funciona. Subí tu historial de trades y obtené un análisis profesional en menos de 60 segundos. Calculá tu Win Rate, Profit Factor y Expectancy gratis.",
+                "headline": "Analizador de Estrategias — Descubre tu Real Trading Edge",
+                "subheadline": "Deja de adivinar si tu estrategia funciona. Sube tu historial de trades y obtén un análisis profesional en menos de 60 segundos. Calculá tu Win Rate, Profit Factor y Expectancy gratis.",
                 "cta": "Analizar Mi Estrategia Ahora — Gratis"
             },
             "steps": [
-                { "title": "Exportar Datos CSV", "desc": "Exportá tu historial de trades de tu bróker o plataforma en formato CSV o Excel. Soportamos MT4, MT5 y formatos estándar." },
-                { "title": "Parseo Automático", "desc": "Subí tu archivo a NodoQuant. Nuestro sistema normaliza fechas, símbolos y P&L en unidades R para un análisis estandarizado." },
-                { "title": "Obtené tu Puntaje", "desc": "Mirá instantáneamente tu Strategy Score (0-100) junto con métricas detalladas de win rate, profit factor y drawdowns." }
+                {
+                    "title": "Exportar Datos CSV",
+                    "desc": "Exportá tu historial de trades de tu bróker o plataforma en formato CSV o Excel. Soportamos MT4, MT5 y formatos estándar."
+                },
+                {
+                    "title": "Parseo Automático",
+                    "desc": "Sube tu archivo a NodoQuant. Nuestro sistema normaliza fechas, símbolos y P&L en unidades R para un análisis estandarizado."
+                },
+                {
+                    "title": "Obtén tu Puntaje",
+                    "desc": "Mira instantáneamente tu Strategy Score (0-100) junto con métricas detalladas de win rate, profit factor y drawdowns."
+                }
             ],
             "features": [
-                { "title": "Performance Ajustada al Riesgo", "desc": "No solo miramos el beneficio total. Analizamos tus retornos en relación al riesgo tomado, dándote una imagen real de tu edge." },
-                { "title": "Win Rate vs Expectancy", "desc": "Entendé la relación entre qué tan seguido ganás y tu tamaño promedio de win/loss. Esta es la clave de la rentabilidad a largo plazo." },
-                { "title": "Protección de Drawdown", "desc": "Analizá tus peores períodos para asegurar que tu estrategia sea sobrevivible durante cambios de mercado inevitables." },
-                { "title": "Insights de Profit Factor", "desc": "Calculá tu beneficio bruto sobre pérdida bruta. Un profit factor por encima de 1.5 indica un sistema profesional de alta probabilidad." },
-                { "title": "Normalización de R-Multiple", "desc": "Convertimos todos los trades a unidades R para que puedas comparar performance entre diferentes tamaños de cuenta de forma justa." },
-                { "title": "Insights Accionables", "desc": "Identificá qué símbolos, sesiones o tipos de trade están bajando tu performance y cuáles son tus ganadores." }
+                {
+                    "title": "Performance Ajustada al Riesgo",
+                    "desc": "No solo miramos el beneficio total. Analizamos tus retornos en relación al riesgo tomado, dándote una imagen real de tu edge."
+                },
+                {
+                    "title": "Win Rate vs Expectancy",
+                    "desc": "Entendé la relación entre qué tan seguido ganas y tu tamaño promedio de win/loss. Esta es la clave de la rentabilidad a largo plazo."
+                },
+                {
+                    "title": "Protección de Drawdown",
+                    "desc": "Analiza tus peores períodos para asegurar que tu estrategia sea sobrevivible durante cambios de mercado inevitables."
+                },
+                {
+                    "title": "Insights de Profit Factor",
+                    "desc": "Calculá tu beneficio bruto sobre pérdida bruta. Un profit factor por encima de 1.5 indica un sistema profesional de alta probabilidad."
+                },
+                {
+                    "title": "Normalización de R-Multiple",
+                    "desc": "Convertimos todos los trades a unidades R para que puedas comparar performance entre diferentes tamaños de cuenta de forma justa."
+                },
+                {
+                    "title": "Insights Accionables",
+                    "desc": "Identificá qué símbolos, sesiones o tipos de trade están bajando tu performance y cuáles son tus ganadores."
+                }
             ],
             "faqs": [
-                { "q": "¿Qué es un Analizador de Estrategias de Trading?", "a": "Es una herramienta de software usada por traders profesionales para evaluar el rendimiento estadístico de su historial. Identifica si las ganancias son por suerte o por un edge real." },
-                { "q": "¿Cuántos trades se necesitan para evaluar una estrategia?", "a": "Estadísticamente, necesitás al menos 30 trades para una señal básica, pero se recomiendan más de 100 para resultados de alta confianza." },
-                { "q": "¿Qué es un buen profit factor?", "a": "Un profit factor mayor a 1.0 significa que sos rentable. Mayor a 1.5 es excelente, y mayor a 2.0 es de clase mundial." },
-                { "q": "¿Qué es la expectancy en trading?", "a": "La expectancy es el monto promedio que esperás ganar (o perder) por trade. Se calcula como (Win Rate × Ganancia Promedio) − (Loss Rate × Pérdida Promedio)." }
+                {
+                    "q": "¿Qué es un Analizador de Estrategias de Trading?",
+                    "a": "Es una herramienta de software usada por traders profesionales para evaluar el rendimiento estadístico de su historial. Identifica si las ganancias son por suerte o por un edge real."
+                },
+                {
+                    "q": "¿Cuántos trades se necesitan para evaluar una estrategia?",
+                    "a": "Estadísticamente, necesitas al menos 30 trades para una señal básica, pero se recomiendan más de 100 para resultados de alta confianza."
+                },
+                {
+                    "q": "¿Qué es un buen profit factor?",
+                    "a": "Un profit factor mayor a 1.0 significa que eres rentable. Mayor a 1.5 es excelente, y mayor a 2.0 es de clase mundial."
+                },
+                {
+                    "q": "¿Qué es la expectancy en trading?",
+                    "a": "La expectancy es el monto promedio que esperás ganar (o perder) por trade. Se calcula como (Win Rate × Ganancia Promedio) − (Loss Rate × Pérdida Promedio)."
+                }
             ],
             "sampleSection": {
                 "title": "¿Qué es un Analizador de Estrategias de Trading?",
                 "p1": "Un **Analizador de Estrategias de Trading** es la herramienta más crítica en el arsenal de un trader profesional. Mientras que la mayoría de los traders retail se enfocan en encontrar la 'entrada perfecta', los profesionales se enfocan en la **expectancy** y los **retornos ajustados al riesgo**.",
-                "p2": "Al usar NodoQuant, podés determinar si tu racha ganadora reciente fue resultado de un **Edge de Trading** genuino o simplemente una racha de suerte. Por el contrario, un analizador puede mostrarte si una racha perdedora es simplemente un drawdown estadístico normal o una señal de que tu estrategia ya no funciona.",
+                "p2": "Al usar NodoQuant, puedes determinar si tu racha ganadora reciente fue resultado de un **Edge de Trading** genuino o simplemente una racha de suerte. Por el contrario, un analizador puede mostrarte si una racha perdedora es simplemente un drawdown estadístico normal o una señal de que tu estrategia ya no funciona.",
                 "h2_step": "Cómo Analizar tu Estrategia Paso a Paso",
                 "p_step": "Evaluar una estrategia requiere más que solo mirar el saldo de tu cuenta. Seguí estos pasos:",
                 "steps": [
                     "**Recolectar Datos**: Exportá al menos 50-100 trades de tu bróker.",
                     "**Normalizar a R**: Convertí tu P&L a múltiplos R (Unidades de riesgo). Esto elimina el sesgo de cambios en tamaños de posición.",
                     "**Calcular Expectancy**: Usá la fórmula: `(Win Rate % * Avg Win) - (Loss Rate % * Avg Loss)`.",
-                    "**Identificar Varianza**: Revisá tu maximum drawdown para ver si podés manejar la volatilidad de la estrategia."
+                    "**Identificar Varianza**: Revisá tu maximum drawdown para ver si puedes manejar la volatilidad de la estrategia."
                 ],
                 "h2_why": "¿Por qué importa el Análisis de Estrategia para tu P&L?",
                 "p_why": "Sin análisis, estás volando a ciegas. Muchos traders abandonan buenas estrategias durante un drawdown normal porque no entienden el perfil de **Max Drawdown** de su estrategia.",
@@ -231,40 +270,82 @@
                     "metric_val1": "Puntaje emocional",
                     "metric_val2": "Expectancy y Profit Factor"
                 },
-                "finalLink": "Subí tus trades reales y analizá tu estrategia →"
+                "finalLink": "Sube tus trades reales y analiza tu estrategia →"
             }
         },
         "cryptoStrategyAnalyzer": {
             "metadata": {
                 "title": "Analizador de Estrategias Crypto — Backtesteá tu Edge en Cripto | NodoQuant",
-                "description": "Testeá tu estrategia de trading cripto con análisis cuantitativo. Subí tu historial de Binance, Bybit o exchanges y obtené Win Rate, Profit Factor, Expectancy y un Strategy Score en 60 segundos.",
+                "description": "Testeá tu estrategia de trading cripto con análisis cuantitativo. Sube tu historial de Binance, Bybit o exchanges y obtén Win Rate, Profit Factor, Expectancy y un Strategy Score en 60 segundos.",
                 "keywords": "analizador de estrategias cripto, backtesting cripto, análisis de estrategia binance, edge de trading cripto, profit factor cripto, tester de estrategia bitcoin"
             },
             "hero": {
                 "badge": "₿ Analizador de Estrategias Crypto",
                 "headline": "¿Tiene tu Estrategia Cripto un Edge Estadístico Real?",
-                "subheadline": "Subí tu historial de trades de Binance, Bybit o exchanges y obtené un análisis cuantitativo completo en menos de 60 segundos. Gratis, privado e instantáneo.",
+                "subheadline": "Sube tu historial de trades de Binance, Bybit o exchanges y obtén un análisis cuantitativo completo en menos de 60 segundos. Gratis, privado e instantáneo.",
                 "cta": "Analizar mi estrategia cripto — gratis"
             },
             "steps": [
-                { "title": "Exportá tu historial cripto", "desc": "Descargá tu CSV de trades cerrados de Binance, Bybit, Kraken o cualquier exchange. La mayoría lo ofrece en Cuenta → Historial de Trades." },
-                { "title": "Subilo a NodoQuant", "desc": "Soltá el archivo en el analizador. Nuestro parser maneja múltiples formatos de exchange y normaliza columnas automáticamente." },
-                { "title": "Obtené tu Strategy Score", "desc": "Recibí un reporte completo: Strategy Score, Curva de Equity, Win Rate, Profit Factor, Expectancy, Max Drawdown y rating de confianza estadística." }
+                {
+                    "title": "Exportá tu historial cripto",
+                    "desc": "Descarga tu CSV de trades cerrados de Binance, Bybit, Kraken o cualquier exchange. La mayoría lo ofrece en Cuenta → Historial de Trades."
+                },
+                {
+                    "title": "Subilo a NodoQuant",
+                    "desc": "Soltá el archivo en el analizador. Nuestro parser maneja múltiples formatos de exchange y normaliza columnas automáticamente."
+                },
+                {
+                    "title": "Obtén tu Strategy Score",
+                    "desc": "Recibe un reporte completo: Strategy Score, Curva de Equity, Win Rate, Profit Factor, Expectancy, Max Drawdown y rating de confianza estadística."
+                }
             ],
             "features": [
-                { "title": "Soporte Multi-Exchange", "desc": "Compatible con Binance, Bybit, Kraken, OKX y cualquier exchange que exporte historial de trades en CSV." },
-                { "title": "Strategy Score (0–100)", "desc": "Un puntaje único que captura la fuerza del edge, performance ajustada al riesgo y qué tan confiable es tu estrategia cripto." },
-                { "title": "Visualización de Curva de Equity", "desc": "Mirá tu P&L acumulado. Identificá si tu estrategia cripto tiene una tendencia alcista o fue suerte." },
-                { "title": "Win Rate & Expectancy", "desc": "Calculá tu win rate real y valor esperado por trade — la base de cualquier sistema cripto rentable." },
-                { "title": "Análisis de Drawdown", "desc": "Entendé el peor drawdown que produjo tu estrategia para evaluar si se ajusta a tu tolerancia al riesgo." },
-                { "title": "Confianza Estadística", "desc": "Sabé si tus resultados son estadísticamente significativos o solo ruido de una muestra pequeña de trades." }
+                {
+                    "title": "Soporte Multi-Exchange",
+                    "desc": "Compatible con Binance, Bybit, Kraken, OKX y cualquier exchange que exporte historial de trades en CSV."
+                },
+                {
+                    "title": "Strategy Score (0–100)",
+                    "desc": "Un puntaje único que captura la fuerza del edge, performance ajustada al riesgo y qué tan confiable es tu estrategia cripto."
+                },
+                {
+                    "title": "Visualización de Curva de Equity",
+                    "desc": "Mira tu P&L acumulado. Identificá si tu estrategia cripto tiene una tendencia alcista o fue suerte."
+                },
+                {
+                    "title": "Win Rate & Expectancy",
+                    "desc": "Calculá tu win rate real y valor esperado por trade — la base de cualquier sistema cripto rentable."
+                },
+                {
+                    "title": "Análisis de Drawdown",
+                    "desc": "Entendé el peor drawdown que produjo tu estrategia para evaluar si se ajusta a tu tolerancia al riesgo."
+                },
+                {
+                    "title": "Confianza Estadística",
+                    "desc": "Sabé si tus resultados son estadísticamente significativos o solo ruido de una muestra pequeña de trades."
+                }
             ],
             "faqs": [
-                { "q": "¿Qué exchanges cripto están soportados?", "a": "Cualquier exchange que exporte historial de trades como CSV — incluyendo Binance, Bybit, OKX, Kraken y Bitget. También aceptamos formatos CSV genéricos." },
-                { "q": "¿Puedo analizar trades de spot y futuros?", "a": "Sí. NodoQuant analiza tanto historial de spot como de derivados (futuros/perps) de los principales exchanges." },
-                { "q": "¿Cuántos trades cripto necesito para un análisis confiable?", "a": "Al menos 30 trades para resultados básicos, 100+ para una evaluación de alta confianza. Mostramos una advertencia si tu muestra es muy pequeña." },
-                { "q": "¿Mi data de portafolio cripto está segura?", "a": "Tu subida contiene solo registros históricos — no se requieren claves API, balances ni información personal." },
-                { "q": "¿Puedo testear mis estrategias de Bitcoin o altcoins?", "a": "Sí. Cualquier par de criptomonedas está soportado — BTC, ETH, SOL, altcoins y derivados. Los resultados son agnósticos a la moneda." }
+                {
+                    "q": "¿Qué exchanges cripto están soportados?",
+                    "a": "Cualquier exchange que exporte historial de trades como CSV — incluyendo Binance, Bybit, OKX, Kraken y Bitget. También aceptamos formatos CSV genéricos."
+                },
+                {
+                    "q": "¿Puedo analizar trades de spot y futuros?",
+                    "a": "Sí. NodoQuant analiza tanto historial de spot como de derivados (futuros/perps) de los principales exchanges."
+                },
+                {
+                    "q": "¿Cuántos trades cripto necesito para un análisis confiable?",
+                    "a": "Al menos 30 trades para resultados básicos, 100+ para una evaluación de alta confianza. Mostramos una advertencia si tu muestra es muy pequeña."
+                },
+                {
+                    "q": "¿Mi data de portafolio cripto está segura?",
+                    "a": "Tu subida contiene solo registros históricos — no se requieren claves API, balances ni información personal."
+                },
+                {
+                    "q": "¿Puedo testear mis estrategias de Bitcoin o altcoins?",
+                    "a": "Sí. Cualquier par de criptomonedas está soportado — BTC, ETH, SOL, altcoins y derivados. Los resultados son agnósticos a la moneda."
+                }
             ],
             "sampleScoreCard": {
                 "title": "Ejemplo de reporte de estrategia",
@@ -278,34 +359,76 @@
         "forexStrategyAnalyzer": {
             "metadata": {
                 "title": "Analizador de Estrategias Forex — Testeá tu Edge en Trading | NodoQuant",
-                "description": "Analizá tu estrategia de trading Forex con precisión estadística. Subí tu historial de MT4/MT5 y calculá Win Rate, Profit Factor, Expectancy y Max Drawdown. Gratis y seguro.",
+                "description": "Analiza tu estrategia de trading Forex con precisión estadística. Sube tu historial de MT4/MT5 y calculá Win Rate, Profit Factor, Expectancy y Max Drawdown. Gratis y seguro.",
                 "keywords": "analizador de estrategias forex, análisis de estrategia EURUSD, calculadora de expectancy forex, análisis de estrategia MT4, analizador de trading MT5, edge de trading forex"
             },
             "hero": {
                 "badge": "🌍 Especialista en Forex",
-                "headline": "Analizador de Estrategias Forex — Analizá tu Real Trading Edge",
-                "subheadline": "Subí tu historial de Metatrader (MT4/MT5) y calculá instantáneamente tu Win Rate, Profit Factor y Expectancy. Dejá de adivinar y empezá a operar con confianza estadística.",
+                "headline": "Analizador de Estrategias Forex — Analiza tu Real Trading Edge",
+                "subheadline": "Sube tu historial de Metatrader (MT4/MT5) y calculá instantáneamente tu Win Rate, Profit Factor y Expectancy. Deja de adivinar y empieza a operar con confianza estadística.",
                 "cta": "Analizar mi estrategia Forex — gratis"
             },
             "steps": [
-                { "title": "Exportar Historial MT4/MT5", "desc": "Guardá tu historial como archivo HTML o CSV desde Metatrader 4 o 5. Soportamos formatos estándar de brókers a través de nuestro parser inteligente." },
-                { "title": "Normalización de Datos", "desc": "NodoQuant convierte pips y ganancias en múltiplos R. Esto permite evaluar tu edge independientemente del tamaño de posición o apalancamiento." },
-                { "title": "Auditoría Profesional", "desc": "Obtené un reporte cuantitativo completo que muestra tu win rate real, profit factor, max drawdown y expectancy por trade." }
+                {
+                    "title": "Exportar Historial MT4/MT5",
+                    "desc": "Guardá tu historial como archivo HTML o CSV desde Metatrader 4 o 5. Soportamos formatos estándar de brókers a través de nuestro parser inteligente."
+                },
+                {
+                    "title": "Normalización de Datos",
+                    "desc": "NodoQuant convierte pips y ganancias en múltiplos R. Esto permite evaluar tu edge independientemente del tamaño de posición o apalancamiento."
+                },
+                {
+                    "title": "Auditoría Profesional",
+                    "desc": "Obtén un reporte cuantitativo completo que muestra tu win rate real, profit factor, max drawdown y expectancy por trade."
+                }
             ],
             "features": [
-                { "title": "Soporte FX Global", "desc": "Analizá majors (EURUSD, GBPUSD), minors y exóticos. Filtrá el rendimiento por símbolo para encontrar qué pares operás mejor." },
-                { "title": "Expectancy por Pip", "desc": "Entendé cuánto esperás ganar vos o tu EA por trade en relación al riesgo tomado. La expectancy positiva no es negociable." },
-                { "title": "Análisis de Riesgo de Drawdown", "desc": "Los mercados Forex son volátiles. Calculamos tu peor caída pico a valle para que puedas gestionar tu apalancamiento de forma segura." },
-                { "title": "Soporte Nativo Metatrader", "desc": "Nuestro parser está optimizado para reportes MT4/MT5. Simplemente arrastrá y soltá tu archivo directamente en el analizador." },
-                { "title": "Confianza Estadística", "desc": "Nunca confíes en una estrategia con una muestra pequeña. Marcamos datasets con menos de 50 trades para advertir sobre aleatoriedad." },
-                { "title": "Strategy Score", "desc": "Un solo número del 0 al 100 que te dice si tu sistema es de nivel profesional, promedio o de alto riesgo." }
+                {
+                    "title": "Soporte FX Global",
+                    "desc": "Analiza majors (EURUSD, GBPUSD), minors y exóticos. Filtrá el rendimiento por símbolo para encontrar qué pares operas mejor."
+                },
+                {
+                    "title": "Expectancy por Pip",
+                    "desc": "Entendé cuánto esperás ganar vos o tu EA por trade en relación al riesgo tomado. La expectancy positiva no es negociable."
+                },
+                {
+                    "title": "Análisis de Riesgo de Drawdown",
+                    "desc": "Los mercados Forex son volátiles. Calculamos tu peor caída pico a valle para que puedas gestionar tu apalancamiento de forma segura."
+                },
+                {
+                    "title": "Soporte Nativo Metatrader",
+                    "desc": "Nuestro parser está optimizado para reportes MT4/MT5. Simplemente arrastrá y soltá tu archivo directamente en el analizador."
+                },
+                {
+                    "title": "Confianza Estadística",
+                    "desc": "Nunca confíes en una estrategia con una muestra pequeña. Marcamos datasets con menos de 50 trades para advertir sobre aleatoriedad."
+                },
+                {
+                    "title": "Strategy Score",
+                    "desc": "Un solo número del 0 al 100 que te dice si tu sistema es de nivel profesional, promedio o de alto riesgo."
+                }
             ],
             "faqs": [
-                { "q": "¿Cómo analizo una estrategia de MT4/MT5?", "a": "Andá a la pestaña 'Historial de Cuentas' en Metatrader, hacé clic derecho y seleccioná 'Guardar como Informe Detallado'. Luego subí ese archivo HTML o CSV a NodoQuant." },
-                { "q": "¿Es mejor el análisis por pips o por múltiplos R?", "a": "No. Los traders profesionales usan múltiplos R porque los pips no consideran la distancia del stop-loss ni el tamaño de posición." },
-                { "q": "¿Puedo analizar datos de Myfxbook o MetaStats?", "a": "Sí, si podés exportar la data a CSV. NodoQuant está diseñado para ir más allá de los diarios básicos, brindando insights cuantitativos profundos." },
-                { "q": "¿Qué es un buen profit factor para Forex?", "a": "En el mercado FX, un profit factor entre 1.2 y 1.8 se considera saludable. Cualquier valor por encima de 2.0 es excepcionalmente fuerte." },
-                { "q": "¿Soportan específicamente el análisis de EURUSD?", "a": "Sí. Podés usar nuestro filtrado por pares para analizar solo trades de EURUSD y ver si tu edge difiere entre pares." }
+                {
+                    "q": "¿Cómo analizo una estrategia de MT4/MT5?",
+                    "a": "Andá a la pestaña 'Historial de Cuentas' en Metatrader, haz clic derecho y seleccioná 'Guardar como Informe Detallado'. Luego sube ese archivo HTML o CSV a NodoQuant."
+                },
+                {
+                    "q": "¿Es mejor el análisis por pips o por múltiplos R?",
+                    "a": "No. Los traders profesionales usan múltiplos R porque los pips no consideran la distancia del stop-loss ni el tamaño de posición."
+                },
+                {
+                    "q": "¿Puedo analizar datos de Myfxbook o MetaStats?",
+                    "a": "Sí, si puedes exportar la data a CSV. NodoQuant está diseñado para ir más allá de los diarios básicos, brindando insights cuantitativos profundos."
+                },
+                {
+                    "q": "¿Qué es un buen profit factor para Forex?",
+                    "a": "En el mercado FX, un profit factor entre 1.2 y 1.8 se considera saludable. Cualquier valor por encima de 2.0 es excepcionalmente fuerte."
+                },
+                {
+                    "q": "¿Soportan específicamente el análisis de EURUSD?",
+                    "a": "Sí. Puedes usar nuestro filtrado por pares para analizar solo trades de EURUSD y ver si tu edge difiere entre pares."
+                }
             ],
             "content": {
                 "h2_what": "¿Qué es un Analizador de Estrategias Forex?",
@@ -314,67 +437,119 @@
                 "h3_why": "Por qué fallan los traders de Forex",
                 "p_why": "La razón #1 por la que los traders de Forex pierden dinero no son las 'malas entradas'. Es la **pobre gestión de riesgo combinada con falta de conciencia estadística**.",
                 "p_calc": "Al usar nuestra **Calculadora de Expectancy Forex**, aprendés los límites de tu estrategia. Si sabés que tu sistema tiene un Max Drawdown del 15%, no entrarás en pánico ante una pérdida del 8% semanal.",
-                "card_mt": { "title": "Compatibilidad MT4/MT5", "desc": "Exportá tu historial desde Metatrader y nosotros nos encargamos del resto. Sin carga manual." },
-                "card_pair": { "title": "Filtrado por Pares", "desc": "Analizá estrategias de EURUSD por separado de tus trades de JPY. Encontrá tu nicho." },
+                "card_mt": {
+                    "title": "Compatibilidad MT4/MT5",
+                    "desc": "Exportá tu historial desde Metatrader y nosotros nos encargamos del resto. Sin carga manual."
+                },
+                "card_pair": {
+                    "title": "Filtrado por Pares",
+                    "desc": "Analiza estrategias de EURUSD por separado de tus trades de JPY. Encontrá tu nicho."
+                },
                 "h3_master": "Masterizando el Análisis de EURUSD",
                 "p_master": "El EURUSD es el par más líquido del mundo. Un **Analizador de Forex** te permite ver si tu edge es consistente entre sesiones (Londres vs Nueva York) y símbolos.",
-                "ready": "Analizá tu EA de Forex o Historial Manual",
+                "ready": "Analiza tu EA de Forex o Historial Manual",
                 "readyCta": "Subir Mis Trades de Forex",
                 "readyFoot": "Soporta Metatrader, TradingView y CSVs estándar",
                 "h2_metrics": "Métricas Cuantitativas Clave para Forex",
                 "metric_stability": "Recovery Factor: Beneficio Neto / Max Drawdown. Te dice qué tan rápido te recuperás.",
                 "h3_leverage": "Apalancamiento y tu Curva de Equity",
-                "p_leverage": "Forex es un mercado muy apalancado. Al analizar tu **Curva de Equity**, podés ver visualmente el impacto de la volatilidad y decidir si tu tamaño de posición es responsable.",
+                "p_leverage": "Forex es un mercado muy apalancado. Al analizar tu **Curva de Equity**, puedes ver visualmente el impacto de la volatilidad y decidir si tu tamaño de posición es responsable.",
                 "leaderboardLink": "Ver Ranking de Estrategias",
-                "finalLink": "Analizá el rendimiento de tu estrategia Forex ahora →"
+                "finalLink": "Analiza el rendimiento de tu estrategia Forex ahora →"
             }
         },
         "tradingEdgeCalculator": {
             "metadata": {
                 "title": "Calculadora de Edge de Trading — Sabé si tu Estrategia es Rentable | NodoQuant",
-                "description": "Calculá tu expectancy de trading y profit factor con nuestra calculadora gratuita. Aprendé la fórmula del éxito y cómo el win rate impacta tus retornos.",
+                "description": "Calculá tu expectancy de trading y profit factor con nuestra calculadora gratuita. Aprende la fórmula del éxito y cómo el win rate impacta tus retornos.",
                 "keywords": "calculadora de edge trading, calculadora de expectancy trading, calculadora de profit factor, fórmula de expectancy trading, calcular edge de trading"
             },
             "hero": {
                 "badge": "🧮 Calculadora Estadística",
                 "headline": "Calculadora de Edge de Trading — Sabé si tu Estrategia es Rentable",
-                "subheadline": "Usá nuestra herramienta interactiva para calcular tu edge estadístico. Descubrí tu expectancy, profit factor y si tu riesgo-beneficio es sostenible.",
+                "subheadline": "Usá nuestra herramienta interactiva para calcular tu edge estadístico. Descubre tu expectancy, profit factor y si tu riesgo-beneficio es sostenible.",
                 "cta": "Calcular Mi Edge Real — Gratis"
             },
             "steps": [
-                { "title": "Ingresá tus Estadísticas", "desc": "Usá la herramienta abajo para ingresar tu win rate, win promedio y loss promedio para ver tu expectancy potencial." },
-                { "title": "Subí Datos Reales", "desc": "Mientras una calculadora es genial para estimar, NodoQuant te permite subir historial real para un cálculo preciso basado en performance." },
-                { "title": "Identificá tu Edge", "desc": "Nuestro sistema calcula tu Strategy Score, identificando si tenés un edge genuino o si simplemente es varianza." }
+                {
+                    "title": "Ingresá tus Estadísticas",
+                    "desc": "Usá la herramienta abajo para ingresar tu win rate, win promedio y loss promedio para ver tu expectancy potencial."
+                },
+                {
+                    "title": "Sube Datos Reales",
+                    "desc": "Mientras una calculadora es genial para estimar, NodoQuant te permite subir historial real para un cálculo preciso basado en performance."
+                },
+                {
+                    "title": "Identificá tu Edge",
+                    "desc": "Nuestro sistema calcula tu Strategy Score, identificando si tienes un edge genuino o si simplemente es varianza."
+                }
             ],
             "features": [
-                { "title": "Calculadora de Expectancy", "desc": "Tu ganancia o pérdida esperada por trade. La expectancy positiva es la base del trading." },
-                { "title": "Profit Factor", "desc": "El ratio de ganancias brutas sobre pérdidas brutas. Cualquier valor por encima de 1.5 es considerado de alto nivel." },
-                { "title": "Análisis de Win Rate", "desc": "Mirá cómo interactúa tu porcentaje de acierto con tu risk-reward. No necesitás un win rate alto para ser rentable." },
-                { "title": "Conciencia de Drawdown", "desc": "Estimá tu riesgo de capital potencial. Entender el drawdown es clave para sobrevivir a las rachas perdedoras." },
-                { "title": "Edge Score (0–100)", "desc": "Obtené un puntaje único que mide la robustez y confiabilidad general de tu edge de trading." },
-                { "title": "Lógica de Múltiplos R", "desc": "Aprendé a pensar en unidades de riesgo (R) en lugar de dinero, el secreto de los traders profesionales." }
+                {
+                    "title": "Calculadora de Expectancy",
+                    "desc": "Tu ganancia o pérdida esperada por trade. La expectancy positiva es la base del trading."
+                },
+                {
+                    "title": "Profit Factor",
+                    "desc": "El ratio de ganancias brutas sobre pérdidas brutas. Cualquier valor por encima de 1.5 es considerado de alto nivel."
+                },
+                {
+                    "title": "Análisis de Win Rate",
+                    "desc": "Mira cómo interactúa tu porcentaje de acierto con tu risk-reward. No necesitas un win rate alto para ser rentable."
+                },
+                {
+                    "title": "Conciencia de Drawdown",
+                    "desc": "Estimá tu riesgo de capital potencial. Entender el drawdown es clave para sobrevivir a las rachas perdedoras."
+                },
+                {
+                    "title": "Edge Score (0–100)",
+                    "desc": "Obtén un puntaje único que mide la robustez y confiabilidad general de tu edge de trading."
+                },
+                {
+                    "title": "Lógica de Múltiplos R",
+                    "desc": "Aprende a pensar en unidades de riesgo (R) en lugar de dinero, el secreto de los traders profesionales."
+                }
             ],
             "faqs": [
-                { "q": "¿Qué es un edge de trading?", "a": "Un edge es una ventaja estadística que hace que tu estrategia sea rentable en una muestra grande de trades. Significa que la probabilidad de éxito es mayor que la de fracaso, combinada con un riesgo-beneficio favorable." },
-                { "q": "¿Cuál es la fórmula de expectancy en trading?", "a": "Expectancy = (Win Rate × Win Promedio) - (Loss Rate × Loss Promedio). Si el resultado es positivo, tu estrategia tiene un edge." },
-                { "q": "¿Qué es un buen profit factor?", "a": "Mayor a 1.0 significa que sos rentable. Mayor a 1.5 es genial, y mayor a 2.0 es nivel profesional." },
-                { "q": "¿Cuántos trades necesito para un cálculo confiable?", "a": "Se recomiendan al menos 100 trades para tener alta confianza estadística. Muestras pequeñas suelen estar sesgadas por la suerte." },
-                { "q": "¿Puedo usar esta calculadora para Forex y Crypto?", "a": "Sí. Los cálculos de expectancy y edge son agnósticos al mercado. Funcionan igual para Forex, acciones, cripto y futuros." }
+                {
+                    "q": "¿Qué es un edge de trading?",
+                    "a": "Un edge es una ventaja estadística que hace que tu estrategia sea rentable en una muestra grande de trades. Significa que la probabilidad de éxito es mayor que la de fracaso, combinada con un riesgo-beneficio favorable."
+                },
+                {
+                    "q": "¿Cuál es la fórmula de expectancy en trading?",
+                    "a": "Expectancy = (Win Rate × Win Promedio) - (Loss Rate × Loss Promedio). Si el resultado es positivo, tu estrategia tiene un edge."
+                },
+                {
+                    "q": "¿Qué es un buen profit factor?",
+                    "a": "Mayor a 1.0 significa que eres rentable. Mayor a 1.5 es genial, y mayor a 2.0 es nivel profesional."
+                },
+                {
+                    "q": "¿Cuántos trades necesito para un cálculo confiable?",
+                    "a": "Se recomiendan al menos 100 trades para tener alta confianza estadística. Muestras pequeñas suelen estar sesgadas por la suerte."
+                },
+                {
+                    "q": "¿Puedo usar esta calculadora para Forex y Crypto?",
+                    "a": "Sí. Los cálculos de expectancy y edge son agnósticos al mercado. Funcionan igual para Forex, acciones, cripto y futuros."
+                }
             ],
             "content": {
                 "h2_interactive": "Calculadora de Edge Interactiva",
-                "p_interactive": "Ajustá los valores para ver cómo impactan las diferentes métricas en la expectancy de tu estrategia.",
+                "p_interactive": "Ajusta los valores para ver cómo impactan las diferentes métricas en la expectancy de tu estrategia.",
                 "h2_what": "¿Qué es un Edge de Trading?",
                 "p1": "En el mundo de la especulación profesional, un **Edge de Trading** es mucho más que un 'setup' o una señal. Es una **ventaja estadística** que te permite ganar en una serie extendida de trades.",
                 "p2": "Tener un edge significa que tu **Expectancy** es positiva. Implica que por cada dólar que ponés, esperás recibir ese dólar más un excedente.",
                 "h3_how": "Cómo Calcular tu Expectancy de Trading",
                 "p_how": "La expectancy es el santo grial de las matemáticas del trading. Combina tu **Win Rate** y tu **Ratio de Riesgo-Beneficio**.",
-                "p_example": "Ejemplo: Si ganás el 40% de las veces, y tu win promedio es $300 mientras tu loss promedio es $100:",
-                "p_result": "Esto significa que ganás un promedio de **$60 por trade** en una muestra grande.",
+                "p_example": "Ejemplo: Si ganas el 40% de las veces, y tu win promedio es $300 mientras tu loss promedio es $100:",
+                "p_result": "Esto significa que ganas un promedio de **$60 por trade** en una muestra grande.",
                 "h3_not_enough": "Por qué la calculadora no es suficiente",
                 "p_calc_limit": "Una calculadora es perfecta para **planificar** y **proyectar**. Sin embargo, el mercado real incluye slippage, comisiones y errores emocionales.",
-                "p_reality": "Es por esto que los traders profesionales usan NodoQuant para analizar su **historial real**. Al subir tus trades, pasás de la 'teoría' a la 'realidad'.",
-                "card_csv": { "title": "¿Tenés más de 30 trades en un CSV?", "desc": "Dejá de adivinar tus estadísticas. Obtené tu Strategy Score real ahora.", "cta": "Subir Mi Historial de Trades" },
+                "p_reality": "Es por esto que los traders profesionales usan NodoQuant para analizar su **historial real**. Al subir tus trades, pasas de la 'teoría' a la 'realidad'.",
+                "card_csv": {
+                    "title": "¿Tienes más de 30 trades en un CSV?",
+                    "desc": "Deja de adivinar tus estadísticas. Obtén tu Strategy Score real ahora.",
+                    "cta": "Subir Mi Historial de Trades"
+                },
                 "h2_winrate": "La Relación entre Win Rate y R:R",
                 "p_winrate": "Un error común es obsesionarse con el win rate alto. En realidad, una estrategia con 25% de win rate puede ser más rentable si el ratio riesgo-beneficio es suficientemente alto.",
                 "h3_metrics": "Métricas Clave para tu Reporte de Edge",
@@ -396,8 +571,8 @@
         "currentPlan": "Plan Actual",
         "upgradeBtn": "Actualizar a Pro ✨",
         "alreadyPro": {
-            "title": "¡Ya sos Pro!",
-            "desc": "Tenés acceso completo a todas las herramientas avanzadas de NodoQuant Pro.",
+            "title": "¡Ya eres Pro!",
+            "desc": "Tienes acceso completo a todas las herramientas avanzadas de NodoQuant Pro.",
             "cta": "Ir al Dashboard →"
         },
         "free": {
@@ -438,7 +613,7 @@
         "history": {
             "title": "Historial de Estrategias",
             "analyzeNew": "Analizar nueva →",
-            "empty": "No tenés estrategias analizadas todavía.",
+            "empty": "No tienes estrategias analizadas todavía.",
             "tryAnalyzer": "Probar Analyzer →",
             "analysis": "Análisis",
             "trades": "Trades",
@@ -449,10 +624,10 @@
     "analyzer": {
         "metadata": {
             "title": "Analizador de Estrategia — NodoQuant",
-            "description": "Subí tu historial de trading y obtené un análisis cuantitativo de tu estrategia. Compatible con CSV y export de MetaTrader 5. Gratis."
+            "description": "Sube tu historial de trading y obtén un análisis cuantitativo de tu estrategia. Compatible con CSV y export de MetaTrader 5. Gratis."
         },
         "onboarding": {
-            "title": "Analizá tu estrategia en 3 pasos",
+            "title": "Analiza tu estrategia en 3 pasos",
             "subtitle": "Unite a miles de traders que usan datos para mejorar su ventaja.",
             "proof": "+5,000 traders ya analizaron",
             "step2": {
@@ -460,8 +635,8 @@
                 "detail": "Nuestro sistema detecta activos, fechas y calcula tu Strategy Score."
             },
             "step3": {
-                "label": "Descubrí tu Ventaja",
-                "detail": "Obtené un reporte completo con Risk of Ruin, Monte Carlo y métricas pro."
+                "label": "Descubre tu Ventaja",
+                "detail": "Obtén un reporte completo con Risk of Ruin, Monte Carlo y métricas pro."
             },
             "sources": {
                 "csv": {
@@ -601,7 +776,7 @@
                 "emailPlaceholder": "tu@email.com",
                 "submit": "Desbloquear informe completo",
                 "processing": "Procesando...",
-                "errorRequired": "Completá tu nombre y email para continuar.",
+                "errorRequired": "Completa tu nombre y email para continuar.",
                 "errorSave": "Error al guardar",
                 "errorNetwork": "Error de red. Intentá de nuevo.",
                 "noSpam": "Sin spam. Solo te contactamos si mostrás interés en automatizar tu estrategia."
@@ -614,8 +789,8 @@
             "pro": {
                 "label": "FUNCIÓN PRO",
                 "lockedTitle": "Desbloqueá métricas profesionales",
-                "lockedDesc": "La simulación Monte Carlo y las métricas de riesgo avanzadas están disponibles para nuestros miembros PRO. Llevá tu análisis al siguiente nivel.",
-                "upgradeCta": "Pasate a PRO"
+                "lockedDesc": "La simulación Monte Carlo y las métricas de riesgo avanzadas están disponibles para nuestros miembros PRO. Lleva tu análisis al siguiente nivel.",
+                "upgradeCta": "Pásate a PRO"
             },
             "performance": {
                 "title": "Métricas de Performance",
@@ -664,7 +839,7 @@
                 "compare": "Comparar Estrategias",
                 "publish": "Publicar Estrategia"
             },
-            "disclaimer": "Los resultados del análisis son históricos y no garantizan performance futura. El backtesting tiene limitaciones inherentes. Siempre operá con capital que podés permitirte perder."
+            "disclaimer": "Los resultados del análisis son históricos y no garantizan performance futura. El backtesting tiene limitaciones inherentes. Siempre operá con capital que puedes permitirte perder."
         },
         "upload": {
             "dropzone": "Arrastrá y soltá tu archivo CSV acá",
@@ -763,7 +938,15 @@
                 "review": "Revisión",
                 "analyzed": "Analizado"
             },
-            "days": ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+            "days": [
+                "Domingo",
+                "Lunes",
+                "Martes",
+                "Miércoles",
+                "Jueves",
+                "Viernes",
+                "Sábado"
+            ],
             "sessions": {
                 "london": "Londres",
                 "newyork": "Nueva York",
@@ -838,14 +1021,14 @@
         "fullReport": {
             "metadata": {
                 "title": "Informe de Estrategia — NodoQuant",
-                "description": "Mirá el edge estadístico de esta estrategia: tasa de acierto, factor de beneficio, drawdown máximo, expectancia y puntaje — analizado con NodoQuant."
+                "description": "Mira el edge estadístico de esta estrategia: tasa de acierto, factor de beneficio, drawdown máximo, expectancia y puntaje — analizado con NodoQuant."
             },
             "status": {
                 "loading": "Cargando informe de estrategia...",
                 "notFound": {
                     "title": "Informe no encontrado",
                     "desc": "Este informe puede ser privado o el enlace es incorrecto.",
-                    "cta": "Analizá tu propia estrategia →"
+                    "cta": "Analiza tu propia estrategia →"
                 }
             },
             "header": {
@@ -866,7 +1049,7 @@
                 "analyzed": "Puntaje · {count} trades analizados"
             },
             "sharing": {
-                "label": "Compartí tus resultados",
+                "label": "Comparte tus resultados",
                 "shareX": "Compartir en X",
                 "shareWhatsapp": "WhatsApp",
                 "copyLink": "Copiar enlace",
@@ -878,8 +1061,8 @@
                 "defaultName": "Mi Estrategia",
                 "analysisLabel": "Análisis de Estrategia",
                 "tradingStrategy": "Estrategia de Trading",
-                "shareTextX": "Mi estrategia de trading obtuvo un puntaje de {score}/100 en NodoQuant.\n\nWin Rate: {wr}%\nProfit Factor: {pf}\nTrades analizados: {count}\n\nAnalizá tu estrategia:\nhttps://nodoquant.com/analyzer",
-                "shareTextWhatsapp": "¡Mi estrategia obtuvo {score}/100 en NodoQuant! Mirala acá: {url}"
+                "shareTextX": "Mi estrategia de trading obtuvo un puntaje de {score}/100 en NodoQuant.\n\nWin Rate: {wr}%\nProfit Factor: {pf}\nTrades analizados: {count}\n\nAnaliza tu estrategia:\nhttps://nodoquant.com/analyzer",
+                "shareTextWhatsapp": "¡Mi estrategia obtuvo {score}/100 en NodoQuant! Mírala acá: {url}"
             },
             "metrics": {
                 "title": "Métricas Clave",
@@ -927,7 +1110,7 @@
             },
             "journal": {
                 "title": "Bitácora de Estrategia",
-                "proLock": "Llevá un registro de tus emociones, contexto de mercado y análisis de errores.",
+                "proLock": "Lleva un registro de tus emociones, contexto de mercado y análisis de errores.",
                 "placeholder": "Análisis del mercado, notas de psicología, ajustes a realizar...",
                 "save": "Guardar notas",
                 "saving": "Guardando...",
@@ -944,13 +1127,13 @@
             "viral": {
                 "label": "Potenciado por NodoQuant",
                 "title": "¿Tu estrategia tiene una ventaja estadística real?",
-                "subtitle": "Subí tu historial y obtené un informe cuantitativo completo en menos de 60 segundos. Gratis.",
-                "cta": "Analizá tu propia estrategia — es gratis",
+                "subtitle": "Sube tu historial y obtén un informe cuantitativo completo en menos de 60 segundos. Gratis.",
+                "cta": "Analiza tu propia estrategia — es gratis",
                 "footer": "No requiere tarjeta · Resultados en 60 segundos"
             },
             "publishModal": {
                 "title": "Crear Perfil de Estrategia",
-                "subtitle": "Compartí tu rendimiento con el mundo",
+                "subtitle": "Comparte tu rendimiento con el mundo",
                 "errorRequired": "El nombre de la estrategia es obligatorio",
                 "errorFailed": "Error al publicar la estrategia",
                 "nameLabel": "Nombre de la Estrategia *",
@@ -978,7 +1161,7 @@
         "strategies": {
             "metadata": {
                 "title": "Biblioteca Pública de Estrategias — NodoQuant",
-                "description": "Descubrí estrategias de trading de alto rendimiento. Explorá resultados backtesteados de Forex, Cripto y Acciones y Futuros de nuestra comunidad."
+                "description": "Descubre estrategias de trading de alto rendimiento. Explorá resultados backtesteados de Forex, Cripto y Acciones y Futuros de nuestra comunidad."
             },
             "hero": {
                 "title": "Biblioteca de",
@@ -995,7 +1178,7 @@
             "empty": {
                 "title": "No se encontraron estrategias",
                 "desc": "No pudimos encontrar estrategias públicas que coincidan con tus filtros. ¡Sé el primero en publicar una!",
-                "cta": "Analizá mi estrategia →"
+                "cta": "Analiza mi estrategia →"
             },
             "card": {
                 "publishedAt": "Publicado {date}",
@@ -1015,15 +1198,15 @@
                 "scoreSub": "Ventaja cuantitativa verificada por NodoQuant",
                 "performanceTitle": "01 TRAYECTORIA DE RENDIMIENTO (R ACUMULADO)",
                 "certificateTitle": "Certificado Oficial",
-                "certificateDesc": "Descargá la tarjeta de puntuación certificada en alta resolución. Optimizada para compartir en redes y portfolios profesionales.",
+                "certificateDesc": "Descarga la tarjeta de puntuación certificada en alta resolución. Optimizada para compartir en redes y portfolios profesionales.",
                 "certificateBtn": "Ver Certificado Oficial",
                 "ctaTitle": "Probá tu propia estrategia",
-                "ctaDesc": "¿Tenés una ventaja estadística real? Obtené tu informe cuantitativo en segundos.",
+                "ctaDesc": "¿Tienes una ventaja estadística real? Obtén tu informe cuantitativo en segundos.",
                 "ctaBtn": "Analizar Gratis",
                 "metadataTitle": "Contexto de Metadatos",
                 "tradesAnalyzed": "Trades Analizados",
                 "fingerprint": "Huella Digital del Análisis",
-                "shareText": "Mi estrategia de trading obtuvo un puntaje de {score}/100 en NodoQuant.\n\nWin Rate: {wr}%\nProfit Factor: {pf}\nTrades analizados: {count}\n\nAnalizá tu propia estrategia:\n",
+                "shareText": "Mi estrategia de trading obtuvo un puntaje de {score}/100 en NodoQuant.\n\nWin Rate: {wr}%\nProfit Factor: {pf}\nTrades analizados: {count}\n\nAnaliza tu propia estrategia:\n",
                 "metrics": {
                     "accuracy": "Precisión",
                     "yield": "Calidad del Rendimiento",
@@ -1071,19 +1254,19 @@
                 "passwordPlaceholder": "••••••••",
                 "submit": "Ingresar a mi cuenta",
                 "loading": "Ingresando...",
-                "noAccount": "¿No tenés una cuenta?",
-                "signupLink": "Registrate acá"
+                "noAccount": "¿No tienes una cuenta?",
+                "signupLink": "Regístrate acá"
             },
             "signup": {
                 "title": "Creá tu cuenta",
-                "subtitle": "Empezá a validar tus estrategias hoy mismo.",
+                "subtitle": "Empieza a validar tus estrategias hoy mismo.",
                 "emailLabel": "Correo electrónico",
                 "emailPlaceholder": "tu@email.com",
                 "passwordLabel": "Contraseña",
                 "passwordPlaceholder": "Mín. 6 caracteres",
                 "submit": "Crear mi cuenta gratuita",
                 "loading": "Creando cuenta...",
-                "haveAccount": "¿Ya tenés una cuenta?",
+                "haveAccount": "¿Ya tienes una cuenta?",
                 "loginLink": "Ingresá aquí",
                 "success": "¡Cuenta creada! Redirigiendo..."
             }
@@ -1091,8 +1274,8 @@
     },
     "layout": {
         "metadata": {
-            "title": "NodoQuant — Descubrí tu ventaja en el trading",
-            "description": "Subí tu historial de trading y descubrí si tu estrategia tiene una verdadera ventaja estadística. Análisis cuantitativo para traders serios.",
+            "title": "NodoQuant — Descubre tu ventaja en el trading",
+            "description": "Sube tu historial de trading y descubre si tu estrategia tiene una verdadera ventaja estadística. Análisis cuantitativo para traders serios.",
             "keywords": "backtesting, análisis de estrategias de trading, trading cuantitativo, análisis de operaciones, ventaja estadística, laboratorio cuantitativo"
         }
     },
@@ -1105,7 +1288,7 @@
     },
     "legal": {
         "backToHome": "Volver al inicio",
-        "contactUs": "Si tenés dudas sobre estos términos, contactanos en support@nodoquant.com",
+        "contactUs": "Si tienes dudas sobre estos términos, contáctanos en support@nodoquant.com",
         "compliance": "NodoQuant cumple con las normativas estándar de protección de datos.",
         "terms": {
             "title": "Términos de Servicio",
@@ -1117,7 +1300,7 @@
             "sec3": "3. Sin Asesoramiento Financiero",
             "sec3_content": "NodoQuant NO es un asesor financiero ni proporciona asesoramiento de inversión. Todas las herramientas y análisis son para fines educativos y de investigación cuantitativa únicamente. El trading conlleva un riesgo sustancial de pérdida.",
             "sec4": "4. Exactitud del Usuario",
-            "sec4_content": "Sos el único responsable de la exactitud de los datos que subís a la plataforma. Los errores en los archivos de datos iniciales darán lugar a resultados de análisis incorrectos.",
+            "sec4_content": "Eres el único responsable de la exactitud de los datos que subís a la plataforma. Los errores en los archivos de datos iniciales darán lugar a resultados de análisis incorrectos.",
             "sec5": "5. Limitación de Responsabilidad",
             "sec5_content": "NodoQuant no será responsable de ninguna pérdida financiera, daño o perjuicio derivado del uso de nuestra plataforma o de las decisiones de trading tomadas en base a nuestros análisis."
         },
@@ -1125,15 +1308,15 @@
             "title": "Política de Privacidad",
             "lastUpdated": "Última actualización: Marzo 2024",
             "sec1": "1. Información que Recopilamos",
-            "sec1_content": "Recopilamos la información que nos proporcionás directamente, como tu nombre y correo electrónico cuando te registrás o solicitás un análisis. También procesamos los archivos de historial de trading que subís para realizar el análisis cuantitativo.",
+            "sec1_content": "Recopilamos la información que nos proporcionás directamente, como tu nombre y correo electrónico cuando te registras o solicitás un análisis. También procesamos los archivos de historial de trading que subís para realizar el análisis cuantitativo.",
             "sec2": "2. Uso de Datos de Trading",
             "sec2_content": "Tus datos de trading se procesan únicamente para generar tus reportes y estadísticas. Por defecto, estos datos son privados. Solo se vuelven públicos si decidís publicar explícitamente tu estrategia en nuestro Leaderboard.",
             "sec3": "3. Seguridad de Datos",
             "sec3_content": "Implementamos medidas de seguridad técnicas y organizativas para proteger tu información. No compartimos tus datos de trading con terceros ni brokers.",
             "sec4": "4. Cookies",
-            "sec4_content": "Utilizamos cookies para mantener tu sesión activa y mejorar tu experiencia de navegación. Podés desactivar las cookies en la configuración de tu navegador, aunque esto puede afectar algunas funciones del sitio.",
+            "sec4_content": "Utilizamos cookies para mantener tu sesión activa y mejorar tu experiencia de navegación. Puedes desactivar las cookies en la configuración de tu navegador, aunque esto puede afectar algunas funciones del sitio.",
             "sec5": "5. Tus Derechos",
-            "sec5_content": "Tenés derecho a acceder, rectificar o eliminar tu información personal en cualquier momento. Podés hacerlo desde la configuración de tu cuenta o contactándonós directamente."
+            "sec5_content": "Tienes derecho a acceder, rectificar o eliminar tu información personal en cualquier momento. Puedes hacerlo desde la configuración de tu cuenta o contactándonós directamente."
         }
     }
-}
+}
