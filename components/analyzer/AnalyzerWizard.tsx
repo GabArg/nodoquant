@@ -60,6 +60,7 @@ export default function AnalyzerWizard() {
     const [loading, setLoading] = useState(false);
     const [unlockedEmail, setUnlockedEmail] = useState("");
     const [isPro, setIsPro] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [strategyId, setStrategyId] = useState("");
     const [showComparison, setShowComparison] = useState(false);
     const { comparisonList, addToComparison, removeFromComparison, isFull } = useComparison(isPro);
@@ -162,17 +163,25 @@ export default function AnalyzerWizard() {
         }
     }, [searchParams, isHydrated]);
 
-    // Fetch PRO status
+    // Fetch PRO & Auth status
     useEffect(() => {
         async function checkPlan() {
             try {
+                // Check auth
+                const supabase = (await import("@/lib/auth/client")).createClient();
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    setIsAuthenticated(true);
+                }
+
+                // Check plan
                 const res = await fetch(`/${locale}/api/user/plan`);
                 const data = await res.json();
                 if (data.isPro) {
                     setIsPro(true);
                 }
             } catch (e) {
-                console.error("Error fetching plan status:", e);
+                console.error("Error fetching auth/plan status:", e);
             }
         }
         checkPlan();
@@ -550,6 +559,10 @@ export default function AnalyzerWizard() {
                                 fileName={parseResult.fileName}
                                 trades={parseResult.trades}
                                 onReset={resetToSource}
+                                onViewFullReport={() => {
+                                    setStep("gate");
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}
                             />
                         </div>
 
@@ -680,6 +693,9 @@ export default function AnalyzerWizard() {
                             fileName={parseResult.fileName}
                             trades={parseResult.trades}
                             onReset={resetToSource}
+                            onViewFullReport={() => {
+                                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                            }}
                         />
                         <EmailGate
                             metricsPayload={{
@@ -700,6 +716,7 @@ export default function AnalyzerWizard() {
                             dateRangeEnd={parseResult.dateRangeEnd?.toISOString()}
                             strategyId={strategyId}
                             datasetName={datasetName}
+                            isAuthenticated={isAuthenticated}
                             onUnlocked={handleEmailUnlocked}
                         />
                     </div>

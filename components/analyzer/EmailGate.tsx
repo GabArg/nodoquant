@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useState, useEffect } from "react";
+import { useTranslations, useLocale } from "next-intl";
+import { useRouter } from "next/navigation";
 
 interface Props {
     metricsPayload: object;
@@ -17,6 +18,7 @@ interface Props {
     dateRangeEnd?: string;
     strategyId?: string;
     datasetName?: string;
+    isAuthenticated: boolean;
     onUnlocked: (email: string, id: string) => void;
 }
 
@@ -28,20 +30,23 @@ export default function EmailGate({
     dateRangeEnd,
     strategyId,
     datasetName,
+    isAuthenticated,
     onUnlocked,
 }: Props) {
     const t = useTranslations("analyzer.gate");
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
+    const locale = useLocale();
+    const router = useRouter();
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    async function handleSubmit(e: React.FormEvent) {
-        e.preventDefault();
-        if (!name.trim() || !email.trim()) {
-            setError(t("form.errorRequired"));
-            return;
+    // Auto-unlock if authenticated
+    useEffect(() => {
+        if (isAuthenticated && !submitting) {
+            handleUnlock();
         }
+    }, [isAuthenticated]);
+
+    async function handleUnlock() {
         setError(null);
         setSubmitting(true);
 
@@ -55,7 +60,6 @@ export default function EmailGate({
                     profit_factor: basicMetrics.profit_factor,
                     max_drawdown: basicMetrics.max_drawdown,
                     metrics_json: metricsPayload,
-                    user_email: email,
                     file_name: fileName,
                     date_range_start: dateRangeStart,
                     date_range_end: dateRangeEnd,
@@ -70,7 +74,7 @@ export default function EmailGate({
                 const errorMsg = data.reason || data.error || t("form.errorSave");
                 throw new Error(errorMsg);
             }
-            onUnlocked(email, data.id);
+            onUnlocked("", data.id);
         } catch (err: unknown) {
             setError(err instanceof Error ? err.message : t("form.errorNetwork"));
         } finally {
@@ -110,66 +114,36 @@ export default function EmailGate({
                 </div>
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label className="form-label" htmlFor="gate-name">{t("form.name")}</label>
-                    <input
-                        id="gate-name"
-                        type="text"
-                        className="form-input"
-                        placeholder={t("form.namePlaceholder")}
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                        disabled={submitting}
-                    />
+            {/* Auth Actions */}
+            {isAuthenticated ? (
+                <div className="w-full text-center py-8">
+                    <div className="w-8 h-8 mx-auto border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-4" />
+                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest animate-pulse">
+                        {error ? <span className="text-red-400">{error}</span> : "Generando reporte profesional..."}
+                    </p>
                 </div>
-                <div>
-                    <label className="form-label" htmlFor="gate-email">{t("form.email")}</label>
-                    <input
-                        id="gate-email"
-                        type="email"
-                        className="form-input"
-                        placeholder={t("form.emailPlaceholder")}
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        disabled={submitting}
-                    />
+            ) : (
+                <div className="space-y-4">
+                    <button
+                        onClick={() => router.push(`/${locale}/signup`)}
+                        className="btn-primary w-full justify-center text-[12px] py-4 shadow-[0_10px_30px_-10px_rgba(99,102,241,0.5)]"
+                    >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="mr-2">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                        </svg>
+                        CREAR CUENTA PARA DESBLOQUEAR
+                    </button>
+
+                    <p className="text-xs text-center text-gray-400 font-medium">
+                        ¿Ya tienes una cuenta?{" "}
+                        <button onClick={() => router.push(`/${locale}/login`)} className="text-indigo-400 hover:text-indigo-300 transition-colors">
+                            Inicia sesión aquí
+                        </button>
+                    </p>
+                    
+                    {error && <p className="text-xs text-red-400 text-center">{error}</p>}
                 </div>
-
-                {error && (
-                    <p className="text-xs text-red-400">{error}</p>
-                )}
-
-                <button
-                    type="submit"
-                    className="btn-primary w-full justify-center"
-                    disabled={submitting}
-                >
-                    {submitting ? (
-                        <>
-                            <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M21 12a9 9 0 11-6.219-8.56" />
-                            </svg>
-                            {t("form.processing")}
-                        </>
-                    ) : (
-                        <>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                                <path d="M7 11V7a5 5 0 0110 0v4" />
-                            </svg>
-                            {t("form.submit")}
-                        </>
-                    )}
-                </button>
-
-                <p className="text-xs text-center" style={{ color: "#4b5563" }}>
-                    {t("form.noSpam")}
-                </p>
-            </form>
+            )}
         </div>
     );
 }

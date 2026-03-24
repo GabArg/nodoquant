@@ -57,8 +57,12 @@ export async function POST(req: NextRequest) {
         const authClient = createClient();
         const { data: { session } } = await authClient.auth.getSession();
 
+        if (!session?.user?.id) {
+            return NextResponse.json({ ok: false, error: "Unauthorized: Debe iniciar sesión para guardar métricas" }, { status: 401 });
+        }
+
         // Priority: Session > Body (Body used primarily for testing/simulations)
-        const user_id = session?.user?.id ?? body.user_id ?? null;
+        const user_id = session.user.id;
 
         let isPro = false;
         if (user_id) {
