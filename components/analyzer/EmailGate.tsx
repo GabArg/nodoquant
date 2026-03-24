@@ -117,10 +117,43 @@ export default function EmailGate({
             {/* Auth Actions */}
             {isAuthenticated ? (
                 <div className="w-full text-center py-8">
-                    <div className="w-8 h-8 mx-auto border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-4" />
-                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest animate-pulse">
-                        {error ? <span className="text-red-400">{error}</span> : "Generando reporte profesional..."}
-                    </p>
+                    {submitting ? (
+                        <>
+                            <div className="w-8 h-8 mx-auto border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-4" />
+                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest animate-pulse">
+                                Generando reporte profesional...
+                            </p>
+                        </>
+                    ) : error ? (
+                        <div className="space-y-4">
+                            <div className="w-12 h-12 mx-auto rounded-full bg-red-500/10 flex items-center justify-center mb-4">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-red-400">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="12" y1="8" x2="12" y2="12"/>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                </svg>
+                            </div>
+                            <p className="text-sm font-semibold text-red-400">{error}</p>
+                            <div className="pt-4 flex justify-center gap-4">
+                                <button 
+                                    onClick={() => handleUnlock()} 
+                                    className="px-6 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-bold transition-colors"
+                                >
+                                    Reintentar
+                                </button>
+                                <button 
+                                    onClick={() => router.push(`/${locale}/dashboard`)} 
+                                    className="px-6 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-colors shadow-lg shadow-indigo-600/20"
+                                >
+                                    Ir al Dashboard
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                            Completado
+                        </p>
+                    )}
                 </div>
             ) : (
                 <div className="space-y-4">
