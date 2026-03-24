@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/auth/server";
-import { getUserSubscription, isProUser, ensureTrialEnrollment, getUserPlanStatus } from "@/lib/payments/subscription";
+import { getUserSubscription, isProUser, getUserPlanStatus } from "@/lib/payments/subscription";
 import { trackEvent } from "@/lib/analytics";
 
 export async function GET() {
@@ -12,8 +12,6 @@ export async function GET() {
             return NextResponse.json({ plan: "free", isPro: false });
         }
 
-        // Automatic Enrollment for new users
-        await ensureTrialEnrollment(user.id);
 
         const sub = await getUserSubscription(user.id);
         const fullStatus = await getUserPlanStatus(user.id);

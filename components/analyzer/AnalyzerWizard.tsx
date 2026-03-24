@@ -315,23 +315,13 @@ export default function AnalyzerWizard() {
         try {
             const { data: { user } } = await (await import("@/lib/auth/client")).createClient().auth.getUser();
             if (user) {
-                const { getUserPlanStatus } = await import("@/lib/payments/subscription");
-                const plan = await getUserPlanStatus(user.id);
-                
-                if (plan.plan === "free" && !plan.trial_start) {
-                    // Activate 30-day trial
-                    const supabase = (await import("@/lib/auth/client")).createClient();
-                    const trialStart = new Date();
-                    const trialEnd = new Date();
-                    trialEnd.setDate(trialStart.getDate() + 30);
-                    
-                    await supabase.from("user_plans").upsert({
-                        user_id: user.id,
-                        plan_type: "pro_trial",
-                        trial_start: trialStart.toISOString(),
-                        trial_end: trialEnd.toISOString()
-                    });
-                    console.log("Pro trial activated for user:", user.id);
+                const res = await fetch(`/${locale}/api/user/trial`, { method: "POST" });
+                const data = await res.json();
+                if (data.ok && data.isPro) {
+                    setIsPro(true);
+                    if (data.enrolledJustNow) {
+                        console.log("Pro trial activated for user:", user.id);
+                    }
                 }
             }
         } catch (e) {

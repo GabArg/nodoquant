@@ -874,6 +874,29 @@
             "title": "Reporte Completo",
             "subtitle": "Análisis cuantitativo",
             "sentTo": "Reporte enviado a",
+            "visualizations": {
+                "title": "Visualizaciones de Rendimiento",
+                "tradesDistribution": "Distribución de trades (P&L)",
+                "winners": "Ganadores",
+                "losers": "Perdedores"
+            },
+            "stability": {
+                "title": "Estabilidad del Edge en el Tiempo",
+                "subtitle": "Monitoreo de la consistencia del rendimiento en muestras recientes."
+            },
+            "health": {
+                "title": "Estado de Salud del Edge",
+                "stable": "Edge Estable",
+                "moderate": "Deriva Moderada",
+                "drift": "Alta Degradación",
+                "score": "Puntaje de Salud"
+            },
+            "evolution": {
+                "title": "Evolución de la Estrategia",
+                "desc": "Monitoreo de cómo cambia tu rendimiento estadístico a lo largo del tiempo.",
+                "reqTrades": "Requiere al menos {count} operaciones para un análisis válido",
+                "lastX": "Últimos {count}"
+            },
             "diagnosis": {
                 "title": "Diagnóstico de la Estrategia",
                 "verdict": "Veredicto:",
@@ -962,7 +985,7 @@
                     "trades": "trades"
                 }
             },
-            "visualizations": "Visualizaciones",
+
             "actions": {
                 "title": "Siguientes pasos",
                 "contextGood": "Tu estrategia muestra una ventaja estadística sólida. Estas herramientas pueden ayudarte a validar y escalar este rendimiento.",
@@ -987,23 +1010,7 @@
                 "profitFactor": "Profit Factor",
                 "sampleSize": "Trades analizados"
             },
-            "disclaimer": "Los resultados del análisis son históricos y no garantizan performance futura. El backtesting tiene limitaciones inherentes. Siempre opera con capital que puedes permitirte perder.",
-            "stability": {
-                "title": "Estabilidad del Edge en el Tiempo",
-                "subtitle": "Compara el rendimiento reciente con el histórico para detectar la degradación de la estrategia.",
-                "evolution": {
-                    "title": "Evolución de la Estrategia",
-                    "desc": "Rastrea cómo cambia tu rendimiento estadístico a lo largo del tiempo con diferentes tamaños de muestra.",
-                    "reqTrades": "Requiere al menos {count} operaciones para un análisis válido"
-                },
-                "health": {
-                    "title": "Estado de Salud del Edge",
-                    "stable": "Edge Estable",
-                    "moderate": "Deriva Moderada",
-                    "drift": "Alta Decadencia",
-                    "score": "Puntaje de Salud"
-                }
-            }
+            "disclaimer": "Los resultados del análisis son históricos y no garantizan performance futura. El backtesting tiene limitaciones inherentes. Siempre opera con capital que puedes permitirte perder."
         },
         "upload": {
             "dropzone": "Arrastra y suelta tu archivo CSV aquí",
@@ -1158,9 +1165,11 @@
             },
             "nextSteps": {
                 "title": "Siguiente Paso Sugerido",
-                "positive": "Ejecuta una prueba de estrés de Monte Carlo para validar el rendimiento en condiciones extremas.",
-                "inconclusive": "Analiza un conjunto de datos más grande para mejorar la confianza estadística.",
-                "negative": "Revisa las reglas de entrada/salida y la gestión de riesgos antes de operar en real."
+                "strongEdge": "Ejecuta una simulación de Prop Firm para ver si tu estrategia es escalable a nivel profesional.",
+                "weakEdge": "Realiza una inmersión profunda en las operaciones perdedoras para perfeccionar tus criterios de entrada.",
+                "unstableEdge": "Reduce el tamaño de las posiciones hasta que el rendimiento se estabilice en las próximas 30 operaciones.",
+                "noEdge": "Revisa tu lógica central; los datos actuales sugieren una ventaja negativa.",
+                "insufficientSample": "Continúa operando con riesgo mínimo hasta alcanzar de 50 a 100 operaciones."
             },
             "tooltips": {
                 "score": "El Puntaje de Estrategia combina métricas como el Factor de Beneficio y la Expectancia para evaluar la calidad.",
@@ -1609,127 +1618,7 @@
             "shareTextX": "Mi estrategia de trading obtuvo un puntaje de {score}/100 en NodoQuant.\n\nWin Rate: {wr}%\nProfit Factor: {pf}\nTrades analizados: {count}\n\nAnaliza tu estrategia:\nhttps://nodoquant.com/analyzer",
             "shareTextWhatsapp": "¡Mi estrategia obtuvo {score}/100 en NodoQuant! Mírala acá: {url}"
         },
-        "report": {
-            "title": "Reporte Completo",
-            "subtitle": "Análisis cuantitativo",
-            "sentTo": "Reporte enviado a",
-            "visualizations": {
-                "title": "Visualizaciones de Rendimiento",
-                "tradesDistribution": "Distribución de trades (P&L)",
-                "winners": "Ganadores",
-                "losers": "Perdedores"
-            },
-            "disclaimer": "Los resultados del análisis son históricos y no garantizan performance futura. El backtesting tiene limitaciones inherentes. Siempre opera con capital que puedes permitirte perder.",
-            "diagnosis": {
-                "title": "Diagnóstico de la Estrategia",
-                "scoreTitle": "Puntaje de Estrategia",
-                "scoreSubtitle": "Evaluación estadística de tu estrategia basada en la distribución de trades, métricas de rentabilidad y riesgo.",
-                "verdict": "Veredicto:",
-                "strongEdge": "Ventaja Fuerte",
-                "weakEdge": "Ventaja Débil",
-                "noEdge": "Sin Ventaja",
-                "unstableEdge": "Borde Inestable",
-                "insufficientSample": "Muestra Insuficiente",
-                "strongDesc": "Tu estrategia muestra una esperanza matemática positiva y un factor de beneficio consistente en una muestra suficiente.",
-                "weakDesc": "La estrategia muestra esperanza positiva pero la confianza estadística es limitada.",
-                "noDesc": "Esta estrategia no demuestra una ventaja estadística confiable.",
-                "unstableDesc": "La estrategia muestra señales positivas pero la estabilidad es inconsistente.",
-                "insufficientDesc": "Se requieren al menos 30 trades para un diagnóstico estadísticamente significativo.",
-                "edgeContext": "La Confianza del Edge estima qué tan probable es que la rentabilidad se deba a la habilidad y no al azar."
-            },
-            "keySignals": {
-                "title": "Señales Clave",
-                "expectancy": "Expectativa",
-                "profitFactor": "Profit Factor",
-                "winRate": "Win Rate",
-                "maxDrawdown": "Max Drawdown",
-                "sampleSize": "Trades analizados",
-                "tooltips": {
-                    "expectancy": "Beneficio/pérdida promedio por trade. Un valor positivo es esencial.",
-                    "profitFactor": "Beneficio bruto total dividido por pérdida bruta total. > 1.5 es nivel profesional.",
-                    "winRate": "Porcentaje de trades ganadores. Debe equilibrarse con el ratio riesgo/beneficio.",
-                    "maxDrawdown": "La mayor caída desde un pico a un valle. Crítico para la gestión de riesgo.",
-                    "sampleSize": "Número de trades analizados. Muestras más grandes brindan mayor confianza."
-                }
-            },
-            "riskOverview": {
-                "title": "Resumen de Riesgo",
-                "maxDrawdown": "Max Drawdown",
-                "riskOfRuin": "Riesgo de Ruina",
-                "sharpe": "Ratio de Sharpe",
-                "skewness": "Asimetría (Riesgo de Cola)",
-                "recoveryFactor": "Factor de Recuperación"
-            },
-            "stability": {
-                "title": "Estabilidad del Edge en el Tiempo",
-                "subtitle": "Monitoreo de la consistencia del rendimiento en muestras recientes."
-            },
-            "health": {
-                "title": "Estado de Salud del Edge",
-                "stable": "Edge Estable",
-                "moderate": "Deriva Moderada",
-                "drift": "Alta Degradación",
-                "score": "Puntaje de Salud"
-            },
-            "monteCarlo": {
-                "title": "Análisis de Riesgo Avanzado (PRO)",
-                "worstCase": "Peor caso (P5)",
-                "averageCase": "Caso promedio (mediana)",
-                "bestCase": "Mejor caso (P95)",
-                "maxDrawdown": "Max. Drawdown (P5)",
-                "labels": {
-                    "worst": "Peor Caso (P5)",
-                    "average": "Caso Promedio",
-                    "best": "Mejor Caso (P95)",
-                    "riskOfRuin": "Riesgo de Ruina",
-                    "initial": "Inicial",
-                    "operation": "Operación"
-                },
-                "desc": "Simula miles de posibles resultados futuros y comprende los drawdowns del peor de los casos antes de arriesgar capital real."
-            },
-            "propFirm": {
-                "title": "Preparación para Prop Firm (PRO)",
-                "subtitle": "Verifica si tu estrategia puede superar las reglas de las empresas de fondeo antes de arriesgar una cuenta de desafío real.",
-                "cta": "Correr Simulación de Desafío"
-            },
-            "pro": {
-                "label": "Función PRO",
-                "lockedTitle": "Inteligencia Profunda Bloqueada",
-                "lockedDesc": "Desbloquea el análisis de riesgo avanzado para simular miles de trayectorias futuras y estimar peores escenarios.",
-                "upgradeCta": "Empezar Prueba PRO",
-                "upgradeSubtitle": "30 días gratis"
-            },
-            "actions": {
-                "title": "Próximos pasos",
-                "copySummary": "Copiar Resumen",
-                "copySuccess": "¡Copiado!",
-                "downloadCert": "Descargar Certificado",
-                "propFirmSim": "Simulación de Prop Firm Challenge (PRO)",
-                "propFirmSubtitle": "Evalúa si esta estrategia sobreviviría a las reglas comunes de empresas de fondeo.",
-                "compare": "Comparar Estrategias",
-                "publish": "Publicar Estrategia"
-            },
-            "sharing": {
-                "shareX": "Compartir en X"
-            },
-            "share": {
-                "title": "Análisis de Estrategia NodoQuant"
-            },
-            "evolution": {
-                "title": "Evolución de la Estrategia",
-                "desc": "Monitoreo de cómo cambia tu rendimiento estadístico a lo largo del tiempo.",
-                "reqTrades": "Requiere al menos {count} operaciones para un análisis válido",
-                "lastX": "Últimos {count}"
-            },
-            "proBenefits": {
-                "title": "Desbloquea Inteligencia de Estrategia Avanzada",
-                "monteCarlo": "Simulación Monte Carlo",
-                "propFirm": "Simulador de Prop Firm Challenge",
-                "comparison": "Comparación de Estrategias",
-                "storage": "Almacenamiento de Estrategias",
-                "sharing": "Compartir en Redes"
-            }
-        },
+
         "metrics": {
             "title": "Métricas Clave",
             "winrate": {
