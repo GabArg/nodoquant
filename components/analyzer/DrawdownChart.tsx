@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
     data: number[];
 }
 
 export default function DrawdownChart({ data }: Props) {
+    const t = useTranslations("analyzer.charts");
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     // Filter/Downsample data for performance if it's very large
@@ -87,7 +89,7 @@ export default function DrawdownChart({ data }: Props) {
 
     return (
         <div className="w-full">
-            <p className="text-xs font-medium mb-2" style={{ color: "#6b7280" }}>Curva de Drawdown (%)</p>
+            <p className="text-xs font-medium mb-2" style={{ color: "#6b7280" }}>{t("drawdownCurve")}</p>
             <canvas ref={canvasRef} style={{ width: "100%", height: "140px", display: "block" }} />
         </div>
     );

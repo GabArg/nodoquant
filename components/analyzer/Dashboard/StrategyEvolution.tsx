@@ -58,9 +58,9 @@ export default function StrategyEvolution({ evolution }: Props) {
             </div>
 
             <div className="flex gap-3">
-                <EvolColumn label="Last 100" metrics={evolution?.last100} req={100} />
-                <EvolColumn label="Last 50" metrics={evolution?.last50} req={50} />
-                <EvolColumn label="Last 30" metrics={evolution?.last30} req={30} />
+                <EvolColumn label={t("evolution.lastX", { count: 100 })} metrics={evolution?.last100} req={100} />
+                <EvolColumn label={t("evolution.lastX", { count: 50 })} metrics={evolution?.last50} req={50} />
+                <EvolColumn label={t("evolution.lastX", { count: 30 })} metrics={evolution?.last30} req={30} />
             </div>
         </div>
     );

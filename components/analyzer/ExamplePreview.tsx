@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { SAMPLE_STRATEGIES, type SampleStrategy } from "@/lib/sampleDatasets";
+import { useTranslations } from "next-intl";
 
 interface Props {
     onTryWithData: () => void;
@@ -89,10 +90,11 @@ function MiniEquityChart({ data, color }: { data: number[]; color: string }) {
 }
 
 function ScoreRing({ score, color }: { score: number; color: string }) {
+    const t = useTranslations("analyzer.preview");
     return (
         <div className="flex flex-col items-center">
             <div className="text-3xl font-black tabular-nums" style={{ color }}>{score}</div>
-            <div className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#6b7280" }}>Puntaje</div>
+            <div className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#6b7280" }}>{t("score")}</div>
         </div>
     );
 }
@@ -114,6 +116,7 @@ function StrategyTab({ strategy, active, onClick }: { strategy: SampleStrategy; 
 }
 
 export default function ExamplePreview({ onTryWithData }: Props) {
+    const t = useTranslations("analyzer.preview");
     const [activeId, setActiveId] = useState(SAMPLE_STRATEGIES[0].id);
     const strategy = SAMPLE_STRATEGIES.find((s) => s.id === activeId) ?? SAMPLE_STRATEGIES[0];
     const { metrics, equityCurve, color, name, description } = strategy;
@@ -126,8 +129,8 @@ export default function ExamplePreview({ onTryWithData }: Props) {
                 {/* Header with tabs */}
                 <div className="px-5 pt-5 pb-3 flex items-center justify-between flex-wrap gap-3">
                     <div className="flex items-center gap-2">
-                        <span className="badge badge-soon text-xs">Demo</span>
-                        <p className="text-sm font-medium text-white">Ejemplos de Estrategias</p>
+                        <span className="badge badge-soon text-xs">{t("demo")}</span>
+                        <p className="text-sm font-medium text-white">{t("strategyExamples")}</p>
                     </div>
                     <div className="flex items-center gap-2">
                         {SAMPLE_STRATEGIES.map((s) => (
@@ -156,10 +159,10 @@ export default function ExamplePreview({ onTryWithData }: Props) {
                 <div className="grid grid-cols-4 gap-0 mx-5 mb-4 rounded-xl overflow-hidden"
                     style={{ border: "1px solid rgba(255,255,255,0.06)" }}>
                     {[
-                        { label: "Winrate", value: `${metrics.winrate}%` },
-                        { label: "Profit Factor", value: metrics.profitFactor.toFixed(2) },
-                        { label: "Max Drawdown", value: `${metrics.maxDrawdown}%` },
-                        { label: "Expectancy", value: `+${metrics.expectancy.toFixed(2)}R` },
+                        { label: t("winrate"), value: `${metrics.winrate}%` },
+                        { label: t("profitFactor"), value: metrics.profitFactor.toFixed(2) },
+                        { label: t("maxDrawdown"), value: `${metrics.maxDrawdown}%` },
+                        { label: t("expectancy"), value: `+${metrics.expectancy.toFixed(2)}R` },
                     ].map((m) => (
                         <div key={m.label}
                             className="px-3 py-3 text-center"
@@ -178,10 +181,10 @@ export default function ExamplePreview({ onTryWithData }: Props) {
                 {/* CTA */}
                 <div className="px-5 py-4" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
                     <p className="text-xs mb-3" style={{ color: "#6b7280" }}>
-                        Subí tu historial y descubrí tu ventaja real:
+                        {t("uploadPrompt")}
                     </p>
                     <div className="flex flex-wrap gap-2 mb-4">
-                        {["Win Rate", "Profit Factor", "Max Drawdown", "Monte Carlo", "Sim. Prop Firm"].map((f) => (
+                        {[t("winrate"), t("profitFactor"), t("maxDrawdown"), t("monteCarlo"), t("simPropFirm")].map((f) => (
                             <span key={f} className="text-xs px-2.5 py-1 rounded-full"
                                 style={{
                                     background: "rgba(99,102,241,0.08)",
@@ -193,7 +196,7 @@ export default function ExamplePreview({ onTryWithData }: Props) {
                         ))}
                     </div>
                     <button onClick={onTryWithData} className="btn-primary w-full justify-center">
-                        Probar con mis propios datos
+                        {t("tryOwnData")}
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M5 12h14M12 5l7 7-7 7" />
                         </svg>

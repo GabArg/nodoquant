@@ -49,13 +49,14 @@ export default function StrategyScoreSection() {
                     </div>
                 </div>
 
-                <div className="mt-20 text-center animate-fade-in">
+                <div className="mt-20 text-center animate-fade-in flex flex-col items-center">
                     <a href="/analyzer" className="btn-primary border-none inline-flex items-center gap-3 px-10 py-5 text-sm font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-xl shadow-indigo-500/30">
                         {tCommon("analyzeCta")}
                         <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
                     </a>
+                    <p className="mt-4 text-[11px] font-bold text-gray-500 uppercase tracking-[0.15em]">{tCommon("ctaSubtext")}</p>
                 </div>
             </div>
         </section>

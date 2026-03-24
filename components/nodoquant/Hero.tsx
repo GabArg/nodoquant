@@ -21,12 +21,8 @@ export default function Hero() {
                         </p>
 
                         {/* H1 */}
-                        <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter text-white mb-8 animate-slide-up leading-[0.95] max-w-[760px]">
-                            {t("title").split(".").map((part, i) => (
-                                <span key={i} className={i === 1 ? "text-indigo-500 block sm:inline" : ""}>
-                                    {part}{i === 0 ? ". " : ""}
-                                </span>
-                            ))}
+                        <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter text-white mb-8 animate-slide-up leading-[0.95] max-w-[800px]">
+                            {t("title")}
                         </h1>
 
                         {/* Subtitle / H2 */}
@@ -46,6 +42,16 @@ export default function Hero() {
                                 <span className="opacity-60 group-hover:opacity-100 transition-opacity">🧪</span>
                                 {t("ctaSample")}
                             </a>
+                        </div>
+                        
+                        {/* Final Trust Microcopy */}
+                        <div className="flex flex-col mb-10 -mt-6 animate-fade-in pl-1">
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1.5">
+                                {t("ctaMicrocopy")}
+                            </p>
+                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em]">
+                                {tCommon("trustSupport")}
+                            </p>
                         </div>
 
                         {/* Microcopy / Trust Signals */}

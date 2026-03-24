@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 
 interface ReportMetrics {
     winrate: number;
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export default function EdgeAlerts({ latestReport }: Props) {
+    const t = useTranslations("analyzer.edgeAlerts");
     if (!latestReport) return null;
 
     const alerts: { type: "edge" | "risk" | "consistency", message: string, color: string, icon: string }[] = [];
@@ -28,9 +30,9 @@ export default function EdgeAlerts({ latestReport }: Props) {
     // 1. Edge Location Alert
     const edge = latestReport.metrics_json?.edge_location;
     if (edge?.bestSymbol || edge?.bestSession) {
-        let msg = "Tu estrategia ";
-        if (edge.bestSymbol) msg += `tiene su mayor rentabilidad en ${edge.bestSymbol}`;
-        if (edge.bestSession) msg += edge.bestSymbol ? ` durante la sesión de ${edge.bestSession}.` : `rinde mejor en la sesión de ${edge.bestSession}.`;
+        let msg = t("edge.intro");
+        if (edge.bestSymbol) msg += t("edge.symbol", { symbol: edge.bestSymbol });
+        if (edge.bestSession) msg += edge.bestSymbol ? t("edge.session", { session: edge.bestSession }) : t("edge.sessionOnly", { session: edge.bestSession });
 
         alerts.push({
             type: "edge",
@@ -43,7 +45,7 @@ export default function EdgeAlerts({ latestReport }: Props) {
         if (latestReport.profit_factor > 1.5) {
             alerts.push({
                 type: "edge",
-                message: `Tenés una ventaja (Edge) estadísticamente sólida con un Profit Factor de ${latestReport.profit_factor.toFixed(2)}.`,
+                message: t("edge.generic", { pf: latestReport.profit_factor.toFixed(2) }),
                 color: "text-indigo-400 border-indigo-500/20 bg-indigo-500/5",
                 icon: "🎯"
             });
@@ -54,7 +56,7 @@ export default function EdgeAlerts({ latestReport }: Props) {
     if (Math.abs(latestReport.max_drawdown) > 20) {
         alerts.push({
             type: "risk",
-            message: `Alerta de Riesgo: Tu Max Drawdown del ${Math.abs(latestReport.max_drawdown).toFixed(1)}% está indicando un riesgo elevado de ruina. Considerá bajar el apalancamiento.`,
+            message: t("risk.maxDrawdownWarning", { limit: Math.abs(latestReport.max_drawdown).toFixed(1) }),
             color: "text-amber-400 border-amber-500/20 bg-amber-500/5",
             icon: "⚠️"
         });
@@ -70,14 +72,14 @@ export default function EdgeAlerts({ latestReport }: Props) {
         if (endVal < startVal) {
             alerts.push({
                 type: "consistency",
-                message: "Tus últimos 20 trades muestran una expectativa declinante. Puede que el mercado haya cambiado de régimen o estés desalineado con tu plan.",
+                message: t("consistency.declining"),
                 color: "text-red-400 border-red-500/20 bg-red-500/5",
                 icon: "📉"
             });
         } else if (endVal > startVal * 1.05) {
             alerts.push({
                 type: "consistency",
-                message: "Buena consistencia: La curva de las últimas 20 operaciones se mantiene fuerte y estable.",
+                message: t("consistency.stable"),
                 color: "text-emerald-400 border-emerald-500/20 bg-emerald-500/5",
                 icon: "📈"
             });
@@ -90,7 +92,7 @@ export default function EdgeAlerts({ latestReport }: Props) {
 
     return (
         <div className="space-y-3">
-            <h3 className="text-sm font-bold text-white mb-4">Edge Alerts</h3>
+            <h3 className="text-sm font-bold text-white mb-4">{t("title")}</h3>
             {alerts.map((alert, i) => (
                 <div key={i} className={`card rounded-xl p-4 border flex gap-3 ${alert.color}`}>
                     <span className="text-xl shrink-0 leading-none">{alert.icon}</span>

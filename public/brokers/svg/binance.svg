@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 48" fill="none" height="48">
+  <!-- Binance diamond icon -->
+  <g fill="#ffffff" transform="translate(0,2)">
+    <!-- center diamond -->
+    <polygon points="24,3 31,10 24,17 17,10" />
+    <!-- top diamond -->
+    <polygon points="24,0 27,3 24,6 21,3" />
+    <!-- bottom diamond -->
+    <polygon points="24,38 27,41 24,44 21,41" />
+    <!-- left diamond -->
+    <polygon points="10,17 13,20 10,23 7,20" />
+    <!-- right diamond -->
+    <polygon points="38,17 41,20 38,23 35,20" />
+    <!-- bottom-left -->
+    <polygon points="17,27 24,20 31,27 24,34" />
+  </g>
+  <!-- BINANCE text -->
+  <text x="56" y="32" font-family="Arial, sans-serif" font-weight="700" font-size="22" fill="#ffffff" letter-spacing="1">BINANCE</text>
+</svg>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import StrategyScoreCard from "./StrategyScoreCard";
 import MetricsGrid from "./MetricsGrid";
 import EquityCurveChart from "./EquityCurveChart";
@@ -13,6 +14,7 @@ interface TradingEdgeReportProps {
 }
 
 export default function TradingEdgeReport({ reportId }: TradingEdgeReportProps) {
+    const t = useTranslations("analyzer.tradingEdgeReport");
     const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -22,12 +24,12 @@ export default function TradingEdgeReport({ reportId }: TradingEdgeReportProps) 
             try {
                 const res = await fetch(`/api/analyzer/report/${reportId}`);
                 if (!res.ok) {
-                    throw new Error("No se pudo cargar el reporte. Verifica el enlace o ID.");
+                    throw new Error(t("fetchError"));
                 }
                 const json = await res.json();
                 setData(json.data);
             } catch (err: any) {
-                setError(err.message || "Error cargando el dashboard.");
+                setError(err.message || t("loadError"));
             } finally {
                 setLoading(false);
             }
@@ -49,7 +51,7 @@ export default function TradingEdgeReport({ reportId }: TradingEdgeReportProps) 
     if (error || !data) {
         return (
             <div className="p-6 bg-red-900/20 border border-red-500/50 rounded-xl text-red-400 text-center">
-                {error || "Reporte no encontrado."}
+                {error || t("notFound")}
             </div>
         );
     }
@@ -60,19 +62,19 @@ export default function TradingEdgeReport({ reportId }: TradingEdgeReportProps) 
         <div className="space-y-8 animate-fade-in w-full max-w-6xl mx-auto">
             {/* Header / Share CTA */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/5 pb-4">
-                <h2 className="text-2xl font-bold text-white tracking-tight">Strategy Analytics</h2>
+                <h2 className="text-2xl font-bold text-white tracking-tight">{t("title")}</h2>
                 <ShareReportButton reportId={reportId} />
             </div>
 
             {/* Validations */}
             {metrics.total_trades < 30 && (
                 <div className="p-4 rounded-xl text-sm" style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", color: "#fca5a5" }}>
-                    <strong>Aviso de Fiabilidad Estadística:</strong> Este análisis se basa en {metrics.total_trades} trades. Estadísticamente, se requieren al menos 30 trades para que las métricas (como el Expectancy) dejen de ser ruido aleatorio puro.
+                    {t.rich('reliabilityWarning', { count: metrics.total_trades, bold: (chunks) => <strong>{chunks}</strong> })}
                 </div>
             )}
             {metrics.total_trades >= 30 && metrics.total_trades < 100 && (
                 <div className="p-4 rounded-xl text-sm" style={{ background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.2)", color: "#fcd34d" }}>
-                    <strong>Aviso de Confianza Limitada:</strong> Analizando {metrics.total_trades} trades. Aunque supera el mínimo matemático, la industria cuantitativa recomienda una muestra mayor a 100 operaciones para confirmar una ventaja real.
+                    {t.rich('confidenceWarning', { count: metrics.total_trades, bold: (chunks) => <strong>{chunks}</strong> })}
                 </div>
             )}
 

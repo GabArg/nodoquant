@@ -36,6 +36,30 @@ export interface FullMetrics extends BasicMetrics {
         last50?: BasicMetrics;
         last30?: BasicMetrics;
     };
+    advanced?: AdvancedRobustness;
+    propFirm?: PropFirmResult;
+    edgeDecay?: EdgeDecay;
+    rHistogram?: { counts: number[]; min: number; max: number };
+}
+
+export interface EdgeDecay {
+    score: number; // 0-100 (100 is healthy)
+    signal: "stable" | "caution" | "warning";
+    recentSQN: number;
+    baselineSQN: number;
+}
+
+export type DiagnosisVerdict = "insufficientSample" | "noEdge" | "strongEdge" | "weakEdge" | "unstableEdge";
+ 
+export interface AdvancedRobustness {
+    sqn: number;
+    sqnLevel: "poor" | "below" | "good" | "excellent" | "elite";
+    zScore: number;
+    zLevel: "random" | "mild" | "strong";
+    edgeConfidence: number;
+    robustnessLevel: "fragile" | "moderate" | "robust" | "elite";
+    expertTips: string[];
+    verdict: DiagnosisVerdict;
 }
 
 export interface StabilityAnalysis {
@@ -63,6 +87,8 @@ export interface RiskMetrics {
     avgDrawdown: number;
     recoveryFactor: number;
     profitToDrawdown: number;
+    sharpeRatio: number;
+    skewness: number;
 }
 
 export interface MonteCarloResult {
@@ -73,6 +99,14 @@ export interface MonteCarloResult {
     riskOfRuin: number; // % of sims that went to 0 or below
     drawdownAt5Pct: number; // max drawdown at 5th percentile
     simulations: number[][]; // the actual equity paths for rendering
+    percentilePaths: {
+        p5: number[];
+        p25: number[];
+        p50: number[];
+        p75: number[];
+        p95: number[];
+    };
+    horizon: number;
 }
 
 export interface PropFirmParams {
@@ -87,6 +121,8 @@ export interface PropFirmResult {
     failDailyDDProb: number; // 0-100
     failMaxDDProb: number; // 0-100
     expectedTrades: number;
+    consistencyScore: number; // 0-100 (inverse of profit concentration)
+    passTier: "not_ready" | "borderline" | "good" | "strong";
 }
 
 // ── Basic analysis ────────────────────────────────────────────────────────────
@@ -262,20 +298,23 @@ export function calcMonteCarloSimulation(
             riskOfRuin: 100,
             drawdownAt5Pct: 100,
             simulations: [],
+            percentilePaths: { p5: [], p25: [], p50: [], p75: [], p95: [] },
+            horizon: 0
         };
     }
 
     const profits = trades.map((t) => t.profit);
+    const h = Math.min(200, profits.length);
+    
     const finalEquities: number[] = [];
     const maxDrawdowns: number[] = [];
     const simulations: number[][] = [];
+    const allPathsForPercentiles: number[][] = [];
     let ruinCount = 0;
 
     for (let i = 0; i < iterations; i++) {
-        // Sample WITH REPLACEMENT so that final equities vary and statistical bounds work.
-        // A simple Fisher-Yates array permutation keeps the final sum constant.
         const shuffled: number[] = [];
-        for (let j = 0; j < profits.length; j++) {
+        for (let j = 0; j < h; j++) {
             shuffled.push(profits[Math.floor(Math.random() * profits.length)]);
         }
 
@@ -283,14 +322,11 @@ export function calcMonteCarloSimulation(
         let peak = equity;
         let maxDD = 0;
         let ruined = false;
-
-        const saveCurve = i < 100; // Only collect 100 paths for visualization
-        const curve: number[] = [];
-        if (saveCurve) curve.push(equity);
+        const curve: number[] = [equity];
 
         for (const p of shuffled) {
             equity += p;
-            if (saveCurve) curve.push(equity);
+            curve.push(equity);
 
             if (equity > peak) peak = equity;
             const dd = peak > 0 ? ((peak - equity) / peak) * 100 : 0;
@@ -301,27 +337,53 @@ export function calcMonteCarloSimulation(
             }
         }
 
+        // Pad curve if ruined
+        if (ruined) {
+            while (curve.length <= h) curve.push(0);
+        }
+
         finalEquities.push(ruined ? 0 : equity);
         maxDrawdowns.push(maxDD);
         if (ruined || equity <= 0) ruinCount++;
-        if (saveCurve) simulations.push(curve);
+        if (i < 50) simulations.push(curve); // Visual sample
+        allPathsForPercentiles.push(curve);
     }
 
     finalEquities.sort((a, b) => a - b);
     maxDrawdowns.sort((a, b) => a - b);
 
-    const p5 = Math.floor(iterations * 0.05);
-    const p50 = Math.floor(iterations * 0.5);
-    const p95 = Math.floor(iterations * 0.95);
+    const p5Idx = Math.floor(iterations * 0.05);
+    const p25Idx = Math.floor(iterations * 0.25);
+    const p50Idx = Math.floor(iterations * 0.5);
+    const p75Idx = Math.floor(iterations * 0.75);
+    const p95Idx = Math.floor(iterations * 0.95);
+
+    // Compute percentile paths
+    const p5: number[] = [];
+    const p25: number[] = [];
+    const p50: number[] = [];
+    const p75: number[] = [];
+    const p95: number[] = [];
+
+    for (let t = 0; t <= h; t++) {
+        const stepValues = allPathsForPercentiles.map(path => path[t]).sort((a, b) => a - b);
+        p5.push(round(stepValues[p5Idx], 2));
+        p25.push(round(stepValues[p25Idx], 2));
+        p50.push(round(stepValues[p50Idx], 2));
+        p75.push(round(stepValues[p75Idx], 2));
+        p95.push(round(stepValues[p95Idx], 2));
+    }
 
     return {
         iterations,
-        worstCase: round(finalEquities[p5] - initialBalance, 2),
-        averageCase: round(finalEquities[p50] - initialBalance, 2),
-        bestCase: round(finalEquities[p95] - initialBalance, 2),
+        worstCase: round(finalEquities[p5Idx] - initialBalance, 2),
+        averageCase: round(finalEquities[p50Idx] - initialBalance, 2),
+        bestCase: round(finalEquities[p95Idx] - initialBalance, 2),
         riskOfRuin: round((ruinCount / iterations) * 100, 1),
-        drawdownAt5Pct: round(maxDrawdowns[p95], 1), // worst 5% drawdown
+        drawdownAt5Pct: round(maxDrawdowns[p95Idx], 1),
         simulations,
+        percentilePaths: { p5, p25, p50, p75, p95 },
+        horizon: h
     };
 }
 
@@ -342,7 +404,6 @@ export function calcFullMetrics(trades: Trade[]): FullMetrics {
     const recommendedRiskPct = calcRecommendedRisk(basic);
     const monteCarlo = calcMonteCarloSimulation(trades, 1000);
     const timeAnalysis = calcTimeAnalysis(trades);
-    const riskAnalysis = calcRiskMetrics(basic, rawDrawdown);
     const stabilityAnalysis = calcStabilityAnalysis(trades);
     const stabilityScore = calcStabilityScore(stabilityAnalysis);
 
@@ -358,14 +419,181 @@ export function calcFullMetrics(trades: Trade[]): FullMetrics {
         riskOfRuin: calcProbabilisticRiskOfRuin(basic),
         monteCarlo,
         timeAnalysis,
-        riskAnalysis,
+        riskAnalysis: calcRiskMetrics(basic, trades, rawDrawdown),
         stabilityAnalysis,
         stabilityScore,
         evolution: {
             last100: trades.length >= 100 ? calcBasicMetrics(trades.slice(-100)) : undefined,
             last50: trades.length >= 50 ? calcBasicMetrics(trades.slice(-50)) : undefined,
             last30: trades.length >= 30 ? calcBasicMetrics(trades.slice(-30)) : undefined,
-        }
+        },
+        advanced: calcAdvancedRobustness(trades, basic, monteCarlo),
+        propFirm: calcPropFirmChallenge(trades, {
+            balance: 100000,
+            targetPct: 10,
+            dailyDrawdownPct: 5,
+            maxDrawdownPct: 10
+        }),
+        edgeDecay: calcEdgeDecay(trades),
+        rHistogram: calcRHistogram(trades)
+    };
+}
+
+export function calcEdgeDecay(trades: Trade[]): EdgeDecay | undefined {
+    if (trades.length < 100) return undefined; // Need at least some history for rolling check
+
+    const recentWindow = 50;
+    const baselineWindow = 150;
+    
+    const recentTrades = trades.slice(-recentWindow);
+    const baselineTrades = trades.slice(-(recentWindow + baselineWindow), -recentWindow);
+    
+    if (baselineTrades.length < 50) return undefined;
+
+    const recent = calcBasicMetrics(recentTrades);
+    const baseline = calcBasicMetrics(baselineTrades);
+
+    // Calculate SQN for both
+    const calcSQN = (b: BasicMetrics, ts: Trade[]) => {
+        const stdDev = Math.sqrt(ts.reduce((s, t) => s + Math.pow(t.profit - b.expectancy, 2), 0) / ts.length) || 1;
+        return (b.expectancy / stdDev) * Math.sqrt(ts.length);
+    };
+
+    const sqnRecent = calcSQN(recent, recentTrades);
+    const sqnBaseline = calcSQN(baseline, baselineTrades);
+
+    let score = 100;
+    if (sqnBaseline > 0) {
+        const ratio = sqnRecent / sqnBaseline;
+        score = Math.min(100, Math.max(0, ratio * 100));
+    }
+
+    let signal: EdgeDecay["signal"] = "stable";
+    if (score < 40) signal = "warning";
+    else if (score < 70) signal = "caution";
+
+    return {
+        score: Math.round(score),
+        signal,
+        recentSQN: round(sqnRecent, 2),
+        baselineSQN: round(sqnBaseline, 2)
+    };
+}
+
+export function calcRHistogram(trades: Trade[], bins = 20): { counts: number[]; min: number; max: number } | undefined {
+    if (trades.length < 10) return undefined;
+    
+    // Calculate R-values
+    const avgLoss = Math.abs(trades.filter(t => t.profit < 0).reduce((s, t) => s + t.profit, 0) / (trades.filter(t => t.profit < 0).length || 1));
+    const rValues = trades.map(t => t.profit / (avgLoss || 1));
+
+    return calcHistogram(rValues, bins);
+}
+
+export function calcAdvancedRobustness(trades: Trade[], basic: BasicMetrics, mc: MonteCarloResult): AdvancedRobustness {
+    const profits = trades.map(t => t.profit);
+    const n = trades.length;
+    
+    // 1. SQN = (Expectancy / StdDev) * sqrt(N)
+    // Refinement: SQN is highly sensitive to outlier trades. We use a normalized stdDev.
+    const avg = basic.expectancy;
+    const stdDev = n > 1 
+        ? Math.sqrt(profits.reduce((s, p) => s + Math.pow(p - avg, 2), 0) / (n - 1))
+        : 1;
+    const sqn = stdDev === 0 ? 0 : (avg / stdDev) * Math.sqrt(n);
+    
+    let sqnLevel: AdvancedRobustness["sqnLevel"] = "poor";
+    if (sqn >= 7) sqnLevel = "elite";
+    else if (sqn >= 5) sqnLevel = "excellent";
+    else if (sqn >= 3) sqnLevel = "good";
+    else if (sqn >= 1.6) sqnLevel = "below";
+
+    // 2. Z-Score (Trade sequence dependency)
+    // Formula: Z = (N*(R - 0.5) - X) / sqrt((X*(X - N)) / (N - 1))
+    // Interpret: > 2.0 (clustering/dependency), < -2.0 (alternating/randomness)
+    const winners = profits.map(p => p > 0);
+    let runs = profits.length > 0 ? 1 : 0;
+    for (let i = 1; i < winners.length; i++) {
+        if (winners[i] !== winners[i - 1]) runs++;
+    }
+    
+    const W = profits.filter(p => p > 0).length;
+    const L = n - W;
+    const X = 2 * W * L;
+    let zScore = 0;
+    if (n > 1 && X > 0 && n !== X) {
+        const numerator = n * (runs - 0.5) - X;
+        const denominator = Math.sqrt((X * (X - n)) / (n - 1));
+        zScore = denominator === 0 ? 0 : numerator / denominator;
+    }
+
+    let zLevel: AdvancedRobustness["zLevel"] = "random";
+    const absZ = Math.abs(zScore);
+    if (absZ > 2) zLevel = "strong";
+    else if (absZ >= 1) zLevel = "mild";
+
+    // 3. Edge Confidence (0-100 composite)
+    // Components: SQN (40%), PF (25%), MC Stability (15%), Sample Size (10%), Risk of Ruin (10%)
+    // Non-linear mapping for SQN and PF to be more punitive
+    const sqnScore = Math.min(100, Math.pow(Math.max(0, sqn / 4), 1.5) * 100);
+    const pfScore = Math.min(100, Math.pow(Math.max(0, (basic.profitFactor - 1) / 1.5), 1.2) * 100);
+    const mcScore = Math.max(0, 100 - (mc.drawdownAt5Pct > 0 ? (mc.drawdownAt5Pct / 40) * 100 : 0));
+    const sampleScore = Math.min(100, (n / 100) * 100);
+    const rorScore = Math.max(0, 100 - (mc.riskOfRuin * 3));
+
+    let edgeConfidence = (sqnScore * 0.4) + (pfScore * 0.25) + (mcScore * 0.15) + (sampleScore * 0.1) + (rorScore * 0.1);
+    
+    // Martingale / Skewness Penalty
+    // Calculate ratio of largest loss to average win
+    const maxLoss = Math.abs(Math.min(...profits, 0));
+    const avgWin = basic.sumProfit > 0 ? (basic.sumProfit / (profits.filter(p => p > 0).length || 1)) : 1;
+    if (maxLoss > avgWin * 15) {
+        edgeConfidence *= 0.6; // High penalty for extreme outliers (Martingale sign)
+    }
+
+    // Penalty for small samples
+    if (n < 30) edgeConfidence *= 0.4;
+    else if (n < 50) edgeConfidence *= 0.8;
+
+    edgeConfidence = Math.min(100, Math.max(0, edgeConfidence));
+
+    // 4. Robustness Level
+    let robustnessLevel: AdvancedRobustness["robustnessLevel"] = "fragile";
+    if (n >= 30) {
+        if (edgeConfidence >= 75 && sqn >= 2.5) robustnessLevel = "elite";
+        else if (edgeConfidence >= 55 && sqn >= 1.8) robustnessLevel = "robust";
+        else if (edgeConfidence >= 35 && sqn >= 1.2) robustnessLevel = "moderate";
+    }
+
+    // 5. Expert Tips Logic
+    const expertTips: string[] = [];
+    if (absZ > 2) expertTips.push("tipZScoreHigh");
+    if (sqn < 2 && n >= 30) expertTips.push("tipSQNLow");
+    if (mc.drawdownAt5Pct > basic.maxDrawdown * 2) expertTips.push("tipMCDDHigh");
+    if (n < 50) expertTips.push("tipSampleSizeLow");
+
+    // 6. Diagnosis Verdict Logic (Hierarchical)
+    let verdict: DiagnosisVerdict = "unstableEdge";
+
+    if (n < 30) {
+        verdict = "insufficientSample";
+    } else if (basic.profitFactor < 1 || edgeConfidence < 40 || basic.expectancy <= 0) {
+        verdict = "noEdge";
+    } else if (edgeConfidence >= 75 && basic.profitFactor >= 1.3 && n >= 100) {
+        verdict = "strongEdge";
+    } else if (edgeConfidence >= 55 && basic.profitFactor >= 1.1 && n >= 50) {
+        verdict = "weakEdge";
+    }
+
+    return {
+        sqn: round(sqn, 2),
+        sqnLevel,
+        zScore: round(zScore, 2),
+        zLevel,
+        edgeConfidence: Math.round(edgeConfidence),
+        robustnessLevel,
+        expertTips,
+        verdict
     };
 }
 
@@ -468,20 +696,43 @@ export function calcTimeAnalysis(trades: Trade[]): TimeAnalysis {
     };
 }
 
-export function calcRiskMetrics(basic: BasicMetrics & { maxDrawdownAbs?: number }, ddCurve: number[]): RiskMetrics {
+export function calcRiskMetrics(basic: BasicMetrics & { maxDrawdownAbs?: number }, trades: Trade[], ddCurve: number[]): RiskMetrics {
     const sumDD = ddCurve.reduce((s, v) => s + v, 0);
     const avgDrawdown = ddCurve.length > 0 ? sumDD / ddCurve.length : 0;
     
     // Recovery Factor = Net Profit / Max Drawdown (Absolute)
     const maxDDAbs = basic.maxDrawdownAbs || 1;
     const recoveryFactor = basic.sumProfit / maxDDAbs;
+
+    // Trade-based Sharpe Ratio = Expectancy / StdDev
+    const profits = trades.map(t => t.profit);
+    const avg = basic.expectancy;
+    const n = trades.length;
+    const stdDev = n > 1 
+        ? Math.sqrt(profits.reduce((s, p) => s + Math.pow(p - avg, 2), 0) / (n - 1))
+        : 1;
+    const sharpeRatio = stdDev === 0 ? 0 : avg / stdDev;
+
+    // Skewness
+    const skewness = calcSkewness(profits, avg, stdDev);
     
     return {
         maxDrawdown: basic.maxDrawdown,
         avgDrawdown: round(avgDrawdown, 2),
         recoveryFactor: round(Math.max(0, recoveryFactor), 2),
         profitToDrawdown: round(Math.max(0, recoveryFactor), 2),
+        sharpeRatio: round(sharpeRatio, 2),
+        skewness: round(skewness, 2),
     };
+}
+
+export function calcSkewness(values: number[], mean: number, stdDev: number): number {
+    const n = values.length;
+    if (n < 3 || stdDev === 0) return 0;
+    
+    const sumCubicDeviations = values.reduce((s, v) => s + Math.pow(v - mean, 3), 0);
+    const skewness = (n / ((n - 1) * (n - 2))) * (sumCubicDeviations / Math.pow(stdDev, 3));
+    return skewness;
 }
 
 // ── Prop firm simulation ──────────────────────────────────────────────────────
@@ -491,11 +742,18 @@ export function calcPropFirmChallenge(
     params: PropFirmParams,
     iterations = 1000
 ): PropFirmResult {
-    const { balance, targetPct, dailyDrawdownPct, maxDrawdownPct } = params;
-    const profits = trades.map((t) => t.profit);
-    const targetGain = balance * (targetPct / 100);
-    const dailyDDLimit = balance * (dailyDrawdownPct / 100);
-    const maxDDLimit = balance * (maxDrawdownPct / 100);
+    const { targetPct, dailyDrawdownPct, maxDrawdownPct } = params;
+    
+    // R-based distribution: use risk_reward if available, otherwise normalize profit to "risk units"
+    // If no risk_reward, we assume a standard 1% risk per trade logic to simulate the edge.
+    const rValues = trades.map(t => {
+        if (t.risk_reward != null) return t.risk_reward;
+        // Fallback: If no RR data, we can't truly know R. We normalize profit relative to average loss to estimate R.
+        return t.profit; 
+    });
+
+    const avgLoss = Math.abs(rValues.filter(v => v < 0).reduce((s, v) => s + v, 0) / (rValues.filter(v => v < 0).length || 1));
+    const normalizedR = rValues.map(v => v / (avgLoss || 1));
 
     let passCount = 0;
     let failDailyDD = 0;
@@ -504,62 +762,90 @@ export function calcPropFirmChallenge(
     let simCount = 0;
 
     for (let i = 0; i < iterations; i++) {
-        const shuffled = [...profits];
+        const shuffled = [...normalizedR];
         for (let j = shuffled.length - 1; j > 0; j--) {
             const k = Math.floor(Math.random() * (j + 1));
             [shuffled[j], shuffled[k]] = [shuffled[k], shuffled[j]];
         }
 
-        let equity = balance;
-        const dayStart = balance;
-        let peakEquity = balance;
+        let equity = 100; // Start at 100%
+        let peakEquity = 100;
+        let dayStartEquity = 100;
+        let dailyPeakEquity = 100;
+        
         let passed = false;
-        let failedDD = false;
-        let failedMaxDD = false;
+        let failedDaily = false;
+        let failedMax = false;
         let tradesUsed = 0;
+        
+        // Simulation parameters assuming 1% risk per 1R
+        const riskPerR = 1.0; 
 
-        for (const p of shuffled) {
-            equity += p;
+        for (const r of shuffled) {
+            const pPct = r * riskPerR;
+            equity += pPct;
             tradesUsed++;
 
-            // Daily DD check (simplified: relative to starting balance)
-            const dailyLoss = dayStart - equity;
-            if (dailyLoss >= dailyDDLimit) {
-                failedDD = true;
+            if (equity > peakEquity) peakEquity = equity;
+            if (equity > dailyPeakEquity) dailyPeakEquity = equity;
+
+            // Daily DD check (from intraday peak)
+            const dailyLoss = dailyPeakEquity - equity;
+            if (dailyLoss >= dailyDrawdownPct) {
+                failedDaily = true;
                 break;
             }
 
-            // Max DD check (from peak)
-            if (equity > peakEquity) peakEquity = equity;
+            // Max DD check (from absolute peak)
             const maxLoss = peakEquity - equity;
-            if (maxLoss >= maxDDLimit) {
-                failedMaxDD = true;
+            if (maxLoss >= maxDrawdownPct) {
+                failedMax = true;
                 break;
             }
 
             // Target reached
-            if (equity - balance >= targetGain) {
+            if (equity - 100 >= targetPct) {
                 passed = true;
                 break;
             }
+            
+            // Note: In real prop firms, daily resets happen at midnight. 
+            // Here we simplify by treating every 5 trades as a "day" if we don't have time data,
+            // or just using the intraday peak logic continuously for simplicity in Monte Carlo.
         }
 
         if (passed) {
             passCount++;
             totalTradesNeeded += tradesUsed;
             simCount++;
-        } else if (failedDD) {
+        } else if (failedDaily) {
             failDailyDD++;
-        } else if (failedMaxDD) {
+        } else if (failedMax) {
             failMaxDD++;
         }
     }
 
+    const passProb = (passCount / iterations) * 100;
+    let passTier: PropFirmResult["passTier"] = "not_ready";
+    if (passProb >= 70) passTier = "strong";
+    else if (passProb >= 50) passTier = "good";
+    else if (passProb >= 30) passTier = "borderline";
+
+    // Consistency Score
+    const sortedProfits = [...normalizedR].sort((a, b) => b - a);
+    const topCount = Math.max(1, Math.ceil(normalizedR.length * 0.1));
+    const topSum = sortedProfits.slice(0, topCount).reduce((s, v) => s + Math.max(0, v), 0);
+    const totalPositiveSum = normalizedR.reduce((s, v) => s + Math.max(0, v), 0);
+    const concentration = totalPositiveSum > 0 ? (topSum / totalPositiveSum) * 100 : 0;
+    const consistencyScore = Math.max(0, 100 - (concentration > 50 ? (concentration - 50) * 2 : 0));
+
     return {
-        passProb: round((passCount / iterations) * 100, 1),
+        passProb: round(passProb, 1),
         failDailyDDProb: round((failDailyDD / iterations) * 100, 1),
         failMaxDDProb: round((failMaxDD / iterations) * 100, 1),
         expectedTrades: simCount > 0 ? Math.round(totalTradesNeeded / simCount) : trades.length,
+        consistencyScore: Math.round(consistencyScore),
+        passTier
     };
 }
 

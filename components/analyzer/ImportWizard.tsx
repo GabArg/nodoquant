@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { type ParseResult, parseTrades, parseGenericCSV, type Trade } from "@/lib/analyzer/parser";
 
 interface ImportWizardProps {
@@ -11,19 +12,20 @@ interface ImportWizardProps {
 }
 
 const FIELDS = [
-    { key: "dateIdx", label: "Hora de Salida / Fecha (Requerido)", group: "required" },
-    { key: "profitIdx", label: "Beneficio / P&L (Req. si no hay Entrada/Salida)", group: "required" },
-    { key: "entryPriceIdx", label: "Precio de Entrada (Req. si no hay Beneficio)", group: "required" },
-    { key: "exitPriceIdx", label: "Precio de Salida (Req. si no hay Beneficio)", group: "required" },
-    { key: "symbolIdx", label: "Símbolo / Ticker", group: "optional" },
-    { key: "directionIdx", label: "Dirección (Compra/Venta)", group: "optional" },
-    { key: "volumeIdx", label: "Tamaño / Volumen", group: "optional" },
-    { key: "entryTimeIdx", label: "Hora de Entrada", group: "optional" },
-    { key: "stopLossIdx", label: "Stop Loss", group: "optional" },
-    { key: "takeProfitIdx", label: "Take Profit", group: "optional" }
+    { key: "dateIdx", group: "required" },
+    { key: "profitIdx", group: "required" },
+    { key: "entryPriceIdx", group: "required" },
+    { key: "exitPriceIdx", group: "required" },
+    { key: "symbolIdx", group: "optional" },
+    { key: "directionIdx", group: "optional" },
+    { key: "volumeIdx", group: "optional" },
+    { key: "entryTimeIdx", group: "optional" },
+    { key: "stopLossIdx", group: "optional" },
+    { key: "takeProfitIdx", group: "optional" }
 ];
 
 export default function ImportWizard({ fileContent, fileName, onComplete, onCancel }: ImportWizardProps) {
+    const t = useTranslations("analyzer.importWizard");
     const [step, setStep] = useState<"mapping" | "preview">("mapping");
     const [headers, setHeaders] = useState<string[]>([]);
     const [mapping, setMapping] = useState<Record<string, number>>({});
@@ -43,7 +45,7 @@ export default function ImportWizard({ fileContent, fileName, onComplete, onCanc
             .filter((l) => l.trim().length > 0);
 
         if (fileLines.length < 2) {
-            setError("El archivo está vacío o no tiene suficientes filas.");
+            setError(t("validation.emptyOrInvalid"));
             return;
         }
 
@@ -69,7 +71,7 @@ export default function ImportWizard({ fileContent, fileName, onComplete, onCanc
             const rawResult = parseTrades(fileContent, fileName);
             if (rawResult.trades.length >= 2) { // Allow less for preview, but at least some trades
                 if (rawResult.trades.length < 30) {
-                    setError(`Advertencia: Tu dataset contiene solo ${rawResult.trades.length} trades válidos. Recomendamos min 30.`);
+                    setError(t("validation.lowTradesWarning", { count: rawResult.trades.length }));
                 }
                 setParsedTrades(rawResult);
                 setStep("preview");
@@ -165,7 +167,7 @@ export default function ImportWizard({ fileContent, fileName, onComplete, onCanc
     const attemptParse = (currentMapping: Record<string, number>, linesArray?: string[]) => {
         setError(null);
         if (currentMapping.dateIdx === undefined || currentMapping.dateIdx === -1) {
-            setError("Debes seleccionar la columna de Tiempo de Salida.");
+            setError(t("validation.missingTime"));
             return false;
         }
 
@@ -174,7 +176,7 @@ export default function ImportWizard({ fileContent, fileName, onComplete, onCanc
             currentMapping.exitPriceIdx !== undefined && currentMapping.exitPriceIdx !== -1;
 
         if (!hasProfit && !hasPrices) {
-            setError("Debes mapear 'Profit / P&L' O bien 'Entry Price' y 'Exit Price'.");
+            setError(t("validation.missingProfitOrPrices"));
             return false;
         }
 
@@ -197,7 +199,7 @@ export default function ImportWizard({ fileContent, fileName, onComplete, onCanc
             });
 
             if (result.trades.length < 30) {
-                setError(`Tu dataset contiene solo ${result.trades.length} trades válidos. Se requiere un mínimo de 30 trades para un análisis confiable.`);
+                setError(t("validation.tooFewTrades", { count: result.trades.length }));
                 // Still allow preview, user can decide to proceed.
             }
 
@@ -205,7 +207,7 @@ export default function ImportWizard({ fileContent, fileName, onComplete, onCanc
             setStep("preview");
             return true;
         } catch (err: any) {
-            setError(err.message || "Error procesando el archivo. Revisa el mapeo.");
+            setError(err.message || t("validation.parseError"));
             return false;
         }
     };
@@ -217,8 +219,8 @@ export default function ImportWizard({ fileContent, fileName, onComplete, onCanc
     return (
         <div className="card p-6 rounded-2xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-white">Importador de Trades</h2>
-                <button onClick={onCancel} className="text-gray-400 hover:text-white transition-colors">Cancelar</button>
+                <h2 className="text-xl font-bold text-white">{t("mapping.title")}</h2>
+                <button onClick={onCancel} className="text-gray-400 hover:text-white transition-colors">{t("mapping.cancel")}</button>
             </div>
 
             {error && (
@@ -231,30 +233,30 @@ export default function ImportWizard({ fileContent, fileName, onComplete, onCanc
                 <div className="space-y-6 animate-fade-in">
                     <div>
                         <p className="text-sm text-gray-400 mb-3">
-                            No pudimos detectar todas las columnas necesarias de forma segura. Selecciona un formato preestablecido o realiza el mapeo manual. Necesitamos al menos <strong>Tiempo de Salida</strong> y <strong>Profit (o Precios de Entrada/Salida)</strong>.
+                            {t.rich("mapping.undetectedPrompt", { bold: (chunks) => <strong>{chunks}</strong> })}
                         </p>
 
                         <div className="flex flex-wrap gap-2 mb-4">
-                            <span className="text-sm text-gray-500 py-1.5 mr-2">Presets rápidos:</span>
-                            <button onClick={() => applyPreset("mt4")} className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-md text-sm text-gray-300 transition-colors">MetaTrader 4</button>
-                            <button onClick={() => applyPreset("mt5")} className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-md text-sm text-gray-300 transition-colors">MetaTrader 5</button>
-                            <button onClick={() => applyPreset("binance")} className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-md text-sm text-gray-300 transition-colors">Binance</button>
-                            <button onClick={() => applyPreset("auto")} className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-md text-sm text-gray-300 transition-colors">CSV Genérico</button>
+                            <span className="text-sm text-gray-500 py-1.5 mr-2">{t("mapping.presets")}</span>
+                            <button onClick={() => applyPreset("mt4")} className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-md text-sm text-gray-300 transition-colors">{t("mapping.mt4")}</button>
+                            <button onClick={() => applyPreset("mt5")} className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-md text-sm text-gray-300 transition-colors">{t("mapping.mt5")}</button>
+                            <button onClick={() => applyPreset("binance")} className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-md text-sm text-gray-300 transition-colors">{t("mapping.binance")}</button>
+                            <button onClick={() => applyPreset("auto")} className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-md text-sm text-gray-300 transition-colors">{t("mapping.csv")}</button>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5 rounded-xl border border-white/5 bg-black/20">
                         <div className="space-y-4">
-                            <h3 className="font-semibold text-indigo-400 text-sm tracking-wide uppercase">Datos Necesarios</h3>
+                            <h3 className="font-semibold text-indigo-400 text-sm tracking-wide uppercase">{t("mapping.requiredData")}</h3>
                             {FIELDS.filter(f => f.group === "required").map(f => (
                                 <div key={f.key} className="flex flex-col gap-1">
-                                    <label className="text-sm text-gray-300">{f.label}</label>
+                                    <label className="text-sm text-gray-300">{t(`fields.${f.key}`)}</label>
                                     <select
                                         className="bg-black/50 border border-white/10 rounded-lg p-2 text-sm text-white focus:border-indigo-500 outline-none"
                                         value={mapping[f.key] ?? -1}
                                         onChange={(e) => handleMapChange(f.key, parseInt(e.target.value))}
                                     >
-                                        <option value={-1}>-- Ignorar --</option>
+                                        <option value={-1}>{t("mapping.ignore")}</option>
                                         {headers.map((h, i) => <option key={i} value={i}>{h}</option>)}
                                     </select>
                                 </div>
@@ -262,16 +264,16 @@ export default function ImportWizard({ fileContent, fileName, onComplete, onCanc
                         </div>
 
                         <div className="space-y-4">
-                            <h3 className="font-semibold text-indigo-400 text-sm tracking-wide uppercase">Datos Opcionales</h3>
+                            <h3 className="font-semibold text-indigo-400 text-sm tracking-wide uppercase">{t("mapping.optionalData")}</h3>
                             {FIELDS.filter(f => f.group === "optional").map(f => (
                                 <div key={f.key} className="flex flex-col gap-1">
-                                    <label className="text-sm text-gray-300">{f.label}</label>
+                                    <label className="text-sm text-gray-300">{t(`fields.${f.key}`)}</label>
                                     <select
                                         className="bg-black/50 border border-white/10 rounded-lg p-2 text-sm text-white focus:border-indigo-500 outline-none"
                                         value={mapping[f.key] ?? -1}
                                         onChange={(e) => handleMapChange(f.key, parseInt(e.target.value))}
                                     >
-                                        <option value={-1}>-- Ignorar --</option>
+                                        <option value={-1}>{t("mapping.ignore")}</option>
                                         {headers.map((h, i) => <option key={i} value={i}>{h}</option>)}
                                     </select>
                                 </div>
@@ -281,7 +283,7 @@ export default function ImportWizard({ fileContent, fileName, onComplete, onCanc
 
                     <div className="pt-4 flex justify-end">
                         <button onClick={handlePreview} className="btn-primary">
-                            Previsualizar Datos
+                            {t("mapping.previewBtn")}
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ml-2">
                                 <path d="M5 12h14M12 5l7 7-7 7" />
                             </svg>
@@ -294,20 +296,20 @@ export default function ImportWizard({ fileContent, fileName, onComplete, onCanc
                 <div className="space-y-6 animate-fade-in">
                     {parsedTrades.trades.length < 100 && (
                         <div className="p-4 rounded-xl text-sm" style={{ background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.2)", color: "#fcd34d" }}>
-                            <strong>Advertencia Estadística:</strong> Tu dataset tiene {parsedTrades.trades.length} trades válidos. Recomendamos al menos 100 trades para análisis cuantitativos precisos. (Mínimo 30 requeridos para evitar ruido estadístico grave).
+                            {t.rich("preview.statisticalWarning", { count: parsedTrades.trades.length, bold: (chunks) => <strong>{chunks}</strong> })}
                         </div>
                     )}
 
-                    <p className="text-sm text-gray-400">Detectamos {parsedTrades.trades.length} trades. Muestra de validación (primeros 3):</p>
+                    <p className="text-sm text-gray-400">{t("preview.detectedCount", { count: parsedTrades.trades.length })}</p>
 
                     <div className="overflow-x-auto border border-white/5 rounded-xl">
                         <table className="w-full text-left text-sm text-gray-300">
                             <thead className="text-xs uppercase bg-white/5 text-gray-400">
                                 <tr>
-                                    <th className="px-4 py-3">Tiempo</th>
-                                    <th className="px-4 py-3">Beneficio</th>
-                                    <th className="px-4 py-3">Símbolo</th>
-                                    <th className="px-4 py-3">Dirección</th>
+                                    <th className="px-4 py-3">{t("preview.table.time")}</th>
+                                    <th className="px-4 py-3">{t("preview.table.profit")}</th>
+                                    <th className="px-4 py-3">{t("preview.table.symbol")}</th>
+                                    <th className="px-4 py-3">{t("preview.table.direction")}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -325,14 +327,14 @@ export default function ImportWizard({ fileContent, fileName, onComplete, onCanc
 
                     <div className="pt-4 flex justify-between items-center">
                         <button onClick={() => setStep("mapping")} className="text-sm text-gray-400 hover:text-white transition-colors">
-                            ← Volver al mapeo
+                            {t("preview.backBtn")}
                         </button>
                         <button
                             onClick={() => onComplete(parsedTrades)}
                             className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-lg font-medium transition-colors flex items-center shadow-lg shadow-indigo-600/20"
                             disabled={parsedTrades.trades.length < 30}
                         >
-                            Analizar Estrategia
+                            {t("preview.analyzeBtn")}
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ml-2">
                                 <path d="M5 12h14M12 5l7 7-7 7" />
                             </svg>

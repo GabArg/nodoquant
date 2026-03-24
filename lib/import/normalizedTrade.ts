@@ -5,7 +5,7 @@
 
 import type { Trade } from "@/lib/analyzer/parser";
 
-export type ImportSource = "csv" | "mt4" | "mt5" | "binance-spot" | "binance-futures" | "generic";
+export type ImportSource = "csv" | "mt4" | "mt5" | "binance" | "binance-spot" | "binance-futures" | "generic";
 
 export type MarketType = "forex" | "crypto" | "futures" | "stocks" | "indices" | "unknown";
 

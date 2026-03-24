@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 48" fill="none" height="48">
+  <!-- MT stylized shield/arrow icon -->
+  <path d="M24 5 L38 13 L38 28 C38 36 24 43 24 43 C24 43 10 36 10 28 L10 13 Z" stroke="#ffffff" stroke-width="3" fill="none"/>
+  <path d="M18 22 L24 16 L30 22 L28 22 L28 30 L20 30 L20 22 Z" fill="#ffffff"/>
+  <!-- MetaTrader 4 text -->
+  <text x="50" y="21" font-family="Arial, sans-serif" font-weight="700" font-size="13" fill="#ffffff">MetaTrader</text>
+  <text x="50" y="37" font-family="Arial, sans-serif" font-weight="400" font-size="13" fill="#ffffff" opacity="0.8">Platform 4</text>
+</svg>

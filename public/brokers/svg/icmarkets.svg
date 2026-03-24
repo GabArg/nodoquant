@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48" fill="none" height="48">
+  <!-- IC stylized icon: globe ring -->
+  <circle cx="24" cy="24" r="18" stroke="#ffffff" stroke-width="4" fill="none"/>
+  <ellipse cx="24" cy="24" rx="9" ry="18" stroke="#ffffff" stroke-width="2.5" fill="none"/>
+  <line x1="6" y1="24" x2="42" y2="24" stroke="#ffffff" stroke-width="2.5"/>
+  <!-- IC Markets text -->
+  <text x="52" y="20" font-family="Arial, sans-serif" font-weight="700" font-size="13" fill="#ffffff" letter-spacing="1">IC</text>
+  <text x="52" y="36" font-family="Arial, sans-serif" font-weight="400" font-size="13" fill="#ffffff" letter-spacing="0.5">MARKETS</text>
+</svg>

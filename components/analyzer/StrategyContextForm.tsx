@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 
 const MARKETS = ["Forex", "Crypto", "Indices", "Stocks", "Futures"];
 const TIMEFRAMES = ["M1", "M5", "M15", "H1", "H4", "D1"];
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export default function StrategyContextForm({ strategyId, onContinue, onBack }: Props) {
+    const t = useTranslations("analyzer.strategyContextForm");
     const [market, setMarket] = useState("");
     const [asset, setAsset] = useState("");
     const [timeframe, setTimeframe] = useState("");
@@ -57,13 +59,13 @@ export default function StrategyContextForm({ strategyId, onContinue, onBack }: 
             });
             const data = await res.json();
             if (!data.ok) {
-                setError(data.error ?? "Error al guardar el contexto.");
+                setError(data.error ?? t("saveError"));
                 setSaving(false);
                 return;
             }
             onContinue();
         } catch (err) {
-            setError("Error de red.");
+            setError(t("networkError"));
             setSaving(false);
         }
     }
@@ -71,7 +73,7 @@ export default function StrategyContextForm({ strategyId, onContinue, onBack }: 
     if (loading) {
         return (
             <div className="w-full max-w-xl mx-auto animate-fade-in text-center text-gray-400 py-10">
-                Cargando contexto de la estrategia...
+                {t("loading")}
             </div>
         );
     }
@@ -80,24 +82,24 @@ export default function StrategyContextForm({ strategyId, onContinue, onBack }: 
         <div className="w-full max-w-xl mx-auto animate-fade-in">
             <div className="card rounded-2xl p-6 space-y-5">
                 <div>
-                    <div className="section-label">Contexto de la Estrategia</div>
-                    <h2 className="text-xl font-bold text-white mb-1">Mejorá tu análisis</h2>
+                    <div className="section-label">{t("label")}</div>
+                    <h2 className="text-xl font-bold text-white mb-1">{t("title")}</h2>
                     <p className="text-sm" style={{ color: "#6b7280" }}>
-                        Definí el mercado y estilo de trading. Esto te ayudará a comparar estrategias de forma más precisa. Puedes saltar este paso.
+                        {t("subtitle")}
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Market */}
                     <div>
-                        <label className="form-label" htmlFor="market-select">Mercado</label>
+                        <label className="form-label" htmlFor="market-select">{t("marketLabel")}</label>
                         <select
                             id="market-select"
                             className="form-input w-full"
                             value={market}
                             onChange={(e) => setMarket(e.target.value)}
                         >
-                            <option value="">Seleccionar...</option>
+                            <option value="">{t("marketPlaceholder")}</option>
                             {MARKETS.map(m => (
                                 <option key={m} value={m}>{m}</option>
                             ))}
@@ -106,12 +108,12 @@ export default function StrategyContextForm({ strategyId, onContinue, onBack }: 
 
                     {/* Asset */}
                     <div>
-                        <label className="form-label" htmlFor="asset-input">Activo</label>
+                        <label className="form-label" htmlFor="asset-input">{t("assetLabel")}</label>
                         <input
                             id="asset-input"
                             type="text"
                             className="form-input w-full"
-                            placeholder="Ej: EURUSD, BTCUSDT"
+                            placeholder={t("assetPlaceholder")}
                             value={asset}
                             onChange={(e) => setAsset(e.target.value)}
                         />
@@ -119,14 +121,14 @@ export default function StrategyContextForm({ strategyId, onContinue, onBack }: 
 
                     {/* Timeframe */}
                     <div>
-                        <label className="form-label" htmlFor="tf-select">Timeframe base</label>
+                        <label className="form-label" htmlFor="tf-select">{t("timeframeLabel")}</label>
                         <select
                             id="tf-select"
                             className="form-input w-full"
                             value={timeframe}
                             onChange={(e) => setTimeframe(e.target.value)}
                         >
-                            <option value="">Seleccionar...</option>
+                            <option value="">{t("timeframePlaceholder")}</option>
                             {TIMEFRAMES.map(t => (
                                 <option key={t} value={t}>{t}</option>
                             ))}
@@ -135,14 +137,14 @@ export default function StrategyContextForm({ strategyId, onContinue, onBack }: 
 
                     {/* Strategy Style */}
                     <div>
-                        <label className="form-label" htmlFor="style-select">Estilo de Trading</label>
+                        <label className="form-label" htmlFor="style-select">{t("styleLabel")}</label>
                         <select
                             id="style-select"
                             className="form-input w-full"
                             value={style}
                             onChange={(e) => setStyle(e.target.value)}
                         >
-                            <option value="">Seleccionar...</option>
+                            <option value="">{t("stylePlaceholder")}</option>
                             {STYLES.map(s => (
                                 <option key={s} value={s}>{s}</option>
                             ))}
@@ -154,7 +156,7 @@ export default function StrategyContextForm({ strategyId, onContinue, onBack }: 
 
                 <div className="flex gap-3 pt-2">
                     <button className="btn-primary flex-1 justify-center" onClick={handleSave} disabled={saving}>
-                        {saving ? "Guardando..." : "Guardar y continuar"}
+                        {saving ? t("saving") : t("saveBtn")}
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ml-1">
                             <path d="M5 12h14M12 5l7 7-7 7" />
                         </svg>
@@ -172,7 +174,7 @@ export default function StrategyContextForm({ strategyId, onContinue, onBack }: 
                             fontSize: "0.85rem",
                         }}
                     >
-                        ← Volver
+                        {t("backBtn")}
                     </button>
                     <button
                         onClick={onContinue}
@@ -184,7 +186,7 @@ export default function StrategyContextForm({ strategyId, onContinue, onBack }: 
                             fontSize: "0.85rem",
                         }}
                     >
-                        Saltar este paso →
+                        {t("skipBtn")}
                     </button>
                 </div>
             </div>

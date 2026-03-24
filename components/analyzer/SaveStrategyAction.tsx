@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
     analysisId: string | null;
 }
 
 export default function SaveStrategyAction({ analysisId }: Props) {
+    const t = useTranslations("analyzer.saveStrategy");
     const [strategyName, setStrategyName] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
@@ -29,7 +31,7 @@ export default function SaveStrategyAction({ analysisId }: Props) {
 
     async function handleSave() {
         if (!strategyName.trim()) {
-            setError("Ingresá un nombre para la estrategia.");
+            setError(t("nameRequired"));
             return;
         }
         if (!analysisId) return;
@@ -43,13 +45,13 @@ export default function SaveStrategyAction({ analysisId }: Props) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     name: strategyName,
-                    description: "Guardada desde el Analyzer",
+                    description: t("defaultDesc"),
                     analysis_id: analysisId
                 })
             });
 
             const data = await res.json();
-            if (!data.ok) throw new Error(data.error ?? "Error al guardar");
+            if (!data.ok) throw new Error(data.error ?? t("saveError"));
 
             setIsSaved(true);
             setShowForm(false);
@@ -66,10 +68,10 @@ export default function SaveStrategyAction({ analysisId }: Props) {
         return (
             <div className="p-4 rounded-xl text-center bg-indigo-500/5 border border-indigo-500/10">
                 <p className="text-sm text-gray-400 mb-3">
-                    Guardar estrategias está disponible en el plan <span className="text-indigo-400 font-bold">Pro</span>.
+                    {t.rich('proRequired', { pro: (chunks) => <span className="text-indigo-400 font-bold">{chunks}</span> })}
                 </p>
                 <button className="btn-primary py-2 px-4 text-xs">
-                    Actualizar a Pro
+                    {t("upgradeBtn")}
                 </button>
             </div>
         );
@@ -79,10 +81,10 @@ export default function SaveStrategyAction({ analysisId }: Props) {
         return (
             <div className="p-4 rounded-xl text-center bg-green-500/10 border border-green-500/20">
                 <p className="text-sm font-semibold text-green-400">
-                    ¡Estrategia guardada correctamente!
+                    {t("savedSuccess")}
                 </p>
                 <p className="text-xs text-green-500/70 mt-1">
-                    Ya podés verla en tu Dashboard.
+                    {t("savedSub")}
                 </p>
             </div>
         );
@@ -101,16 +103,16 @@ export default function SaveStrategyAction({ analysisId }: Props) {
                         <polyline points="17 21 17 13 7 13 7 21" />
                         <polyline points="7 3 7 8 15 8" />
                     </svg>
-                    Guardar esta estrategia
+                    {t("saveAction")}
                 </button>
             ) : (
                 <div className="card p-4 rounded-xl space-y-3 animate-fade-in">
                     <div>
-                        <label className="form-label text-xs">Nombre de la estrategia</label>
+                        <label className="form-label text-xs">{t("nameLabel")}</label>
                         <input
                             type="text"
                             className="form-input text-sm"
-                            placeholder="Ej: Scalping Oro H1"
+                            placeholder={t("namePlaceholder")}
                             value={strategyName}
                             onChange={(e) => setStrategyName(e.target.value)}
                             autoFocus
@@ -123,13 +125,13 @@ export default function SaveStrategyAction({ analysisId }: Props) {
                             disabled={isSaving}
                             className="btn-primary flex-1 justify-center text-xs"
                         >
-                            {isSaving ? "Guardando..." : "Confirmar"}
+                            {isSaving ? t("saving") : t("confirm")}
                         </button>
                         <button
                             onClick={() => setShowForm(false)}
                             className="px-4 py-2 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-gray-400"
                         >
-                            Cancelar
+                            {t("cancel")}
                         </button>
                     </div>
                 </div>

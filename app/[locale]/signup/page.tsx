@@ -21,7 +21,7 @@ export default function SignupPage() {
         setLoading(true);
 
         const supabase = createClient();
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
             email,
             password,
         });
@@ -30,6 +30,18 @@ export default function SignupPage() {
             setError(error.message);
             setLoading(false);
         } else {
+            // Enroll in trial immediately after signup
+            if (data?.user) {
+                try {
+                    // We call the API or the function if we can, but since this is client side,
+                    // we might need an API endpoint or just rely on the route.ts catch-all.
+                    // However, the user said "enrollment should also trigger during user signup".
+                    // Let's call the plan API to force enrollment.
+                    await fetch(`/${locale}/api/user/plan`);
+                } catch (e) {
+                    console.error("Trial enrollment fallback failed:", e);
+                }
+            }
             router.push(`/${locale}/dashboard`);
             router.refresh();
         }

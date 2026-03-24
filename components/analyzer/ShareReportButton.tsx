@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
     analysisId: string;
@@ -17,9 +18,10 @@ export default function ShareReportButton({
     showStrategyName: initialShowStrategy = false,
     showDatasetName: initialShowDataset = false,
 }: Props) {
-    const MARKETS = ["Forex", "Cripto", "Índices", "Acciones", "Futuros"];
+    const t = useTranslations("analyzer.shareReport");
+    const MARKETS = t.raw("markets");
     const TIMEFRAMES = ["M1", "M5", "M15", "H1", "H4", "D1"];
-    const STYLES = ["Scalping", "Swing", "Seguimiento de Tendencia", "Reversión a la Media", "Ruptura", "Arbitraje"];
+    const STYLES = t.raw("styles");
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [publicUrl, setPublicUrl] = useState(
@@ -78,7 +80,7 @@ export default function ShareReportButton({
                     <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
                     <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
                 </svg>
-                {shared ? "Compartido" : "Compartir análisis"}
+                {shared ? t("shared") : t("shareBtn")}
             </button>
 
             {open && (
@@ -88,7 +90,7 @@ export default function ShareReportButton({
                         style={{ background: "#111118", border: "1px solid rgba(255,255,255,0.08)" }}
                     >
                         <div className="flex items-center justify-between">
-                            <h3 className="text-lg font-bold text-white">Compartir análisis</h3>
+                            <h3 className="text-lg font-bold text-white">{t("title")}</h3>
                             <button
                                 onClick={() => setOpen(false)}
                                 style={{ background: "none", border: "none", color: "#6b7280", cursor: "pointer" }}
@@ -105,7 +107,7 @@ export default function ShareReportButton({
                                     onChange={(e) => setShowStrategy(e.target.checked)}
                                     className="form-checkbox"
                                 />
-                                <span className="text-sm text-gray-300">Mostrar nombre de estrategia</span>
+                                <span className="text-sm text-gray-300">{t("showStrategy")}</span>
                             </label>
                             <label className="flex items-center gap-3 cursor-pointer">
                                 <input
@@ -114,7 +116,7 @@ export default function ShareReportButton({
                                     onChange={(e) => setShowDataset(e.target.checked)}
                                     className="form-checkbox"
                                 />
-                                <span className="text-sm text-gray-300">Mostrar nombre del dataset</span>
+                                <span className="text-sm text-gray-300">{t("showDataset")}</span>
                             </label>
                         </div>
 
@@ -132,7 +134,7 @@ export default function ShareReportButton({
                                     className="text-xs font-medium px-3 py-1.5 rounded-lg"
                                     style={{ background: "rgba(99,102,241,0.15)", color: "#818cf8" }}
                                 >
-                                    {copied ? "✓ Copiado" : "Copiar"}
+                                    {copied ? t("copied") : t("copy")}
                                 </button>
                             </div>
                         )}
@@ -143,12 +145,12 @@ export default function ShareReportButton({
                                 onClick={handleShare}
                                 disabled={loading}
                             >
-                                {loading ? "Generando..." : shared ? "Actualizar link" : "Generar link público"}
+                                {loading ? t("generating") : shared ? t("updateLink") : t("generateLink")}
                             </button>
                         </div>
 
                         <p className="text-xs text-center" style={{ color: "#374151" }}>
-                            El reporte público muestra métricas y gráficos sin exponer tus datos personales.
+                            {t("disclaimer")}
                         </p>
                     </div>
                 </div>

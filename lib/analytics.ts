@@ -6,6 +6,12 @@ export type AnalyticsEvent =
     | 'certificate_share'
     | 'strategy_publish'
     | 'analyzer_run'
+    | 'analysis_started'
+    | 'analysis_completed'
+    | 'pro_feature_lock_click'
+    | 'trial_started'
+    | 'trial_expired'
+    | 'upgrade_cta_click'
     | 'page_view';
 
 export interface EventProperties {

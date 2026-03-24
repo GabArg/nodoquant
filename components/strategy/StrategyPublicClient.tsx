@@ -122,7 +122,7 @@ function MiniChart({ data, color, label }: { data: number[]; color: string; labe
 // ── Main Component ──
 export default function StrategyPublicClient({ strategy, datasets, slug }: Props) {
     const router = useRouter();
-    const t = useTranslations("strategy");
+    const t = useTranslations("strategies.profile");
     const stratName = safeStrategyName(strategy?.name);
     const [previewIdx, setPreviewIdx] = useState(0);
     const [copied, setCopied] = useState(false);
@@ -191,14 +191,14 @@ export default function StrategyPublicClient({ strategy, datasets, slug }: Props
         const q = quantResult.score;
         const c = confResult.level;
         const o = overfitResult.riskLevel;
-        if (q >= 7 && c === "High" && o === "Low") return { text: "Robust strategy with strong statistical support.", color: "#34d399" };
-        if (q >= 7 && c === "High") return { text: "Strong performance with solid evidence, but monitor overfitting signals.", color: "#818cf8" };
-        if (q >= 7 && o === "High") return { text: "High performance but potential overfitting risk detected. Validate with more datasets.", color: "#fbbf24" };
-        if (q >= 7) return { text: "Promising strategy but limited evidence. More datasets recommended.", color: "#818cf8" };
-        if (q >= 5 && c === "High") return { text: "Moderate edge with solid data backing. Room for optimization.", color: "#818cf8" };
-        if (q >= 5) return { text: "Moderate signal detected. Increase sample size to confirm edge.", color: "#fbbf24" };
-        if (c === "High") return { text: "No clear edge despite strong data — consider reviewing strategy logic.", color: "#f87171" };
-        return { text: "Insufficient data and weak signal. More testing required.", color: "#f87171" };
+        if (q >= 7 && c === "High" && o === "Low") return { text: t("summary.robust"), color: "#34d399" };
+        if (q >= 7 && c === "High") return { text: t("summary.strong"), color: "#818cf8" };
+        if (q >= 7 && o === "High") return { text: t("summary.overfit"), color: "#fbbf24" };
+        if (q >= 7) return { text: t("summary.promising"), color: "#818cf8" };
+        if (q >= 5 && c === "High") return { text: t("summary.moderate"), color: "#818cf8" };
+        if (q >= 5) return { text: t("summary.signal"), color: "#fbbf24" };
+        if (c === "High") return { text: t("summary.noClear"), color: "#f87171" };
+        return { text: t("summary.insufficient"), color: "#f87171" };
     }
     const summary = autoSummary();
 
@@ -214,7 +214,7 @@ export default function StrategyPublicClient({ strategy, datasets, slug }: Props
                             <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
                             <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
                         </svg>
-                        Strategy Analysis Report
+                        {t("headerLabel")}
                     </div>
                     <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-3">{stratName}</h1>
                     {strategy?.description && (
@@ -222,10 +222,10 @@ export default function StrategyPublicClient({ strategy, datasets, slug }: Props
                     )}
                     <div className="flex flex-wrap justify-center gap-2 mb-5">
                         <span className="px-2.5 py-1 rounded-md text-xs font-medium" style={{ background: "rgba(255,255,255,0.04)", color: "#9ca3af" }}>
-                            {enriched.length} dataset{enriched.length !== 1 ? "s" : ""}
+                            {t(enriched.length === 1 ? "datasetsCount" : "datasetsCountPlural", { count: enriched.length })}
                         </span>
                         <span className="px-2.5 py-1 rounded-md text-xs font-medium" style={{ background: "rgba(255,255,255,0.04)", color: "#9ca3af" }}>
-                            Last update: {formatDate(enriched[0].created_at)}
+                            {t("lastUpdate", { date: formatDate(enriched[0].created_at) })}
                         </span>
                         {strategy?.market && (
                             <span className="px-2.5 py-1 rounded-md text-xs font-medium" style={{ background: "rgba(99,102,241,0.08)", color: "#818cf8" }}>
@@ -251,16 +251,16 @@ export default function StrategyPublicClient({ strategy, datasets, slug }: Props
                     <div className="flex justify-center flex-wrap gap-3">
                         <button onClick={handleShare} className="btn-primary text-sm inline-flex items-center gap-2">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
-                            {copied ? "Copied URL!" : "Share Strategy"}
+                            {copied ? t("copiedUrl") : t("shareStrategy")}
                         </button>
                         {latestPublicId && (
                             <Link href={`/report/${latestPublicId}`} className="btn-secondary text-sm inline-flex">
-                                View Latest Dataset
+                                {t("viewLatest")}
                             </Link>
                         )}
                         <Link href="/strategy-leaderboard" className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                             style={{ background: "rgba(255,255,255,0.04)", color: "#9ca3af", border: "1px solid rgba(255,255,255,0.08)" }}>
-                            Leaderboard
+                            {t("leaderboard")}
                         </Link>
                     </div>
                 </header>
@@ -269,8 +269,8 @@ export default function StrategyPublicClient({ strategy, datasets, slug }: Props
                 {/* SECTION 1 — STRATEGY VERDICT */}
                 {/* ════════════════════════════════════════ */}
                 <SectionHeader
-                    title="Strategy Verdict"
-                    desc="Overall evaluation based on statistical strength, evidence quality, and overfitting risk."
+                    title={t("verdictTitle")}
+                    desc={t("verdictDesc")}
                     num="01"
                 />
 
@@ -299,8 +299,8 @@ export default function StrategyPublicClient({ strategy, datasets, slug }: Props
                 {/* SECTION 2 — STRATEGY BEHAVIOR */}
                 {/* ════════════════════════════════════════ */}
                 <SectionHeader
-                    title="Strategy Behavior"
-                    desc="Behavioral fingerprint — trading style, risk structure, and distribution characteristics."
+                    title={t("behaviorTitle")}
+                    desc={t("behaviorDesc")}
                     num="02"
                 />
 
@@ -323,8 +323,8 @@ export default function StrategyPublicClient({ strategy, datasets, slug }: Props
                 {/* SECTION 3 — STRATEGY STABILITY */}
                 {/* ════════════════════════════════════════ */}
                 <SectionHeader
-                    title="Strategy Stability"
-                    desc="Consistency and reliability across datasets and time."
+                    title={t("stabilityTitle")}
+                    desc={t("stabilityDesc")}
                     num="03"
                 />
 
@@ -370,17 +370,17 @@ export default function StrategyPublicClient({ strategy, datasets, slug }: Props
                 {/* SECTION 4 — DATASET ANALYSIS */}
                 {/* ════════════════════════════════════════ */}
                 <SectionHeader
-                    title="Dataset Analysis"
-                    desc="Performance breakdown of individual datasets."
+                    title={t("analysisTitle")}
+                    desc={t("analysisDesc")}
                     num="04"
                 />
 
                 {/* Summary Cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-                    <SummaryCard title="Best Edge" value={bestEdge.edge.toFixed(1)} sub={bestEdge.dsLabel} color={edgeScoreColor(bestEdge.edge)} />
-                    <SummaryCard title="Lowest DD" value={`${Number(lowestDD.max_drawdown).toFixed(1)}%`} sub={lowestDD.dsLabel} color="#34d399" />
-                    <SummaryCard title="Highest PF" value={Number(highestPF.profit_factor).toFixed(2)} sub={highestPF.dsLabel} color="#34d399" />
-                    <SummaryCard title="Avg Edge" value={avgEdge.toFixed(1)} sub={`${enriched.length} datasets`} color={edgeScoreColor(avgEdge)} />
+                    <SummaryCard title={t("bestEdge")} value={bestEdge.edge.toFixed(1)} sub={bestEdge.dsLabel} color={edgeScoreColor(bestEdge.edge)} />
+                    <SummaryCard title={t("lowestDD")} value={`${Number(lowestDD.max_drawdown).toFixed(1)}%`} sub={lowestDD.dsLabel} color="#34d399" />
+                    <SummaryCard title={t("highestPF")} value={Number(highestPF.profit_factor).toFixed(2)} sub={highestPF.dsLabel} color="#34d399" />
+                    <SummaryCard title={t("avgEdge")} value={avgEdge.toFixed(1)} sub={t(enriched.length === 1 ? "datasetsCount" : "datasetsCountPlural", { count: enriched.length })} color={edgeScoreColor(avgEdge)} />
                 </div>
 
                 {/* Datasets Table */}
@@ -389,13 +389,13 @@ export default function StrategyPublicClient({ strategy, datasets, slug }: Props
                         <table className="w-full text-left text-sm text-gray-300">
                             <thead className="bg-black/20 text-xs uppercase font-medium text-gray-500 border-b border-white/5">
                                 <tr>
-                                    <th className="px-4 py-3">Created</th>
-                                    <th className="px-4 py-3">Dataset</th>
-                                    <th className="px-4 py-3 text-right">Trades</th>
-                                    <th className="px-4 py-3 text-right">WR</th>
-                                    <th className="px-4 py-3 text-right">PF</th>
-                                    <th className="px-4 py-3 text-right">Max DD</th>
-                                    <th className="px-4 py-3 text-right">Edge</th>
+                                    <th className="px-4 py-3">{t("tableHeader.created")}</th>
+                                    <th className="px-4 py-3">{t("tableHeader.dataset")}</th>
+                                    <th className="px-4 py-3 text-right">{t("tableHeader.trades")}</th>
+                                    <th className="px-4 py-3 text-right">{t("tableHeader.wr")}</th>
+                                    <th className="px-4 py-3 text-right">{t("tableHeader.pf")}</th>
+                                    <th className="px-4 py-3 text-right">{t("tableHeader.maxDD")}</th>
+                                    <th className="px-4 py-3 text-right">{t("tableHeader.edge")}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
@@ -441,7 +441,7 @@ export default function StrategyPublicClient({ strategy, datasets, slug }: Props
                 {/* Dataset Performance Charts */}
                 <div className="card rounded-2xl border border-white/5 bg-[#111118] p-5 mb-12">
                     <div className="flex items-center justify-between mb-4">
-                        <p className="text-xs font-semibold text-indigo-400 uppercase tracking-widest">Dataset Performance</p>
+                        <p className="text-xs font-semibold text-indigo-400 uppercase tracking-widest">{t("datasetPerformance")}</p>
                         <select
                             value={previewIdx}
                             onChange={(e) => setPreviewIdx(Number(e.target.value))}
@@ -456,25 +456,25 @@ export default function StrategyPublicClient({ strategy, datasets, slug }: Props
                         <MiniChart
                             data={preview?.metrics_json?.equity_curve ?? []}
                             color="#818cf8"
-                            label="Equity Curve"
+                            label={t("equityCurve")}
                         />
                         <MiniChart
                             data={preview?.metrics_json?.drawdown_curve ?? []}
                             color="#f87171"
-                            label="Drawdown Curve"
+                            label={t("drawdownCurve")}
                         />
                     </div>
                 </div>
 
                 {/* Footer Branding */}
                 <div className="text-center py-8 border-t" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
-                    <p className="text-xs mb-1" style={{ color: "#4b5563" }}>Analyzed with</p>
+                    <p className="text-xs mb-1" style={{ color: "#4b5563" }}>{t("footer.analyzedWith")}</p>
                     <Link href="/" className="text-lg font-bold text-white hover:text-indigo-300 transition-colors">
                         NodoQuant
                     </Link>
-                    <p className="text-xs mt-1 mb-4" style={{ color: "#6b7280" }}>Quant Strategy Lab</p>
+                    <p className="text-xs mt-1 mb-4" style={{ color: "#6b7280" }}>{t("footer.lab")}</p>
                     <Link href="/analyzer" className="btn-primary text-sm inline-flex">
-                        Analyze your strategy →
+                        {t("footer.cta")}
                     </Link>
                 </div>
             </div>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 28" height="28" fill="white">
+  <!-- cTrader: hollow C arc icon -->
+  <path d="M22 4 A12 12 0 1 0 22 24 L22 19 A7 7 0 1 1 22 9 Z" fill="white"/>
+  <!-- Inner horizontal bar of 'c' -->
+  <rect x="14" y="12" width="11" height="4" rx="2"/>
+  <!-- Text with mixed weight -->
+  <text x="38" y="19" font-family="'Arial', sans-serif" font-size="13">
+    <tspan font-weight="400" fill="white">c</tspan><tspan font-weight="700" fill="white">Trader</tspan>
+  </text>
+</svg>

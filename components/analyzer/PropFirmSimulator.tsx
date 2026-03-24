@@ -1,18 +1,22 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import type { Trade } from "@/lib/analyzer/parser";
 import { calcPropFirmChallenge, type PropFirmParams } from "@/lib/analyzer/metrics";
+import ProLockOverlay from "@/components/pricing/ProLockOverlay";
+import { trackEvent } from "@/lib/analytics";
 
 interface Props {
     trades: Trade[];
+    isPro?: boolean;
 }
 
 type Mode = "personal" | "challenge" | "funded";
 
-export default function PropFirmSimulator({ trades }: Props) {
-    const t = useTranslations("analyzer.simulator");
+export default function PropFirmSimulator({ trades, isPro = false }: Props) {
+    const t = useTranslations("analyzer.propFirm");
+    const locale = useLocale();
     const [mode, setMode] = useState<Mode | null>(null);
     const [params, setParams] = useState<PropFirmParams>({
         balance: 10000,
@@ -176,49 +180,62 @@ export default function PropFirmSimulator({ trades }: Props) {
                 </div>
             )}
 
-            {/* Results */}
+            {/* Results with ProLockOverlay */}
             {result && (
-                <div className="card rounded-xl p-5 space-y-1 animate-fade-in">
-                    <p className="text-xs font-semibold text-indigo-400 uppercase tracking-widest mb-3">
-                        {t("results.title")}
-                    </p>
-
-                    {[
-                        {
-                            label: t("results.passProb"),
-                            value: `${result.passProb.toFixed(1)}%`,
-                            good: result.passProb > 50,
-                        },
-                        {
-                            label: t("results.failDaily"),
-                            value: `${result.failDailyDDProb.toFixed(1)}%`,
-                            good: result.failDailyDDProb < 20,
-                        },
-                        {
-                            label: t("results.failMax"),
-                            value: `${result.failMaxDDProb.toFixed(1)}%`,
-                            good: result.failMaxDDProb < 20,
-                        },
-                        {
-                            label: t("results.avgTrades"),
-                            value: `${result.expectedTrades}`,
-                            good: true,
-                        },
-                    ].map(({ label, value, good }) => (
-                        <div
-                            key={label}
-                            className="flex justify-between items-center py-3"
-                            style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
-                        >
-                            <span className="text-sm" style={{ color: "#9ca3af" }}>{label}</span>
-                            <span
-                                className="text-sm font-semibold tabular-nums"
-                                style={{ color: good ? "#34d399" : "#f87171" }}
-                            >
-                                {value}
+                <div className="card rounded-xl p-5 space-y-1 animate-fade-in relative overflow-hidden">
+                    <div className="flex items-center justify-between mb-3">
+                        <p className="text-xs font-semibold text-indigo-400 uppercase tracking-widest">
+                            {t("results.title")}
+                        </p>
+                        {!isPro && (
+                            <span className="text-[10px] font-black px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 uppercase tracking-widest">
+                                PRO
                             </span>
-                        </div>
-                    ))}
+                        )}
+                    </div>
+
+                    <ProLockOverlay
+                        isPro={isPro}
+                        title={t("proLocked.title")}
+                        description={t("proLocked.desc")}
+                    >
+                        {[
+                            {
+                                label: t("results.passProb"),
+                                value: `${result.passProb.toFixed(1)}%`,
+                                good: result.passProb > 50,
+                            },
+                            {
+                                label: t("results.failDaily"),
+                                value: `${result.failDailyDDProb.toFixed(1)}%`,
+                                good: result.failDailyDDProb < 20,
+                            },
+                            {
+                                label: t("results.failMax"),
+                                value: `${result.failMaxDDProb.toFixed(1)}%`,
+                                good: result.failMaxDDProb < 20,
+                            },
+                            {
+                                label: t("results.avgTrades"),
+                                value: `${result.expectedTrades}`,
+                                good: true,
+                            },
+                        ].map(({ label, value, good }) => (
+                            <div
+                                key={label}
+                                className="flex justify-between items-center py-3"
+                                style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+                            >
+                                <span className="text-sm" style={{ color: "#9ca3af" }}>{label}</span>
+                                <span
+                                    className="text-sm font-semibold tabular-nums"
+                                    style={{ color: good ? "#34d399" : "#f87171" }}
+                                >
+                                    {value}
+                                </span>
+                            </div>
+                        ))}
+                    </ProLockOverlay>
 
                     <p className="text-xs mt-3 pt-2" style={{ color: "#374151" }}>
                         {t("results.disclaimer", { count: trades.length })}

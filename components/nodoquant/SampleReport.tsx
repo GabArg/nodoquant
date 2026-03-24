@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 
 export default function SampleReport() {
     const t = useTranslations("sampleReport");
+    const tCommon = useTranslations("common");
 
     return (
         <section className="py-24 border-t border-white/5 bg-[#050505]" id="sample-report">
@@ -38,14 +39,19 @@ export default function SampleReport() {
                         {/* Metrics Preview */}
                         <div className="lg:col-span-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
                             {[
-                                { label: t("metrics.winRate"), value: "45%", color: "text-white" },
-                                { label: t("metrics.profitFactor"), value: "1.84", color: "text-white" },
-                                { label: t("metrics.expectancy"), value: "0.42 R", color: "text-emerald-400" },
-                                { label: t("metrics.maxDrawdown"), value: "-12.5%", color: "text-red-400" },
-                                { label: t("metrics.trades"), value: "436", color: "text-indigo-300" },
+                                { label: t("metrics.winRate"), value: "45%", color: "text-white", tooltip: "winRate" },
+                                { label: t("metrics.profitFactor"), value: "1.84", color: "text-white", tooltip: "profitFactor" },
+                                { label: t("metrics.expectancy"), value: "0.42 R", color: "text-emerald-400", tooltip: "expectancy" },
+                                { label: t("metrics.maxDrawdown"), value: "-12.5%", color: "text-red-400", tooltip: "maxDrawdown" },
+                                { label: t("metrics.trades"), value: "436", color: "text-indigo-300", tooltip: "trades" },
                             ].map((m) => (
-                                <div key={m.label} className="p-5 bg-white/[0.03] rounded-2xl border border-white/[0.05] flex flex-col justify-center hover:bg-white/[0.06] hover:border-white/[0.1] transition-all">
-                                    <span className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-2">{m.label}</span>
+                                <div key={m.label} title={tCommon(`tooltips.${m.tooltip}`)} className="p-5 bg-white/[0.03] rounded-2xl border border-white/[0.05] flex flex-col justify-center hover:bg-white/[0.06] hover:border-white/[0.1] transition-all cursor-help relative group/item">
+                                    <div className="flex items-center gap-1.5 mb-2">
+                                        <span className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">{m.label}</span>
+                                        <svg className="w-3 h-3 text-gray-600 group-hover/item:text-indigo-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
                                     <span className={`text-2xl font-black ${m.color} tracking-tight`}>{m.value}</span>
                                 </div>
                             ))}

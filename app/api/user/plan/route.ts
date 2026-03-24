@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/auth/server";
-import { getUserSubscription, isProUser } from "@/lib/payments/subscription";
+import { getUserSubscription, isProUser, ensureTrialEnrollment, getUserPlanStatus } from "@/lib/payments/subscription";
+import { trackEvent } from "@/lib/analytics";
 
 export async function GET() {
     try {
@@ -11,13 +12,23 @@ export async function GET() {
             return NextResponse.json({ plan: "free", isPro: false });
         }
 
+        // Automatic Enrollment for new users
+        await ensureTrialEnrollment(user.id);
+
         const sub = await getUserSubscription(user.id);
+        const fullStatus = await getUserPlanStatus(user.id);
         const isPro = isProUser(sub);
+
+        // Track trial expiration if it just happened
+        if (fullStatus.plan === "pro_trial" && !fullStatus.isTrial) {
+            await trackEvent("trial_expired", { userId: user.id }, user.id);
+        }
 
         return NextResponse.json({
             ok: true,
             plan: sub?.plan ?? "free",
-            isPro: isPro
+            isPro: isPro,
+            trialDaysRemaining: fullStatus.trialDaysRemaining
         });
     } catch (err: any) {
         return NextResponse.json({ plan: "free", isPro: false, error: err.message });

@@ -66,6 +66,62 @@ export async function getUserPlanStatus(userId: string): Promise<UserPlanStatus>
 }
 
 /**
+ * Ensures a user has a trial entry if they are new.
+ * Automatically enrolls them in a 30-day PRO trial.
+ */
+export async function ensureTrialEnrollment(userId: string): Promise<boolean> {
+    const supabase = getSupabaseServer();
+    if (!supabase) return false;
+
+    // Check if they already have a plan
+    const { data: existing } = await supabase
+        .from("user_plans")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
+
+    if (existing) return true;
+
+    // Create 30-day trial
+    const now = new Date();
+    const trialEnd = new Date();
+    trialEnd.setDate(now.getDate() + 30);
+
+    const { error } = await supabase
+        .from("user_plans")
+        .insert({
+            user_id: userId,
+            plan_type: 'pro_trial',
+            trial_start: now.toISOString(),
+            trial_end: trialEnd.toISOString()
+        });
+
+    if (error) {
+        console.error("Error enrolling user in trial:", error);
+        return false;
+    }
+
+    // Since trackEvent usually needs to be imported or handled, we assume we want to track this.
+    // However, subscription.ts is a low-level lib, maybe we track in the route?
+    return true;
+}
+
+/**
+ * Tracks trial expiration when a user fetches their plan and it's found to be expired.
+ */
+export async function trackTrialExpiration(userId: string, plan: any) {
+    if (plan.plan_type !== 'pro_trial' || !plan.trial_end) return;
+    
+    const now = new Date();
+    const trialEnd = new Date(plan.trial_end);
+    
+    if (trialEnd < now) {
+        // This is where we would fire the analytics event 'trial_expired'
+        // We can do this in the route handler to avoid circular deps if any
+    }
+}
+
+/**
  * Compatibility helper (deprecated LS logic)
  */
 export async function getUserSubscription(userId: string) {

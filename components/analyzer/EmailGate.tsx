@@ -65,7 +65,11 @@ export default function EmailGate({
                 }),
             });
             const data = await res.json();
-            if (!data.ok) throw new Error(data.error ?? t("form.errorSave"));
+            if (!data.ok) {
+                // If the API provided a specific reason string, use it
+                const errorMsg = data.reason || data.error || t("form.errorSave");
+                throw new Error(errorMsg);
+            }
             onUnlocked(email, data.id);
         } catch (err: unknown) {
             setError(err instanceof Error ? err.message : t("form.errorNetwork"));

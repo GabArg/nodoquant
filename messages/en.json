@@ -3,6 +3,7 @@
         "home": "Home",
         "product": "Product",
         "howItWorks": "How It Works",
+        "exampleReport": "Example Report",
         "strategyScore": "Strategy Score",
         "faq": "FAQ",
         "analyzer": "Analyzer",
@@ -16,20 +17,23 @@
         "analyzeCta": "Analyze My Strategy"
     },
     "common": {
-        "analyzeCta": "Analyze My Strategy"
+        "analyzeCta": "Analyze My Strategy",
+        "ctaSubtext": "Free analysis • No account required",
+        "trustSupport": "CSV • MT4 • MT5 supported"
     },
     "home": {
-        "title": "Upload your trades. Discover if your strategy really has an edge.",
-        "subtitle": "Analyze your trading history with quantitative metrics, risk diagnostics and strategy stability insights.",
+        "title": "Discover Whether Your Trading Strategy Truly Has an Edge",
+        "subtitle": "Upload your trades and analyze your strategy with professional quantitative metrics and Monte Carlo validation.",
         "description": "NodoQuant analyzes your historical operations and calculates professional metrics including Strategy Score, Profit Factor, Expectancy and Drawdown.",
         "label": "The Quantitative Laboratory for Traders",
         "bullet1": "Upload your history (MT4 / MT5 / CSV)",
         "bullet2": "Receive a complete Trading Edge Report",
         "bullet3": "Discover your Strategy Score (0–100)",
-        "trustSignal1": "Works with MT4, MT5 and Binance exports",
-        "trustSignal2": "No broker connection required",
-        "trustSignal3": "Your data stays private",
+        "trustSignal1": "Quantitative Strategy Diagnostics",
+        "trustSignal2": "Monte Carlo Risk Simulation",
+        "trustSignal3": "Trade Edge Validation",
         "ctaPrimary": "Analyze My Strategy",
+        "ctaMicrocopy": "Free analysis • No account required",
         "ctaSample": "Try Demo Strategy",
         "ctaSecondary": "View Demo Report",
         "disclaimer": "NodoQuant develops software and performs quantitative analysis. No profitability or future results are guaranteed. Trading in financial markets carries risk of loss.",
@@ -68,16 +72,31 @@
         "cta": "Analyze My Strategy",
         "cta_note": "Free · CSV, MT4 or MT5 file"
     },
+    "snapshot": {
+        "label": "Case Study",
+        "title": "Professional Analysis result",
+        "desc": "How a professional diagnostic report looks after analyzing 400+ trades.",
+        "badge": "Verified Statistical Edge",
+        "expectancy": "Positive Expectancy Detected",
+        "summary": "The strategy demonstrates a robust statistical advantage with stable equity growth across multiple market cycles."
+    },
     "socialProof": {
-        "title": "Traders use NodoQuant to validate their strategies",
-        "desc": "Used by traders analyzing strategies worldwide",
-        "label": "Strategies Analyzed",
-        "counter": "Thousands"
+        "title": "Professional Grade Strategy Analysis",
+        "desc": "Built for Quantitative Precision",
+        "label": "Analysis Depth",
+        "counter": "Professional"
+    },
+    "tooltips": {
+        "expectancy": "The average amount you can expect to win (or lose) per trade.",
+        "profitFactor": "The total gross profit divided by the total gross loss.",
+        "maxDrawdown": "The maximum observed loss from a peak to a trough of a portfolio.",
+        "winRate": "The percentage of trades that resulted in a profit.",
+        "trades": "The total number of closed trades analyzed."
     },
     "strategyScore": {
         "label": "Evaluation",
         "title": "Your Strategy Score",
-        "desc": "The Strategy Score summarizes whether your system is weak, inconsistent, solid or statistically strong.",
+        "desc": "The Strategy Score evaluates the statistical strength of your trading strategy using key quantitative metrics like expectancy, profit factor, drawdown behavior and trade sample size.",
         "s1_range": "40 / 100",
         "s1_desc": "No Statistical Edge",
         "s2_range": "60 / 100",
@@ -121,353 +140,7 @@
         "label": "Start now",
         "title": "Test Your Trading Strategy for Free",
         "desc": "Upload your trading history and discover if your strategy really has an edge.",
-        "cta": "Analyze My Strategy",
-        "note": "CSV / MT4 / MT5 support"
-    },
-    "platforms": {
-        "title": "Works with the platforms you already use",
-        "helper": "Upload exports from MT4, MT5, Binance or your broker's CSV files."
-    },
-    "footerNote": {
-        "description": "The Quantitative Laboratory for Traders. Upload your trades and discover if your strategy really has a statistical edge.",
-        "product": "Product",
-        "resources": "Resources",
-        "legal": "Legal",
-        "terms": "Terms of Service",
-        "privacy": "Privacy Policy",
-        "cta_sample_report": "Sample Report",
-        "d1": "NodoQuant develops software and performs quantitative analysis.",
-        "d2": "No profitability or future financial results are guaranteed.",
-        "d3": "Trading in financial markets carries real risk of capital loss.",
-        "rights": "All rights reserved",
-        "disclaimer": "Backtesting results are historical and do not guarantee future performance. Always trade with capital you can afford to lose."
-    },
-    "testimonials": {
-        "title": "What traders say",
-        "t1_quote": "The Strategy Score helped me understand that my edge was real, but I needed to improve my risk management.",
-        "t2_quote": "Being able to analyze thousands of trades in seconds saved me months of manual backtesting.",
-        "t3_quote": "The Monte Carlo metrics gave me the confidence to safely increase my position sizes."
-    },
-    "sampleReport": {
-        "title": "See a Real Trading Edge Report",
-        "desc": "Explore an example of the quantitative report generated by NodoQuant and discover your strategy's true potential.",
-        "scoreLabel": "Strategy Score",
-        "scoreStatus": "Strong Edge",
-        "metrics": {
-            "winRate": "Win Rate",
-            "profitFactor": "Profit Factor",
-            "expectancy": "Expectancy",
-            "maxDrawdown": "Max Drawdown",
-            "trades": "Trades Analyzed"
-        },
-        "equityCurve": "Equity Curve",
-        "cta": "View Sample Report"
-    },
-    "edgeCalculator": {
-        "winRate": "Win Rate (%)",
-        "avgWin": "Avg Win ($ or R)",
-        "avgLoss": "Avg Loss ($ or R)",
-        "sampleSize": "Sample Size (Trades)",
-        "expectancyTitle": "Expectancy per Trade",
-        "profitFactor": "Profit Factor",
-        "edgeScore": "Edge Score",
-        "positiveEdge": "This system has a positive edge. You expect to gain {expectancy} units for every unit of risk.",
-        "negativeEdge": "This system has a negative edge. In the long run, this strategy will lose money regardless of luck.",
-        "cta": "Analyze Your Data →"
-    },
-    "seoTemplate": {
-        "defaultCta": "Analyze my strategy — free",
-        "howItWorks": "How it works",
-        "whatYouGet": "What you get",
-        "faqTitle": "Frequently asked questions",
-        "readyTitle": "Ready to discover your edge?",
-        "readyDesc": "Upload your trade history and get a full quantitative report in under 60 seconds.",
-        "noCreditCard": "No credit card required · Results in 60 seconds"
-    },
-    "pages": {
-        "strategyAnalyzer": {
-            "metadata": {
-                "title": "Trading Strategy Analyzer — Discover Your Real Trading Edge | NodoQuant",
-                "description": "Analyze any trading strategy instantly. Upload your MT4, MT5 or any CSV trade history. Calculate Win Rate, Profit Factor, Expectancy, and Max Drawdown for free.",
-                "keywords": "trading strategy analyzer, analyze trading strategy, forex analyzer, crypto analyzer, strategy performance analysis, backtesting analyzer"
-            },
-            "hero": {
-                "badge": "💎 Professional Analyzer",
-                "headline": "Strategy Analyzer — Discover Your Real Trading Edge",
-                "subheadline": "Stop guessing if your strategy works. Upload your trade history and get a professional analysis in under 60 seconds. Calculate your Win Rate, Profit Factor and Expectancy for free.",
-                "cta": "Analyze My Strategy Now — Free"
-            },
-            "steps": [
-                { "title": "Export CSV Data", "desc": "Export your trade history from your broker or platform in CSV or Excel format. We support MT4, MT5 and standard formats." },
-                { "title": "Automatic Parsing", "desc": "Upload your file to NodoQuant. Our system normalizes dates, symbols and P&L into R-units for standardized analysis." },
-                { "title": "Get Your Score", "desc": "Instantly see your Strategy Score (0-100) along with detailed metrics for win rate, profit factor and drawdowns." }
-            ],
-            "features": [
-                { "title": "Risk-Adjusted Performance", "desc": "We don't just look at total profit. We analyze your returns relative to risk taken, giving you a true picture of your edge." },
-                { "title": "Win Rate vs Expectancy", "desc": "Understand the relationship between how often you win and your average win/loss size. This is the key to long-term profitability." },
-                { "title": "Drawdown Protection", "desc": "Analyze your worst periods to ensure your strategy is survivable during inevitable market shifts." },
-                { "title": "Profit Factor Insights", "desc": "Calculate your gross profit over gross loss. A profit factor above 1.5 indicates a high-probability professional system." },
-                { "title": "R-Multiple Normalization", "desc": "We convert all trades into R-units so you can compare performance across different account sizes fairly." },
-                { "title": "Actionable Insights", "desc": "Identify which symbols, sessions or trade types are dragging down your performance and which are your core winners." }
-            ],
-            "faqs": [
-                { "q": "What is a Trading Strategy Analyzer?", "a": "A trading strategy analyzer is a software tool used by professional traders to evaluate the statistical performance of their trading history. It identifies if profits are due to luck or a real edge." },
-                { "q": "How many trades are needed to evaluate a strategy?", "a": "Statistically, you need at least 30 trades for a basic signal, but 100+ are recommended for high-confidence results." },
-                { "q": "What is a good profit factor?", "a": "A profit factor greater than 1.0 means you are profitable. Above 1.5 is excellent, and above 2.0 is world-class." },
-                { "q": "What is expectancy in trading?", "a": "Expectancy is the average amount you expect to win (or lose) per trade. It's calculated as (Win Rate × Average Win) − (Loss Rate × Average Loss)." }
-            ],
-            "sampleSection": {
-                "title": "What is a Trading Strategy Analyzer?",
-                "p1": "A **Trading Strategy Analyzer** is the most critical tool in a professional trader's arsenal. While most retail traders focus on finding the 'perfect entry', professionals focus on **expectancy** and **risk-adjusted returns**.",
-                "p2": "By using NodoQuant, you can determine if your recent winning streak was the result of a genuine **Trading Edge** or simply a run of luck. Conversely, an analyzer can show you if a losing streak is just normal statistical drawdown or a signal that your strategy no longer works.",
-                "h2_step": "How to Analyze your Strategy Step-by-Step",
-                "p_step": "Evaluating a strategy requires more than just looking at your account balance. Follow these steps:",
-                "steps": [
-                    "**Collect Data**: Export at least 50-100 trades from your broker.",
-                    "**Normalize to R**: Convert your P&L to R-multiples (Risk units). This removes the bias of changing position sizes.",
-                    "**Calculate Expectancy**: Use the formula: `(Win Rate % * Avg Win) - (Loss Rate % * Avg Loss)`.",
-                    "**Identify Variance**: Review your maximum drawdown to see if you can handle the strategy's volatility."
-                ],
-                "h2_why": "Why Strategy Analysis Matters for Your P&L?",
-                "p_why": "Without analysis, you're flying blind. Many traders abandon good strategies during a normal drawdown because they don't understand their strategy's **Max Drawdown** profile.",
-                "proTip": "Professional trading isn't about being right; it's about being profitable. An analyzer shifts your focus from the 'outcome' of a single trade to the 'process' of a series of trades.",
-                "ready": "Ready to see your real numbers?",
-                "readyCta": "Analyze My Strategy Now",
-                "features": {
-                    "support": "Multi-broker support",
-                    "instant": "Instant results",
-                    "free": "Always free"
-                },
-                "h2_compare": "Comparing Analyzers vs Trading Journals",
-                "p_compare": "While a trading journal is great for tracking your emotions, a **Strategy Analyzer** like NodoQuant focuses on quantitative output. Journals tell you *what* happened; Analyzers tell you *why* it's mathematically profitable.",
-                "table": {
-                    "feature": "Feature",
-                    "journal": "Trading Journal",
-                    "analyzer": "Strategy Analyzer",
-                    "goal": "Primary Goal",
-                    "goal_val1": "Behavioral tracking",
-                    "goal_val2": "Statistical verification",
-                    "focus": "Data Focus",
-                    "focus_val1": "Screenshots & Notes",
-                    "focus_val2": "P&L & R-Multiples",
-                    "metric": "Key Metric",
-                    "metric_val1": "Emotional score",
-                    "metric_val2": "Expectancy & Profit Factor"
-                },
-                "finalLink": "Upload your real trade data and analyze your strategy →"
-            }
-        },
-        "cryptoStrategyAnalyzer": {
-            "metadata": {
-                "title": "Crypto Strategy Analyzer — Backtest Your Crypto Edge | NodoQuant",
-                "description": "Test your crypto trading strategy with quantitative analysis. Upload your Binance, Bybit or exchange history and get Win Rate, Profit Factor, Expectancy and a Strategy Score in 60 seconds.",
-                "keywords": "crypto strategy analyzer, crypto backtesting, binance strategy analysis, crypto trading edge, crypto profit factor, bitcoin strategy tester"
-            },
-            "hero": {
-                "badge": "₿ Crypto Strategy Analyzer",
-                "headline": "Does Your Crypto Strategy Have a Real Statistical Edge?",
-                "subheadline": "Upload your Binance, Bybit or exchange trade history and get a full quantitative analysis in under 60 seconds. Free, private and instant.",
-                "cta": "Analyze my crypto strategy — free"
-            },
-            "steps": [
-                { "title": "Export your crypto history", "desc": "Download your closed trades CSV from Binance, Bybit, Kraken or any exchange. Most offer this under Account → Trade History." },
-                { "title": "Upload to NodoQuant", "desc": "Drop the file into the analyzer. Our parser handles multiple exchange formats and normalizes columns automatically." },
-                { "title": "Get your Strategy Score", "desc": "Receive a full report: Strategy Score, Equity Curve, Win Rate, Profit Factor, Expectancy, Max Drawdown and statistical confidence rating." }
-            ],
-            "features": [
-                { "title": "Multi-Exchange Support", "desc": "Compatible with Binance, Bybit, Kraken, OKX and any exchange that exports trade history in CSV." },
-                { "title": "Strategy Score (0–100)", "desc": "A single score catching edge strength, risk-adjusted performance and how reliable your crypto strategy is." },
-                { "title": "Equity Curve Visualization", "desc": "See your cumulative P&L. Identify if your crypto strategy has an upward trend or was just a lucky streak." },
-                { "title": "Win Rate & Expectancy", "desc": "Calculate your true win rate and expected value per trade — the foundation of any profitable crypto system." },
-                { "title": "Drawdown Analysis", "desc": "Understand the worst drawdown your strategy produced to evaluate if it fits your risk tolerance." },
-                { "title": "Statistical Confidence", "desc": "Know if your results are statistically significant or just noise from a small sample of trades." }
-            ],
-            "faqs": [
-                { "q": "Which crypto exchanges are supported?", "a": "Any exchange that exports trade history as CSV — including Binance, Bybit, OKX, Kraken and Bitget. We also accept generic CSV formats." },
-                { "q": "Can I analyze both spot and futures trades?", "a": "Yes. NodoQuant analyzes both spot and derivatives (futures/perps) history from major exchanges." },
-                { "q": "How many crypto trades do I need for a reliable analysis?", "a": "At least 30 trades for basic results, 100+ for high-confidence evaluation. We display a warning if your sample is too small." },
-                { "q": "Is my crypto portfolio data secure?", "a": "Your upload contains only historical records — no API keys, balances or personal information are required." },
-                { "q": "Can I test my Bitcoin or altcoin strategies?", "a": "Yes. Any crypto pair is supported — BTC, ETH, SOL, altcoins and derivatives. Results are currency-agnostic." }
-            ],
-            "sampleScoreCard": {
-                "title": "Sample Strategy Report",
-                "desc": "This is how your analysis looks — generated from real BTC trading data.",
-                "typeLabel": "Crypto Analysis",
-                "scoreLabel": "Strategy Score",
-                "tradesLabel": "trades",
-                "footer": "analyzed with NodoQuant"
-            }
-        },
-        "forexStrategyAnalyzer": {
-            "metadata": {
-                "title": "Forex Strategy Analyzer — Test Your Trading Edge | NodoQuant",
-                "description": "Analyze your Forex trading strategy with statistical precision. Upload your MT4/MT5 history and calculate Win Rate, Profit Factor, Expectancy and Max Drawdown. Free and secure.",
-                "keywords": "forex strategy analyzer, EURUSD strategy analysis, forex expectancy calculator, MT4 strategy analysis, MT5 trading analyzer, forex trading edge"
-            },
-            "hero": {
-                "badge": "🌍 Forex Specialist",
-                "headline": "Forex Strategy Analyzer — Analyze Your Real Trading Edge",
-                "subheadline": "Upload your Metatrader (MT4/MT5) history and instantly calculate your Win Rate, Profit Factor and Expectancy. Stop guessing and start trading with statistical confidence.",
-                "cta": "Analyze my Forex strategy — free"
-            },
-            "steps": [
-                { "title": "Export MT4/MT5 History", "desc": "Save your history as an HTML or CSV file from Metatrader 4 or 5. We support standard broker formats through our smart parser." },
-                { "title": "Data Normalization", "desc": "NodoQuant converts pips and profit into R-multiples. This allows you to evaluate your edge regardless of position size or leverage." },
-                { "title": "Professional Audit", "desc": "Get a full quantitative report showing your true win rate, profit factor, max drawdown and expectancy per trade." }
-            ],
-            "features": [
-                { "title": "Global FX Support", "desc": "Analyze majors (EURUSD, GBPUSD), minors and exotics. Filter performance by symbol to find which pairs you trade best." },
-                { "title": "Expectancy per Pip", "desc": "Understand how much you or your EA expects to win per trade relative to risk taken. Positive expectancy is non-negotiable." },
-                { "title": "Drawdown Risk Analysis", "desc": "Forex markets are volatile. We calculate your worst peak-to-trough drop so you can manage your leverage safely." },
-                { "title": "Native Metatrader Support", "desc": "Our parser is optimized for MT4/MT5 reports. Simply drag and drop your file directly into the analyzer." },
-                { "title": "Statistical Confidence", "desc": "Never trust a strategy with a small sample size. We tag datasets with fewer than 50 trades to warn against randomness." },
-                { "title": "Strategy Score", "desc": "A single number from 0 to 100 telling you if your system is professional-grade, average or high-risk." }
-            ],
-            "faqs": [
-                { "q": "How do I analyze an MT4/MT5 strategy?", "a": "Go to the 'Account History' tab in Metatrader, right-click and select 'Save as Detailed Report'. Then upload that HTML or CSV file to NodoQuant." },
-                { "q": "Is analysis by pips or R-multiples better?", "a": "R-multiples are superior. Professional traders use R because pips don't account for stop-loss distance or position sizing." },
-                { "q": "Can I analyze data from Myfxbook or MetaStats?", "a": "Yes, if you can export the data to CSV. NodoQuant is designed to go deeper than basic journals, providing deep quantitative insights." },
-                { "q": "What is a good profit factor for Forex?", "a": "In the FX market, a profit factor between 1.2 and 1.8 is considered healthy. Anything above 2.0 is exceptionally strong." },
-                { "q": "Do you support EURUSD specifically for analysis?", "a": "Yes. You can use our symbol filtering to analyze only EURUSD trades and see if your edge differs between pairs." }
-            ],
-            "content": {
-                "h2_what": "What is a Forex Strategy Analyzer?",
-                "p1": "A **Forex Strategy Analyzer** is a quantitative tool designed specifically for the unique characteristics of the currency market. Unlike standard calculators, an FX analyzer must handle 24/5 liquidity and measure performance across different pairs.",
-                "p2": "For Metatrader users (MT4/MT5), NodoQuant provides an automated way to transform a 'Detailed Report' into a professional quantitative audit.",
-                "h3_why": "Why Forex Traders Fail",
-                "p_why": "The #1 reason Forex traders lose money isn't 'bad entries'. It's **poor risk management combined with a lack of statistical awareness**.",
-                "p_calc": "By using our **Forex Expectancy Calculator**, you learn the limits of your strategy. If you know your system has a Max Drawdown of 15%, you won't panic at an 8% weekly loss.",
-                "card_mt": { "title": "MT4/MT5 Compatibility", "desc": "Export your history from Metatrader and we handle the rest. No manual input." },
-                "card_pair": { "title": "Pair-wise Filtering", "desc": "Analyze EURUSD strategies separately from your JPY trades. Find your niche." },
-                "h3_master": "Mastering the EURUSD Analysis",
-                "p_master": "EURUSD is the most liquid pair in the world. A **Forex Analyzer** allows you to see if your edge is consistent across sessions (London vs New York) and symbols.",
-                "ready": "Analyze your Forex EA or Manual History",
-                "readyCta": "Upload My Forex Trades",
-                "readyFoot": "Supports Metatrader, TradingView and standard CSVs",
-                "h2_metrics": "Key Quantitative Metrics for Forex",
-                "metric_stability": "Recovery Factor: Net Profit / Max Drawdown. Tells you how fast you recover.",
-                "h3_leverage": "Leverage and your Equity Curve",
-                "p_leverage": "Forex is a highly leveraged market. By analyzing your **Equity Curve**, you can visually see the impact of volatility and decide if your position sizing is responsible.",
-                "leaderboardLink": "See Strategy Rankings",
-                "finalLink": "Analyze your Forex strategy performance now →"
-            }
-        },
-        "tradingEdgeCalculator": {
-            "metadata": {
-                "title": "Trading Edge Calculator — Know if Your Strategy is Profitable | NodoQuant",
-                "description": "Calculate your trading expectancy and profit factor with our free calculator. Learn the formula for success and how win rate impacts your returns.",
-                "keywords": "trading edge calculator, trading expectancy calculator, profit factor calculator, trading expectancy formula, calculate trading edge"
-            },
-            "hero": {
-                "badge": "🧮 Statistical Calculator",
-                "headline": "Trading Edge Calculator — Know if Your Strategy is Profitable",
-                "subheadline": "Use our interactive tool to calculate your statistical edge. Discover your expectancy, profit factor and whether your risk-to-reward is sustainable.",
-                "cta": "Calculate My Real Edge — Free"
-            },
-            "steps": [
-                { "title": "Enter Your Stats", "desc": "Use the tool below to input your win rate, average win, and average loss to see your potential expectancy." },
-                { "title": "Upload Real Data", "desc": "While a calculator is great for estimation, NodoQuant lets you upload real history for a precise calculation based on performance." },
-                { "title": "Identify your Edge", "desc": "Our system calculates your Strategy Score, identifying if you have a genuine edge or if it's simply variance." }
-            ],
-            "features": [
-                { "title": "Expectancy Calculator", "desc": "Your expected profit or loss per trade. Positive expectancy is the bedrock of trading." },
-                { "title": "Profit Factor", "desc": "The ratio of gross profits to gross losses. Any value above 1.5 is considered top-tier." },
-                { "title": "Win Rate Analysis", "desc": "See how your win percentage interacts with your risk-reward. You don't need a high win rate to be profitable." },
-                { "title": "Drawdown Awareness", "desc": "Estimate your potential equity risk. Understanding drawdown is key to surviving losing streaks." },
-                { "title": "Edge Score (0–100)", "desc": "Get a unique score measuring the overall robustness and reliability of your trading edge." },
-                { "title": "R-Multiple Logic", "desc": "Learn to think in risk units (R) instead of dollars, the secret of professional traders." }
-            ],
-            "faqs": [
-                { "q": "What is a trading edge?", "a": "An edge is a statistical advantage that over a large sample of trades makes your strategy profitable. It means the probability of success is higher than failure across time, combined with favorable risk-to-reward." },
-                { "q": "What is the trading expectancy formula?", "a": "Expectancy = (Win Rate × Average Win) - (Loss Rate × Average Loss). If the result is positive, your strategy has an edge." },
-                { "q": "What is a good profit factor?", "a": "Above 1.0 means you're profitable. Above 1.5 is great, and above 2.0 is professional level." },
-                { "q": "How many trades do I need for a reliable calculation?", "a": "At least 100 trades are recommended to have high statistical confidence. Small samples are often skewed by luck." },
-                { "q": "Can I use this calculator for Forex and Crypto?", "a": "Yes. Expectancy and edge calculations are market-agnostic. They work the same for Forex, stocks, crypto and futures." }
-            ],
-            "content": {
-                "h2_interactive": "Interactive Edge Calculator",
-                "p_interactive": "Adjust the values to see how different metrics impact your strategy's expectancy.",
-                "h2_what": "What is a Trading Edge?",
-                "p1": "In the world of professional speculation, a **Trading Edge** is much more than a 'setup' or a signal. It's a **statistical advantage** that allows you to win over an extended series of trades.",
-                "p2": "Having an edge means your **Expectancy** is positive. It implies that for every dollar you put up, you expect to receive that dollar back plus a surplus.",
-                "h3_how": "How to Calculate Your Trading Expectancy",
-                "p_how": "Expectancy is the holy grail of trading math. It combines your **Win Rate** and your **Risk-to-Reward Ratio**.",
-                "p_example": "Example: If you win 40% of the time, and your average win is $300 while your average loss is $100:",
-                "p_result": "This means you earn an average of **$60 per trade** across a large sample size.",
-                "h3_not_enough": "Why a Calculator Isn't Enough",
-                "p_calc_limit": "A calculator is perfect for **planning** and **projecting**. However, real trading includes slippage, commissions and emotional errors.",
-                "p_reality": "This is why professional traders use NodoQuant to analyze their **real history**. By uploading your trades, you move from 'theory' to 'reality'.",
-                "card_csv": { "title": "Have 30+ trades in a CSV?", "desc": "Stop guessing your stats. Get your real Strategy Score now.", "cta": "Upload My Trade History" },
-                "h2_winrate": "The Relationship Between Win Rate and R:R",
-                "p_winrate": "A common mistake is obsessing over a high win rate. In reality, a strategy with a 25% win rate can be more profitable if the risk-to-reward ratio is high enough.",
-                "h3_metrics": "Key Metrics for your Edge Report",
-                "leaderboardLink": "See Pricing & Plans",
-                "finalLink": "Calculate your edge with real trade data →"
-            }
-        }
-    },
-    "pricing": {
-        "title": "Level up your trading with {brand}",
-        "desc": "Unlock advanced metrics, Monte Carlo simulations and unlimited analysis to refine your edge.",
-        "errorCheckout": "Could not start checkout. Please try again.",
-        "errorNetwork": "Network error. Please try again.",
-        "month": "mo",
-        "cancelAnytime": "Cancel anytime",
-        "recommended": "RECOMMENDED",
-        "activePlan": "Active Plan",
-        "basePlan": "Base Plan",
-        "currentPlan": "Current Plan",
-        "upgradeBtn": "Upgrade to Pro ✨",
-        "alreadyPro": {
-            "title": "You're already Pro!",
-            "desc": "You have full access to all NodoQuant Pro's advanced tools.",
-            "cta": "Go to Dashboard →"
-        },
-        "free": {
-            "name": "Free",
-            "features": [
-                "1 saved analysis",
-                "Up to 500 trades per analysis",
-                "Public reports & Leaderboard",
-                "Monte Carlo Simulator",
-                "Advanced Edge Alerts",
-                "Strategy Journal"
-            ]
-        },
-        "pro": {
-            "name": "NodoQuant Pro",
-            "features": [
-                "Unlimited saved analyses",
-                "Unlimited trades per analysis",
-                "Automatic Evolution Comparison",
-                "Edge Alerts (Consistency & Risk)",
-                "Monte Carlo Simulator (Risk of Ruin)",
-                "Interactive Strategy Journal",
-                "Access to future Pro features"
-            ]
-        }
-    },
-    "dashboard": {
-        "title": "Welcome back",
-        "greeting": "Welcome back",
-        "subtitle": "Here is the current state of your quant strategies.",
-        "upgrade": "Upgrade to Pro ✨",
-        "stats": {
-            "strategies": "Strategies",
-            "totalAnalyses": "Total Analyses",
-            "avgWinrate": "Avg Winrate",
-            "bestPF": "Best Profit Factor"
-        },
-        "history": {
-            "title": "Strategy History",
-            "analyzeNew": "Analyze new →",
-            "empty": "You don't have any analyzed strategies yet.",
-            "tryAnalyzer": "Try Analyzer →",
-            "analysis": "Analysis",
-            "trades": "Trades",
-            "winrate": "Winrate",
-            "profitFactor": "Profit F."
-        }
+        "note": "Free analysis • No account required"
     },
     "analyzer": {
         "metadata": {
@@ -499,37 +172,119 @@
                 },
                 "mt5": {
                     "label": "MetaTrader 5",
-                    "detail": "Export history directly from the 'Deals' terminal tab.",
+                    "detail": "Export your 'Deals' history direct from the terminal.",
                     "badge": "Recommended"
                 },
                 "binance": {
                     "label": "Binance Spot",
                     "detail": "Import your trades via Binance CSV export.",
                     "badge": "Crypto"
-                },
-                "default": {
-                    "label": "Select your source",
-                    "detail": "We support multiple formats for seamless analysis.",
-                    "badge": "Strategy"
                 }
             },
             "trust": {
-                "noData": "No data storage",
-                "fast": "Fast analysis",
-                "free": "100% Free"
+                "noData": "Local Processing",
+                "fast": "Results in 60s",
+                "free": "Free Analysis"
             }
         },
-        "monteCarlo": {
-            "labels": {
-                "worst": "Worst Case (P5)",
-                "average": "Average Case",
-                "best": "Best Case (P95)",
-                "riskOfRuin": "Risk of Ruin"
+        "wizard": {
+            "heroTitle": "Discover Whether Your Trading Strategy Truly Has an Edge",
+            "heroDescription": "Upload your trades and analyze your strategy with professional quantitative metrics and Monte Carlo validation.",
+            "diagnosticOutcome": "Diagnostic Outcome",
+            "diagnosticEdgeFound": "Mathematical edge detected. The strategy demonstrates a reliable statistical advantage in the provided sample.",
+            "diagnosticInconsistent": "Inconsistent edge detected. The performance fluctuates significantly; further stabilization is required.",
+            "diagnosticNoEdge": "No statistical edge detected. The current data sample suggests a negative or random expectancy.",
+            "sampleDataCta": "Use sample data (test analysis)",
+            "errorReading": "Analysis failed:",
+            "nextStepsTitle": "Next Diagnostics",
+            "nextStepsDescGood": "The mathematical foundation is solid. Run further simulations to discover stability under heavy variance.",
+            "nextStepsDescBad": "Statistical edge not detected. Review recent data samples or adjust risk parameters.",
+            "steps": {
+                "upload": "Upload",
+                "mapping": "Mapping",
+                "analysis": "Analysis",
+                "report": "Report"
+            },
+            "viewReport": "Full Diagnostic Report",
+            "importAnother": "Analyze another file",
+            "freeTool": "Professional Diagnostic Tool",
+            "loading": {
+                "parsing": "Reading trading history...",
+                "normalizing": "Normalizing risk units (R)...",
+                "diagnostics": "Running statistical diagnostics...",
+                "finalizing": "Generating Edge Score..."
+            },
+            "monteCarlo": {
+                "label": "Monte Carlo",
+                "title": "Monte Carlo Analysis",
+                "desc": "Simulate thousands of variations to discover real-world robustness.",
+                "cta": "Run Monte Carlo"
+            },
+            "propFirm": {
+                "label": "Prop Firm",
+                "title": "Prop Firm Simulator",
+                "desc": "Test your strategy against industry-standard funding challenges.",
+                "cta": "Launch Simulator"
+            },
+            "saveStrategy": {
+                "label": "Save Progress",
+                "title": "Save to Strategy Library",
+                "desc": "Archive your results and track performance evolution over time.",
+                "cta": "Save Strategy"
+            },
+            "crossSell": {
+                "label": "Need custom automation?",
+                "title": "Expert Quant Development",
+                "desc": "Our team builds professional custom bots and backtesting indicators.",
+                "cta": "Contact Our Dev Team"
             }
         },
-        "simulator": {
+        "sourceSelector": {
+            "title": "Strategy Diagnostics",
+            "description": "Select your data source to begin the quantitative analysis. All methods produce the same high-precision diagnostic report.",
+            "outcomeNote": "Each method results in the same professional report",
+            "privacyNote": "Local processing: your trading data never leaves your browser",
+            "soon": "Coming Soon",
+            "sources": {
+                "csv": {
+                    "label": "Upload CSV",
+                    "desc": "Any CSV or TSV export from your broker, EA backtester, or trading journal."
+                },
+                "mt4": {
+                    "label": "MT4 Statement",
+                    "desc": "Import an account statement in HTML or CSV exported directly from MetaTrader 4."
+                },
+                "mt5": {
+                    "label": "MT5 Statement",
+                    "desc": "Import a Deals report in HTML or CSV exported from MetaTrader 5."
+                },
+                "binance": {
+                    "label": "Binance API",
+                    "desc": "Connect via API key to import Spot and/or USDT-M Futures trade history automatically."
+                },
+                "generic": {
+                    "label": "More Brokers",
+                    "desc": "Interactive Brokers, Bybit, OKX, KuCoin and more — coming soon."
+                }
+            }
+        },
+        "propFirm": {
             "title": "Prop Firm Simulator",
             "subtitle": "Test your strategy against industry-standard funding challenges.",
+            "dailyViolation": "Daily Violation Risk",
+            "maxViolation": "Max Violation Risk",
+            "consistency": "Consistency Score",
+            "verdicts": {
+                "strong": "Highly Ready",
+                "good": "Standard Pass",
+                "borderline": "High Risk Pass",
+                "not_ready": "Not Ready"
+            },
+            "metrics": {
+                "target": "Profit Target",
+                "limit": "Drawdown Limit",
+                "days": "Est. Duration"
+            },
             "modes": {
                 "personal": {
                     "label": "Personal Account",
@@ -561,51 +316,12 @@
                 "passProb": "Pass Probability",
                 "failDaily": "Daily Drawdown Risk",
                 "failMax": "Max Drawdown Risk",
-                "avgTrades": "Expected Trades to Target",
-                "disclaimer": "Outcome based on {count} bootstrap simulations of your historical trades."
-            }
-        },
-        "wizard": {
-            "freeTool": "Free tool",
-            "title": "Strategy Analyzer",
-            "description": "Import your trading history and get a complete quantitative analysis of your strategy. Supports CSV, MT4/MT5 statements, and Binance API.",
-            "steps": {
-                "upload": "Upload",
-                "mapping": "Mapping",
-                "analysis": "Analysis",
-                "report": "Report"
+                "avgTrades": "Estimated Trades",
+                "disclaimer": "Based on a Monte Carlo simulation of {count} trades."
             },
-            "sampleDataCta": "Try with sample data",
-            "errorReading": "Error reading file:",
-            "nextStepsTitle": "What would you like to do next?",
-            "nextStepsDescGood": "Your strategy shows a solid statistical edge. These tools can help you validate and scale this performance.",
-            "nextStepsDescBad": "Your strategy currently doesn't show a clear statistical edge. These tools can help you analyze its robustness in further depth.",
-            "monteCarlo": {
-                "label": "Robustness",
-                "title": "Monte Carlo Simulation",
-                "desc": "Simulate thousands of variations of your strategy to evaluate its real-world robustness.",
-                "cta": "Run Simulation"
-            },
-            "propFirm": {
-                "label": "Challenge",
-                "title": "Prop Firm Simulator",
-                "desc": "Test if your strategy could pass a prop firm challenge with various risk levels.",
-                "cta": "Simulate Challenge"
-            },
-            "saveStrategy": {
-                "label": "Analysis",
-                "title": "Save Strategy",
-                "desc": "Save this strategy to your private profile and track its performance over time.",
-                "cta": "Save Strategy",
-                "proOnly": "PRO ONLY"
-            },
-            "viewReport": "Unlock full analysis",
-            "importAnother": "Import another file",
-            "crossSell": {
-                "label": "Want to automate it?",
-                "title": "We convert your strategy into a bot for MT5",
-                "desc": "Professional backtesting, parameter optimization and .ex5 delivery without exposing your code.",
-                "cta": "See services & pricing"
+            "proLocked": {
+                "title": "Simulator Results Locked",
+                "desc": "Access Monte Carlo edge validation and prop firm passing probabilities with NodoQuant PRO."
             }
         },
         "gate": {
@@ -634,58 +350,127 @@
             "title": "Full Report",
             "subtitle": "Quantitative analysis",
             "sentTo": "Report sent to",
-            "pro": {
-                "label": "PRO FEATURE",
-                "lockedTitle": "Unlock Professional Metrics",
-                "lockedDesc": "Monte Carlo simulation and advanced risk metrics are available for our PRO members. Take your analysis to the next level.",
-                "upgradeCta": "Upgrade to PRO"
+            "visualizations": {
+                "title": "Performance Visualizations",
+                "tradesDistribution": "Trade Distribution (P&L)",
+                "winners": "Winners",
+                "losers": "Losers"
             },
-            "performance": {
-                "title": "Performance Metrics",
+            "disclaimer": "Analysis results are historical and do not guarantee future performance. Backtesting has inherent limitations. Always trade with capital you can afford to lose.",
+            "diagnosis": {
+                "title": "Strategy Diagnosis",
+                "scoreTitle": "Strategy Score",
+                "scoreSubtitle": "Statistical evaluation of your strategy based on trade distribution, profitability metrics, and risk.",
+                "verdict": "Verdict:",
+                "strongEdge": "Strong Edge",
+                "weakEdge": "Weak Edge",
+                "noEdge": "No Edge",
+                "unstableEdge": "Unstable Edge",
+                "insufficientSample": "Insufficient Sample",
+                "strongDesc": "Your strategy demonstrates a statistically significant positive expectancy and consistent performance.",
+                "weakDesc": "The strategy shows positive expectancy but statistical confidence is currently limited.",
+                "noDesc": "This strategy does not demonstrate a reliable statistical advantage.",
+                "unstableDesc": "The strategy shows positive signals but performance stability is inconsistent.",
+                "insufficientDesc": "A minimum of 30 trades is required for a statistically significant diagnosis.",
+                "edgeContext": "Edge Confidence estimates how likely it is that profitability is due to skill rather than luck."
+            },
+            "keySignals": {
+                "title": "Key Signals",
                 "expectancy": "Expectancy",
-                "perTrade": "per trade",
-                "expectancyTip": "Average profit or loss expected for each operation based on historical performance.",
-                "trades": "Analyzed trades",
+                "profitFactor": "Profit Factor",
                 "winRate": "Win Rate",
-                "profitFactor": "Profit Factor"
+                "maxDrawdown": "Max Drawdown",
+                "sampleSize": "Trades analyzed",
+                "tooltips": {
+                    "expectancy": "Average profit/loss per trade. A positive value is essential.",
+                    "profitFactor": "Total gross profit divided by total gross loss. > 1.5 is professional grade.",
+                    "winRate": "Percentage of winning trades. Should be balanced with risk/reward ratio.",
+                    "maxDrawdown": "The largest peak-to-valley drop. Critical for risk management.",
+                    "sampleSize": "Number of trades analyzed. Larger samples provide higher confidence."
+                }
+            },
+            "riskOverview": {
+                "title": "Risk Overview",
+                "maxDrawdown": "Max Drawdown",
+                "riskOfRuin": "Risk of Ruin",
+                "sharpe": "Sharpe Ratio",
+                "skewness": "Skewness (Tail Risk)",
+                "recoveryFactor": "Recovery Factor"
+            },
+            "stability": {
+                "title": "Edge Stability Over Time",
+                "subtitle": "Monitoring performance consistency across recent trade samples."
+            },
+            "health": {
+                "title": "Edge Health Status",
+                "stable": "Stable Edge",
+                "moderate": "Moderate Drift",
+                "drift": "High Degradation",
+                "score": "Health Score"
             },
             "monteCarlo": {
-                "title": "Monte Carlo (1,000 simulations)",
-                "worstCase": "Worst case (5th percentile)",
-                "averageCase": "Average case (median)",
-                "bestCase": "Best case (95th percentile)",
-                "maxDrawdown": "Max. Drawdown (5th percentile)",
+                "title": "Advanced Risk Analysis (PRO)",
+                "worstCase": "Worst Case (P5)",
+                "averageCase": "Average Case (Median)",
+                "bestCase": "Best Case (P95)",
+                "maxDrawdown": "Max. Drawdown (P5)",
                 "labels": {
                     "worst": "Worst Case (P5)",
                     "average": "Average Case",
                     "best": "Best Case (P95)",
-                    "riskOfRuin": "Risk of Ruin"
+                    "riskOfRuin": "Risk of Ruin",
+                    "initial": "Initial",
+                    "operation": "Operation"
                 },
-                "desc": "Simulate thousands of variations of your strategy to evaluate its real-world robustness."
+                "desc": "Simulate thousands of possible future outcomes and understand worst-case drawdowns before risking real capital."
             },
-            "risk": {
-                "title": "Risk Metrics",
-                "riskOfRuin": "Risk of Ruin",
-                "riskOfRuinTip": "Estimated probability that the strategy eventually loses its trading capital given its historical performance.",
-                "maxLosingStreak": "Max. losing streak",
-                "avgDrawdown": "Average Drawdown",
-                "avgDrawdownTip": "The average drop from a peak to a valley during the period analyzed.",
-                "recoveryFactor": "Recovery Factor",
-                "recoveryFactorTip": "Measures the strategy's ability to recover from drawdowns (Net Profit / Maximum Drawdown).",
-                "profitToDrawdown": "Profit to Drawdown Ratio",
-                "profitToDrawdownTip": "Ratio between total profit and worst drop experienced.",
-                "recommendedRisk": "Recommended risk / operation",
-                "trades": "trades"
+            "propFirm": {
+                "title": "Prop Firm Readiness (PRO)",
+                "subtitle": "Check if your strategy can pass prop firm rules before risking a real challenge account.",
+                "cta": "Run Challenge Simulation"
             },
-            "visualizations": "Visualizations",
+            "pro": {
+                "label": "PRO Feature",
+                "lockedTitle": "Deep Intelligence Locked",
+                "lockedDesc": "Unlock advanced risk analysis to simulate thousands of future trajectories and estimate worst-case scenarios.",
+                "upgradeCta": "Start PRO Trial",
+                "upgradeSubtitle": "30 days free"
+            },
             "actions": {
-                "title": "Next steps",
-                "contextGood": "Your strategy shows a solid statistical edge. These tools can help you validate and scale this performance.",
-                "contextBad": "Your strategy currently doesn't show a clear statistical edge. These tools can help you analyze its robustness in further depth.",
+                "title": "Next Steps",
+                "copySummary": "Copy Summary",
+                "copySuccess": "Copied!",
                 "downloadCert": "Download Certificate",
-                "propFirmSim": "Prop Firm Simulation",
+                "propFirmSim": "Prop Firm Challenge Simulation (PRO)",
+                "propFirmSubtitle": "Check if this strategy would survive common prop firm rules.",
                 "compare": "Compare Strategies",
                 "publish": "Publish Strategy"
+            },
+            "sharing": {
+                "shareX": "Share on X"
+            },
+            "share": {
+                "title": "NodoQuant Strategy Analysis"
+            },
+            "evolution": {
+                "title": "Strategy Evolution",
+                "desc": "Tracking your statistical performance changes over time with different sample sizes.",
+                "reqTrades": "Requires at least {count} trades for valid analysis",
+                "lastX": "Last {count}"
+            },
+            "proBenefits": {
+                "title": "Unlock Advanced Strategy Intelligence",
+                "monteCarlo": "Monte Carlo Simulation",
+                "propFirm": "Prop Firm Challenge Simulator",
+                "comparison": "Strategy Comparison",
+                "publishing": "Strategy Publishing",
+                "storage": "Strategy Storage"
+            },
+            "share": {
+                "title": "NodoQuant Strategy Analysis",
+                "edgeConfidence": "Diagnosis",
+                "profitFactor": "Profit Factor",
+                "sampleSize": "Trades analyzed"
             },
             "disclaimer": "Analysis results are historical and do not guarantee future performance. Backtesting has inherent limitations. Always trade with capital you can afford to lose."
         },
@@ -727,8 +512,10 @@
             "formatBinance": "Binance",
             "formatCsv": "CSV Import",
             "metrics": {
+                "score": "Strategy Score",
                 "winrate": "Win Rate",
                 "profitFactor": "Profit Factor",
+                "expectancy": "Expectancy",
                 "maxDrawdown": "Max Drawdown",
                 "netPnl": "Net P&L"
             },
@@ -775,7 +562,169 @@
                         "tcTip": "Statistical significance of your results."
                     }
                 }
+            },
+            "diagnosis": {
+                "title": "Strategy Diagnosis",
+                "badgeLabel": "Diagnosis",
+                "strongEdge": {
+                    "label": "Strong Statistical Edge Detected",
+                    "icon": "✅",
+                    "explanation": "Your strategy shows exceptional statistical robustness and risk control."
+                },
+                "weakEdge": {
+                    "label": "Limited Statistical Edge",
+                    "icon": "📈",
+                    "explanation": "Your strategy demonstrates a small edge that may be vulnerable to market changes."
+                },
+                "unstableEdge": {
+                    "label": "Unstable Performance",
+                    "icon": "⚠️",
+                    "explanation": "The performance varies significantly across cycles; the edge is not yet stable."
+                },
+                "noEdge": {
+                    "label": "No Reliable Edge Detected",
+                    "icon": "❌",
+                    "explanation": "Current data does not demonstrate a reliable statistical advantage."
+                },
+                "insufficientSample": {
+                    "label": "Insufficient Data Sample",
+                    "icon": "📊",
+                    "explanation": "At least 30 trades are required for a statistically relevant diagnosis."
+                }
+            },
+            "interpretation": {
+                "title": "What This Means",
+                "strongEdge": [
+                    "Strategy shows solid statistical edge",
+                    "Risk of ruin is exceptionally low",
+                    "Performance is stable across cycles"
+                ],
+                "weakEdge": [
+                    " Edge exists but remains marginal",
+                    "Sensitive to slippage or high spreads",
+                    "Requires optimization of R:R"
+                ],
+                "unstableEdge": [
+                    "Performance varies significantly",
+                    "Recent metrics differ from baseline",
+                    "Higher probability of deep drawdowns"
+                ],
+                "noEdge": [
+                    "Losses outweigh gains statistically",
+                    "Expectancy is random or negative",
+                    "High dependency on individual wins"
+                ],
+                "insufficientSample": [
+                    "More operations are needed",
+                    "Metrics are prone to high variance",
+                    "Diagnosis is purely preliminary"
+                ]
+            },
+            "nextSteps": {
+                "title": "Suggested Next Step",
+                "strongEdge": "Run a Prop Firm simulation to see if your strategy can scale professionally.",
+                "weakEdge": "Conduct a deep dive into losing trades to refine your entry criteria.",
+                "unstableEdge": "Reduce position sizes until performance stabilizes across the next 30 trades.",
+                "noEdge": "Review your core logic; the current data suggest a negative edge.",
+                "insufficientSample": "Continue trading with minimum risk until reaching 50-100 trades."
+            },
+            "tooltips": {
+                "score": "The Strategy Score combines metrics like Profit Factor and Expectancy to assess strategy quality.",
+                "pf": "The ratio of gross profit to gross loss. A PF > 1.4 suggests a healthy statistical edge.",
+                "expectancy": "The average amount you expect to win (or lose) per dollar risked.",
+                "maxDrawdown": "The peak-to-valley percentage drop in your account equity during analysis."
             }
+        },
+        "edgeConfidence": {
+            "title": "Edge Confidence",
+            "tooltip": "Edge Confidence estimates how statistically reliable your strategy's advantage is.",
+            "levels": {
+                "none": "No Edge",
+                "inconclusive": "Inconclusive",
+                "weak": "Weak Edge",
+                "strong": "Strong Edge",
+                "robust": "Highly Robust Edge"
+            }
+        },
+        "robustness": {
+            "title": "Robustness Level",
+            "levels": {
+                "fragile": "Fragile",
+                "moderate": "Moderate",
+                "robust": "Robust",
+                "elite": "Elite"
+            }
+        },
+        "sqn": {
+            "title": "SQN (System Quality Number)",
+            "tooltip": "SQN measures strategy quality based on expectancy and standard deviation normalized by trade count.",
+            "levels": {
+                "poor": "Poor",
+                "below": "Below Average",
+                "good": "Good",
+                "excellent": "Excellent",
+                "elite": "Elite"
+            }
+        },
+        "zscore": {
+            "title": "Z-Score (Correlation)",
+            "tooltip": "Z-Score measures trade dependency. A high score suggests wins/losses are clustered.",
+            "levels": {
+                "random": "Random",
+                "mild": "Mild Dependence",
+                "strong": "Strong Dependence"
+            }
+        },
+        "monteCarlo": {
+            "title": "Monte Carlo Analysis",
+            "tooltip": "Simulates thousands of variations of your trade sequence to identify worst-case outcomes and survival probability.",
+            "medianOutcome": "Median Outcome",
+            "worstCaseDD": "Worst Case DD (95%)",
+            "ruinProb": "Risk of Ruin",
+            "levels": {
+                "positive": "Robust Variance",
+                "neutral": "Moderate Risk",
+                "negative": "High Ruin Risk"
+            }
+        },
+        "intelligence": {
+            "title": "Strategy Intelligence",
+            "subtitle": "Advanced visual insights into edge stability and future probability ranges.",
+            "edgeDecay": {
+                "title": "Edge Health Signal",
+                "subtitle": "Last 50 vs Baseline (150)",
+                "stable": "Stable Edge",
+                "caution": "Edge Degrading",
+                "warning": "Edge Failure Risk"
+            },
+            "payoffDistribution": {
+                "title": "Normalized Payoff Distribution",
+                "subtitle": "Returns in R-units to visualize skewness and tail risk."
+            },
+            "equityFan": {
+                "title": "Equity Probability Cone",
+                "subtitle": "Simulation of future outcomes showing confidence bands."
+            }
+        },
+        "comparison": {
+            "title": "Strategy Comparison",
+            "subtitle": "Side-by-side evaluation of up to 3 strategies to identify the most robust edge.",
+            "add": "Add to Comparison",
+            "view": "Compare Strategies",
+            "back": "Back to Diagnostics",
+            "empty": "No strategies selected for comparison.",
+            "maxReached": "Maximum of 3 selected.",
+            "remove": "Remove",
+            "metrics": {
+                "best": "Best"
+            }
+        },
+        "expertTips": {
+            "title": "Expert Recommendations",
+            "tipZScoreHigh": "Results appear clustered. Consider reducing size after losses or reviewing if your strategy overtrades in certain conditions.",
+            "tipSQNLow": "Strategy edge is statistically weak. Increasing sample size or refining entry criteria may improve reliability.",
+            "tipMCDDHigh": "Risk exposure may be higher than historical results suggest. Monte Carlo Worst Case ({mcDD}) is significantly larger than Historical DD ({histDD}).",
+            "tipSampleSizeLow": "Sample size is still small. Avoid over-leveraging until you reach at least 50-100 trades for higher statistical confidence."
         },
         "insights": {
             "title": "Strategy Insights",
@@ -786,7 +735,15 @@
                 "review": "Review",
                 "analyzed": "Analyzed"
             },
-            "days": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+            "days": [
+                "Sunday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday"
+            ],
             "sessions": {
                 "london": "London",
                 "newyork": "New York",
@@ -857,274 +814,1064 @@
                 "rr": "risk-reward ratio (large wins)",
                 "tip": "Ensure your stop losses are always respected to protect this edge."
             }
+        },
+        "charts": {
+            "equityTitle": "Equity Curve",
+            "drawdownCurve": "Drawdown Curve (%)",
+            "equityLabel": "Cumulative Profit",
+            "noData": "No equity data available",
+            "trades": "Trades",
+            "tradeNum": "Trade #{num}"
+        },
+        "dashboard": {
+            "equityCurve": "Equity Curve (R-Multiples)",
+            "winRate": "Win Rate",
+            "stable": "Stable",
+            "low": "Low",
+            "profitFactor": "Profit Factor",
+            "excellent": "Excellent",
+            "profitable": "Profitable",
+            "loss": "Loss",
+            "expectancy": "Expectancy",
+            "perTrade": "Per trade",
+            "maxDrawdown": "Max Drawdown",
+            "risk": "Risk",
+            "averageR": "Average R",
+            "avgWinLoss": "Avg Winner/Loser",
+            "totalTrades": "Total Trades",
+            "sampleSize": "Sample Size",
+            "weeklySummary": "Weekly Summary",
+            "produced": "This week your strategy produced",
+            "acrossTrades": "across {count} trades.",
+            "drawdown": "Drawdown"
+        },
+        "preview": {
+            "strategyExamples": "Strategy Examples",
+            "demo": "Demo",
+            "score": "Score",
+            "winrate": "Winrate",
+            "profitFactor": "Profit Factor",
+            "maxDrawdown": "Max Drawdown",
+            "expectancy": "Expectancy",
+            "uploadPrompt": "Upload your history and discover your real advantage:",
+            "simPropFirm": "Sim. Prop Firm",
+            "monteCarlo": "Monte Carlo",
+            "tryOwnData": "Try with my own data"
+        },
+        "performanceBreakdown": {
+            "title": "Performance Breakdown",
+            "insufficientData": "Not enough data for this breakdown.",
+            "trades": "Trades",
+            "winRate": "Win Rate",
+            "expectancy": "Expectancy (R)",
+            "tabs": {
+                "symbol": "Asset",
+                "session": "Session",
+                "weekday": "Day"
+            },
+            "columns": {
+                "symbol": "Asset / Pair",
+                "session": "Session",
+                "weekday": "Day of the Week"
+            }
+        },
+        "edgeAlerts": {
+            "title": "Edge Alerts",
+            "edge": {
+                "intro": "Your strategy ",
+                "symbol": "is most profitable on {symbol}",
+                "session": " during the {session} session.",
+                "sessionOnly": "performs best during the {session} session.",
+                "generic": "You have a statistically solid Edge with a Profit Factor of {pf}."
+            },
+            "risk": {
+                "maxDrawdownWarning": "Risk Alert: Your Max Drawdown of {limit}% indicates a high risk of ruin. Consider lowering your leverage."
+            },
+            "consistency": {
+                "declining": "Your last 20 trades show a declining expectancy. The market regime may have changed or you are misaligned with your plan.",
+                "stable": "Good consistency: The curve of the last 20 operations remains strong and stable."
+            }
+        },
+        "strategySelector": {
+            "nameRequired": "Name is mandatory.",
+            "createError": "Error creating strategy.",
+            "networkError": "Network error.",
+            "selectStrategyError": "Select a strategy.",
+            "datasetNameError": "Enter a name for the dataset.",
+            "organizeLabel": "Organize analysis",
+            "title": "Select your strategy",
+            "subtitle": "Group your analysis by strategy to compare them later.",
+            "strategyLabel": "Strategy",
+            "loadingStrategies": "Loading strategies...",
+            "noStrategies": "No strategies",
+            "createNew": "+ Create new strategy",
+            "newStrategy": "New strategy",
+            "nameLabel": "Name",
+            "namePlaceholder": "Ej: Scalping EUR/USD",
+            "descLabel": "Description (optional)",
+            "descPlaceholder": "Brief strategy description",
+            "creating": "Creating...",
+            "create": "Create",
+            "cancel": "Cancel",
+            "datasetNameLabel": "Dataset name",
+            "datasetPlaceholder": "Ej: Backtest 2023, Forward Test, Live trades",
+            "errorPrefix": "Error",
+            "continueBtn": "Continue to analysis",
+            "backBtn": "← Go back"
+        },
+        "strategyContextForm": {
+            "saveError": "Error saving context.",
+            "networkError": "Network error.",
+            "loading": "Loading strategy context...",
+            "label": "Strategy Context",
+            "title": "Improve your analysis",
+            "subtitle": "Define market and trading style. This helps compare strategies accurately. You can skip this step.",
+            "marketLabel": "Market",
+            "marketPlaceholder": "Select...",
+            "assetLabel": "Asset",
+            "assetPlaceholder": "Ej: EURUSD, BTCUSDT",
+            "timeframeLabel": "Base Timeframe",
+            "timeframePlaceholder": "Select...",
+            "styleLabel": "Trading Style",
+            "stylePlaceholder": "Select...",
+            "saving": "Saving...",
+            "saveBtn": "Save and continue",
+            "backBtn": "← Go back",
+            "skipBtn": "Skip this step →"
+        },
+        "shareReport": {
+            "markets": ["Forex", "Crypto", "Indices", "Stocks", "Futures"],
+            "styles": ["Scalping", "Swing", "Trend Following", "Mean Reversion", "Breakout", "Arbitrage"],
+            "shared": "Shared",
+            "shareBtn": "Share analysis",
+            "title": "Share analysis",
+            "showStrategy": "Show strategy name",
+            "showDataset": "Show dataset name",
+            "copied": "✓ Copied",
+            "copy": "Copy",
+            "generating": "Generating...",
+            "updateLink": "Update link",
+            "generateLink": "Generate public link",
+            "disclaimer": "The public report shows metrics and charts without exposing your personal data.",
+            "copiedDash": "URL Copied!",
+            "shareDash": "Share your Strategy Report"
+        },
+        "saveStrategy": {
+            "nameRequired": "Enter a name for the strategy.",
+            "defaultDesc": "Saved from Analyzer",
+            "saveError": "Error saving",
+            "proRequired": "Saving strategies is available on the <pro>Pro</pro> plan.",
+            "upgradeBtn": "Upgrade to Pro",
+            "savedSuccess": "Strategy saved successfully!",
+            "savedSub": "You can view it on your Dashboard.",
+            "saveAction": "Save this strategy",
+            "nameLabel": "Strategy name",
+            "namePlaceholder": "Ej: Scalping Gold H1",
+            "saving": "Saving...",
+            "confirm": "Confirm",
+            "cancel": "Cancel"
+        },
+        "importWizard": {
+            "fields": {
+                "dateIdx": "Exit Time / Date (Required)",
+                "profitIdx": "Profit / P&L (Req. if no Entry/Exit)",
+                "entryPriceIdx": "Entry Price (Req. if no Profit)",
+                "exitPriceIdx": "Exit Price (Req. if no Profit)",
+                "symbolIdx": "Symbol / Ticker",
+                "directionIdx": "Direction (Buy/Sell)",
+                "volumeIdx": "Size / Volume",
+                "entryTimeIdx": "Entry Time",
+                "stopLossIdx": "Stop Loss",
+                "takeProfitIdx": "Take Profit"
+            },
+            "validation": {
+                "emptyOrInvalid": "The file is empty or does not have enough rows.",
+                "lowTradesWarning": "Warning: Your dataset contains only {count} valid trades. We recommend min 30.",
+                "missingTime": "You must select the Exit Time column.",
+                "missingProfitOrPrices": "You must map 'Profit / P&L' OR 'Entry Price' and 'Exit Price'.",
+                "tooFewTrades": "Your dataset contains only {count} valid trades. A minimum of 30 trades is required for reliable analysis.",
+                "parseError": "Error processing the file. Check the mapping."
+            },
+            "mapping": {
+                "title": "Trade Importer",
+                "cancel": "Cancel",
+                "undetectedPrompt": "We couldn't safely detect all required columns. Select a preset format or map manually. We need at least <bold>Exit Time</bold> and <bold>Profit (or Entry/Exit Prices)</bold>.",
+                "presets": "Quick presets:",
+                "mt4": "MetaTrader 4",
+                "mt5": "MetaTrader 5",
+                "binance": "Binance",
+                "csv": "Generic CSV",
+                "requiredData": "Required Data",
+                "optionalData": "Optional Data",
+                "ignore": "-- Ignore --",
+                "previewBtn": "Preview Data"
+            },
+            "preview": {
+                "statisticalWarning": "<bold>Statistical Warning:</bold> Your dataset has {count} valid trades. We recommend at least 100 trades for accurate quantitative analysis. (Minimum 30 required to avoid severe statistical noise).",
+                "detectedCount": "We detected {count} trades. Validation sample (first 3):",
+                "table": {
+                    "time": "Time",
+                    "profit": "Profit",
+                    "symbol": "Symbol",
+                    "direction": "Direction"
+                },
+                "backBtn": "← Back to mapping",
+                "analyzeBtn": "Analyze Strategy"
+            }
+        },
+        "tradingEdgeReport": {
+            "fetchError": "Could not load the report. Check the link or ID.",
+            "loadError": "Error loading the dashboard.",
+            "loading": "Loading...",
+            "notFound": "Report not found.",
+            "title": "Strategy Analytics",
+            "reliabilityWarning": "<bold>Statistical Reliability Notice:</bold> This analysis is based on {count} trades. Statistically, at least 30 trades are required so that metrics (like Expectancy) stop being pure random noise.",
+            "confidenceWarning": "<bold>Limited Confidence Notice:</bold> Analyzing {count} trades. Although it exceeds the mathematical minimum, the quantitative industry recommends a sample larger than 100 operations to confirm a real edge."
+        }
+    },
+    "platforms": {
+        "title": "Works with the platforms you already use",
+        "helper": "Upload exports from MT4, MT5, Binance or your broker's CSV files."
+    },
+    "footerNote": {
+        "description": "The Quantitative Laboratory for Traders. Upload your trades and discover if your strategy really has a statistical edge.",
+        "product": "Product",
+        "resources": "Resources",
+        "legal": "Legal",
+        "terms": "Terms of Service",
+        "privacy": "Privacy Policy",
+        "cta_sample_report": "Sample Report",
+        "d1": "NodoQuant develops software and performs quantitative analysis.",
+        "d2": "No profitability or future financial results are guaranteed.",
+        "d3": "Trading in financial markets carries real risk of capital loss.",
+        "rights": "All rights reserved",
+        "disclaimer": "Backtesting results are historical and do not guarantee future performance. Always trade with capital you can afford to lose."
+    },
+    "testimonials": {
+        "title": "What traders say",
+        "t1_quote": "The Strategy Score helped me understand that my edge was real, but I needed to improve my risk management.",
+        "t2_quote": "Being able to analyze thousands of trades in seconds saved me months of manual backtesting.",
+        "t3_quote": "The Monte Carlo metrics gave me the confidence to safely increase my position sizes."
+    },
+    "sampleReport": {
+        "title": "Example: Professional Edge Analysis",
+        "desc": "This report was generated from a dataset of 400+ trades and demonstrates how NodoQuant evaluates statistical edge.",
+        "scoreLabel": "Strategy Score",
+        "scoreStatus": "Strong Edge",
+        "metrics": {
+            "winRate": "Win Rate",
+            "profitFactor": "Profit Factor",
+            "expectancy": "Expectancy",
+            "maxDrawdown": "Max Drawdown",
+            "trades": "Trades Analyzed"
+        },
+        "equityCurve": "Equity Curve",
+        "cta": "View Sample Report"
+    },
+    "edgeCalculator": {
+        "winRate": "Win Rate (%)",
+        "avgWin": "Avg Win ($ or R)",
+        "avgLoss": "Avg Loss ($ or R)",
+        "sampleSize": "Sample Size (Trades)",
+        "expectancyTitle": "Expectancy per Trade",
+        "profitFactor": "Profit Factor",
+        "edgeScore": "Edge Score",
+        "positiveEdge": "This system has a positive edge. You expect to gain {expectancy} units for every unit of risk.",
+        "negativeEdge": "This system has a negative edge. In the long run, this strategy will lose money regardless of luck.",
+        "cta": "Analyze Your Data →"
+    },
+    "seoTemplate": {
+        "defaultCta": "Analyze my strategy — free",
+        "howItWorks": "How it works",
+        "whatYouGet": "What you get",
+        "faqTitle": "Frequently asked questions",
+        "readyTitle": "Ready to discover your edge?",
+        "readyDesc": "Upload your trade history and get a full quantitative report in under 60 seconds.",
+        "noCreditCard": "No credit card required · Results in 60 seconds"
+    },
+    "pages": {
+        "strategyAnalyzer": {
+            "metadata": {
+                "title": "Trading Strategy Analyzer — Discover Your Real Trading Edge | NodoQuant",
+                "description": "Analyze any trading strategy instantly. Upload your MT4, MT5 or any CSV trade history. Calculate Win Rate, Profit Factor, Expectancy, and Max Drawdown for free.",
+                "keywords": "trading strategy analyzer, analyze trading strategy, forex analyzer, crypto analyzer, strategy performance analysis, backtesting analyzer"
+            },
+            "hero": {
+                "badge": "💎 Professional Analyzer",
+                "headline": "Strategy Analyzer — Discover Your Real Trading Edge",
+                "subheadline": "Stop guessing if your strategy works. Upload your trade history and get a professional analysis in under 60 seconds. Calculate your Win Rate, Profit Factor and Expectancy for free.",
+                "cta": "Analyze My Strategy Now — Free"
+            },
+            "steps": [
+                {
+                    "title": "Export CSV Data",
+                    "desc": "Export your trade history from your broker or platform in CSV or Excel format. We support MT4, MT5 and standard formats."
+                },
+                {
+                    "title": "Automatic Parsing",
+                    "desc": "Upload your file to NodoQuant. Our system normalizes dates, symbols and P&L into R-units for standardized analysis."
+                },
+                {
+                    "title": "Get Your Score",
+                    "desc": "Instantly see your Strategy Score (0-100) along with detailed metrics for win rate, profit factor and drawdowns."
+                }
+            ],
+            "features": [
+                {
+                    "title": "Risk-Adjusted Performance",
+                    "desc": "We don't just look at total profit. We analyze your returns relative to risk taken, giving you a true picture of your edge."
+                },
+                {
+                    "title": "Win Rate vs Expectancy",
+                    "desc": "Understand the relationship between how often you win and your average win/loss size. This is the key to long-term profitability."
+                },
+                {
+                    "title": "Drawdown Protection",
+                    "desc": "Analyze your worst periods to ensure your strategy is survivable during inevitable market shifts."
+                },
+                {
+                    "title": "Profit Factor Insights",
+                    "desc": "Calculate your gross profit over gross loss. A profit factor above 1.5 indicates a high-probability professional system."
+                },
+                {
+                    "title": "R-Multiple Normalization",
+                    "desc": "We convert all trades into R-units so you can compare performance across different account sizes fairly."
+                },
+                {
+                    "title": "Actionable Insights",
+                    "desc": "Identify which symbols, sessions or trade types are dragging down your performance and which are your core winners."
+                }
+            ],
+            "faqs": [
+                {
+                    "q": "What is a Trading Strategy Analyzer?",
+                    "a": "A trading strategy analyzer is a software tool used by professional traders to evaluate the statistical performance of their trading history. It identifies if profits are due to luck or a real edge."
+                },
+                {
+                    "q": "How many trades are needed to evaluate a strategy?",
+                    "a": "Statistically, you need at least 30 trades for a basic signal, but 100+ are recommended for high-confidence results."
+                },
+                {
+                    "q": "What is a good profit factor?",
+                    "a": "A profit factor greater than 1.0 means you are profitable. Above 1.5 is excellent, and above 2.0 is world-class."
+                },
+                {
+                    "q": "What is expectancy in trading?",
+                    "a": "Expectancy is the average amount you expect to win (or lose) per trade. It's calculated as (Win Rate × Average Win) − (Loss Rate × Average Loss)."
+                }
+            ],
+            "sampleSection": {
+                "title": "What is a Trading Strategy Analyzer?",
+                "p1": "A **Trading Strategy Analyzer** is the most critical tool in a professional trader's arsenal. While most retail traders focus on finding the 'perfect entry', professionals focus on **expectancy** and **risk-adjusted returns**.",
+                "p2": "By using NodoQuant, you can determine if your recent winning streak was the result of a genuine **Trading Edge** or simply a run of luck. Conversely, an analyzer can show you if a losing streak is just normal statistical drawdown or a signal that your strategy no longer works.",
+                "h2_step": "How to Analyze your Strategy Step-by-Step",
+                "p_step": "Evaluating a strategy requires more than just looking at your account balance. Follow these steps:",
+                "steps": [
+                    "**Collect Data**: Export at least 50-100 trades from your broker.",
+                    "**Normalize to R**: Convert your P&L to R-multiples (Risk units). This removes the bias of changing position sizes.",
+                    "**Calculate Expectancy**: Use the formula: `(Win Rate % * Avg Win) - (Loss Rate % * Avg Loss)`.",
+                    "**Identify Variance**: Review your maximum drawdown to see if you can handle the strategy's volatility."
+                ],
+                "h2_why": "Why Strategy Analysis Matters for Your P&L?",
+                "p_why": "Without analysis, you're flying blind. Many traders abandon good strategies during a normal drawdown because they don't understand their strategy's **Max Drawdown** profile.",
+                "proTip": "Professional trading isn't about being right; it's about being profitable. An analyzer shifts your focus from the 'outcome' of a single trade to the 'process' of a series of trades.",
+                "ready": "Ready to see your real numbers?",
+                "readyCta": "Analyze My Strategy Now",
+                "features": {
+                    "support": "Multi-broker support",
+                    "instant": "Instant results",
+                    "free": "Always free"
+                },
+                "h2_compare": "Comparing Analyzers vs Trading Journals",
+                "p_compare": "While a trading journal is great for tracking your emotions, a **Strategy Analyzer** like NodoQuant focuses on quantitative output. Journals tell you *what* happened; Analyzers tell you *why* it's mathematically profitable.",
+                "table": {
+                    "feature": "Feature",
+                    "journal": "Trading Journal",
+                    "analyzer": "Strategy Analyzer",
+                    "goal": "Primary Goal",
+                    "goal_val1": "Behavioral tracking",
+                    "goal_val2": "Statistical verification",
+                    "focus": "Data Focus",
+                    "focus_val1": "Screenshots & Notes",
+                    "focus_val2": "P&L & R-Multiples",
+                    "metric": "Key Metric",
+                    "metric_val1": "Emotional score",
+                    "metric_val2": "Expectancy & Profit Factor"
+                },
+                "finalLink": "Upload your real trade data and analyze your strategy →"
+            }
+        },
+        "cryptoStrategyAnalyzer": {
+            "metadata": {
+                "title": "Crypto Strategy Analyzer — Backtest Your Crypto Edge | NodoQuant",
+                "description": "Test your crypto trading strategy with quantitative analysis. Upload your Binance, Bybit or exchange history and get Win Rate, Profit Factor, Expectancy and a Strategy Score in 60 seconds.",
+                "keywords": "crypto strategy analyzer, crypto backtesting, binance strategy analysis, crypto trading edge, crypto profit factor, bitcoin strategy tester"
+            },
+            "hero": {
+                "badge": "₿ Crypto Strategy Analyzer",
+                "headline": "Does Your Crypto Strategy Have a Real Statistical Edge?",
+                "subheadline": "Upload your Binance, Bybit or exchange trade history and get a full quantitative analysis in under 60 seconds. Free, private and instant.",
+                "cta": "Analyze my crypto strategy — free"
+            },
+            "steps": [
+                {
+                    "title": "Export your crypto history",
+                    "desc": "Download your closed trades CSV from Binance, Bybit, Kraken or any exchange. Most offer this under Account → Trade History."
+                },
+                {
+                    "title": "Upload to NodoQuant",
+                    "desc": "Drop the file into the analyzer. Our parser handles multiple exchange formats and normalizes columns automatically."
+                },
+                {
+                    "title": "Get your Strategy Score",
+                    "desc": "Receive a full report: Strategy Score, Equity Curve, Win Rate, Profit Factor, Expectancy, Max Drawdown and statistical confidence rating."
+                }
+            ],
+            "features": [
+                {
+                    "title": "Multi-Exchange Support",
+                    "desc": "Compatible with Binance, Bybit, Kraken, OKX and any exchange that exports trade history in CSV."
+                },
+                {
+                    "title": "Strategy Score (0–100)",
+                    "desc": "A single score catching edge strength, risk-adjusted performance and how reliable your crypto strategy is."
+                },
+                {
+                    "title": "Equity Curve Visualization",
+                    "desc": "See your cumulative P&L. Identify if your crypto strategy has an upward trend or was just a lucky streak."
+                },
+                {
+                    "title": "Win Rate & Expectancy",
+                    "desc": "Calculate your true win rate and expected value per trade — the foundation of any profitable crypto system."
+                },
+                {
+                    "title": "Drawdown Analysis",
+                    "desc": "Understand the worst drawdown your strategy produced to evaluate if it fits your risk tolerance."
+                },
+                {
+                    "title": "Statistical Confidence",
+                    "desc": "Know if your results are statistically significant or just noise from a small sample of trades."
+                }
+            ],
+            "faqs": [
+                {
+                    "q": "Which crypto exchanges are supported?",
+                    "a": "Any exchange that exports trade history as CSV — including Binance, Bybit, OKX, Kraken and Bitget. We also accept generic CSV formats."
+                },
+                {
+                    "q": "Can I analyze both spot and futures trades?",
+                    "a": "Yes. NodoQuant analyzes both spot and derivatives (futures/perps) history from major exchanges."
+                },
+                {
+                    "q": "How many crypto trades do I need for a reliable analysis?",
+                    "a": "At least 30 trades for basic results, 100+ for high-confidence evaluation. We display a warning if your sample is too small."
+                },
+                {
+                    "q": "Is my crypto portfolio data secure?",
+                    "a": "Your upload contains only historical records — no API keys, balances or personal information are required."
+                },
+                {
+                    "q": "Can I test my Bitcoin or altcoin strategies?",
+                    "a": "Yes. Any crypto pair is supported — BTC, ETH, SOL, altcoins and derivatives. Results are currency-agnostic."
+                }
+            ],
+            "sampleScoreCard": {
+                "title": "Sample Strategy Report",
+                "desc": "This is how your analysis looks — generated from real BTC trading data.",
+                "typeLabel": "Crypto Analysis",
+                "scoreLabel": "Strategy Score",
+                "tradesLabel": "trades",
+                "footer": "analyzed with NodoQuant"
+            }
+        },
+        "forexStrategyAnalyzer": {
+            "metadata": {
+                "title": "Forex Strategy Analyzer — Test Your Trading Edge | NodoQuant",
+                "description": "Analyze your Forex trading strategy with statistical precision. Upload your MT4/MT5 history and calculate Win Rate, Profit Factor, Expectancy and Max Drawdown. Free and secure.",
+                "keywords": "forex strategy analyzer, EURUSD strategy analysis, forex expectancy calculator, MT4 strategy analysis, MT5 trading analyzer, forex trading edge"
+            },
+            "hero": {
+                "badge": "🌍 Forex Specialist",
+                "headline": "Forex Strategy Analyzer — Analyze Your Real Trading Edge",
+                "subheadline": "Upload your Metatrader (MT4/MT5) history and instantly calculate your Win Rate, Profit Factor and Expectancy. Stop guessing and start trading with statistical confidence.",
+                "cta": "Analyze my Forex strategy — free"
+            },
+            "steps": [
+                {
+                    "title": "Export MT4/MT5 History",
+                    "desc": "Save your history as an HTML or CSV file from Metatrader 4 or 5. We support standard broker formats through our smart parser."
+                },
+                {
+                    "title": "Data Normalization",
+                    "desc": "NodoQuant converts pips and profit into R-multiples. This allows you to evaluate your edge regardless of position size or leverage."
+                },
+                {
+                    "title": "Professional Audit",
+                    "desc": "Get a full quantitative report showing your true win rate, profit factor, max drawdown and expectancy per trade."
+                }
+            ],
+            "features": [
+                {
+                    "title": "Global FX Support",
+                    "desc": "Analyze majors (EURUSD, GBPUSD), minors and exotics. Filter performance by symbol to find which pairs you trade best."
+                },
+                {
+                    "title": "Expectancy per Pip",
+                    "desc": "Understand how much you or your EA expects to win per trade relative to risk taken. Positive expectancy is non-negotiable."
+                },
+                {
+                    "title": "Drawdown Risk Analysis",
+                    "desc": "Forex markets are volatile. We calculate your worst peak-to-trough drop so you can manage your leverage safely."
+                },
+                {
+                    "title": "Native Metatrader Support",
+                    "desc": "Our parser is optimized for MT4/MT5 reports. Simply drag and drop your file directly into the analyzer."
+                },
+                {
+                    "title": "Statistical Confidence",
+                    "desc": "Never trust a strategy with a small sample size. We tag datasets with fewer than 50 trades to warn against randomness."
+                },
+                {
+                    "title": "Strategy Score",
+                    "desc": "A single number from 0 to 100 telling you if your system is professional-grade, average or high-risk."
+                }
+            ],
+            "faqs": [
+                {
+                    "q": "How do I analyze an MT4/MT5 strategy?",
+                    "a": "Go to the 'Account History' tab in Metatrader, right-click and select 'Save as Detailed Report'. Then upload that HTML or CSV file to NodoQuant."
+                },
+                {
+                    "q": "Is analysis by pips or R-multiples better?",
+                    "a": "R-multiples are superior. Professional traders use R because pips don't account for stop-loss distance or position sizing."
+                },
+                {
+                    "q": "Can I analyze data from Myfxbook or MetaStats?",
+                    "a": "Yes, if you can export the data to CSV. NodoQuant is designed to go deeper than basic journals, providing deep quantitative insights."
+                },
+                {
+                    "q": "What is a good profit factor for Forex?",
+                    "a": "In the FX market, a profit factor between 1.2 and 1.8 is considered healthy. Anything above 2.0 is exceptionally strong."
+                },
+                {
+                    "q": "Do you support EURUSD specifically for analysis?",
+                    "a": "Yes. You can use our symbol filtering to analyze only EURUSD trades and see if your edge differs between pairs."
+                }
+            ],
+            "content": {
+                "h2_what": "What is a Forex Strategy Analyzer?",
+                "p1": "A **Forex Strategy Analyzer** is a quantitative tool designed specifically for the unique characteristics of the currency market. Unlike standard calculators, an FX analyzer must handle 24/5 liquidity and measure performance across different pairs.",
+                "p2": "For Metatrader users (MT4/MT5), NodoQuant provides an automated way to transform a 'Detailed Report' into a professional quantitative audit.",
+                "h3_why": "Why Forex Traders Fail",
+                "p_why": "The #1 reason Forex traders lose money isn't 'bad entries'. It's **poor risk management combined with a lack of statistical awareness**.",
+                "p_calc": "By using our **Forex Expectancy Calculator**, you learn the limits of your strategy. If you know your system has a Max Drawdown of 15%, you won't panic at an 8% weekly loss.",
+                "card_mt": {
+                    "title": "MT4/MT5 Compatibility",
+                    "desc": "Export your history from Metatrader and we handle the rest. No manual input."
+                },
+                "card_pair": {
+                    "title": "Pair-wise Filtering",
+                    "desc": "Analyze EURUSD strategies separately from your JPY trades. Find your niche."
+                },
+                "h3_master": "Mastering the EURUSD Analysis",
+                "p_master": "EURUSD is the most liquid pair in the world. A **Forex Analyzer** allows you to see if your edge is consistent across sessions (London vs New York) and symbols.",
+                "ready": "Analyze your Forex EA or Manual History",
+                "readyCta": "Upload My Forex Trades",
+                "readyFoot": "Supports Metatrader, TradingView and standard CSVs",
+                "h2_metrics": "Key Quantitative Metrics for Forex",
+                "metric_stability": "Recovery Factor: Net Profit / Max Drawdown. Tells you how fast you recover.",
+                "h3_leverage": "Leverage and your Equity Curve",
+                "p_leverage": "Forex is a highly leveraged market. By analyzing your **Equity Curve**, you can visually see the impact of volatility and decide if your position sizing is responsible.",
+                "leaderboardLink": "See Strategy Rankings",
+                "finalLink": "Analyze your Forex strategy performance now →"
+            }
+        },
+        "tradingEdgeCalculator": {
+            "metadata": {
+                "title": "Trading Edge Calculator — Know if Your Strategy is Profitable | NodoQuant",
+                "description": "Calculate your trading expectancy and profit factor with our free calculator. Learn the formula for success and how win rate impacts your returns.",
+                "keywords": "trading edge calculator, trading expectancy calculator, profit factor calculator, trading expectancy formula, calculate trading edge"
+            },
+            "hero": {
+                "badge": "🧮 Statistical Calculator",
+                "headline": "Trading Edge Calculator — Know if Your Strategy is Profitable",
+                "subheadline": "Use our interactive tool to calculate your statistical edge. Discover your expectancy, profit factor and whether your risk-to-reward is sustainable.",
+                "cta": "Calculate My Real Edge — Free"
+            },
+            "steps": [
+                {
+                    "title": "Enter Your Stats",
+                    "desc": "Use the tool below to input your win rate, average win, and average loss to see your potential expectancy."
+                },
+                {
+                    "title": "Upload Real Data",
+                    "desc": "While a calculator is great for estimation, NodoQuant lets you upload real history for a precise calculation based on performance."
+                },
+                {
+                    "title": "Identify your Edge",
+                    "desc": "Our system calculates your Strategy Score, identifying if you have a genuine edge or if it's simply variance."
+                }
+            ],
+            "features": [
+                {
+                    "title": "Expectancy Calculator",
+                    "desc": "Your expected profit or loss per trade. Positive expectancy is the bedrock of trading."
+                },
+                {
+                    "title": "Profit Factor",
+                    "desc": "The ratio of gross profits to gross losses. Any value above 1.5 is considered top-tier."
+                },
+                {
+                    "title": "Win Rate Analysis",
+                    "desc": "See how your win percentage interacts with your risk-reward. You don't need a high win rate to be profitable."
+                },
+                {
+                    "title": "Drawdown Awareness",
+                    "desc": "Estimate your potential equity risk. Understanding drawdown is key to surviving losing streaks."
+                },
+                {
+                    "title": "Edge Score (0–100)",
+                    "desc": "Get a unique score measuring the overall robustness and reliability of your trading edge."
+                },
+                {
+                    "title": "R-Multiple Logic",
+                    "desc": "Learn to think in risk units (R) instead of dollars, the secret of professional traders."
+                }
+            ],
+            "faqs": [
+                {
+                    "q": "What is a trading edge?",
+                    "a": "An edge is a statistical advantage that over a large sample of trades makes your strategy profitable. It means the probability of success is higher than failure across time, combined with favorable risk-to-reward."
+                },
+                {
+                    "q": "What is the trading expectancy formula?",
+                    "a": "Expectancy = (Win Rate × Average Win) - (Loss Rate × Average Loss). If the result is positive, your strategy has an edge."
+                },
+                {
+                    "q": "What is a good profit factor?",
+                    "a": "Above 1.0 means you're profitable. Above 1.5 is great, and above 2.0 is professional level."
+                },
+                {
+                    "q": "How many trades do I need for a reliable calculation?",
+                    "a": "At least 100 trades are recommended to have high statistical confidence. Small samples are often skewed by luck."
+                },
+                {
+                    "q": "Can I use this calculator for Forex and Crypto?",
+                    "a": "Yes. Expectancy and edge calculations are market-agnostic. They work the same for Forex, stocks, crypto and futures."
+                }
+            ],
+            "content": {
+                "h2_interactive": "Interactive Edge Calculator",
+                "p_interactive": "Adjust the values to see how different metrics impact your strategy's expectancy.",
+                "h2_what": "What is a Trading Edge?",
+                "p1": "In the world of professional speculation, a **Trading Edge** is much more than a 'setup' or a signal. It's a **statistical advantage** that allows you to win over an extended series of trades.",
+                "p2": "Having an edge means your **Expectancy** is positive. It implies that for every dollar you put up, you expect to receive that dollar back plus a surplus.",
+                "h3_how": "How to Calculate Your Trading Expectancy",
+                "p_how": "Expectancy is the holy grail of trading math. It combines your **Win Rate** and your **Risk-to-Reward Ratio**.",
+                "p_example": "Example: If you win 40% of the time, and your average win is $300 while your average loss is $100:",
+                "p_result": "This means you earn an average of **$60 per trade** across a large sample size.",
+                "h3_not_enough": "Why a Calculator Isn't Enough",
+                "p_calc_limit": "A calculator is perfect for **planning** and **projecting**. However, real trading includes slippage, commissions and emotional errors.",
+                "p_reality": "This is why professional traders use NodoQuant to analyze their **real history**. By uploading your trades, you move from 'theory' to 'reality'.",
+                "card_csv": {
+                    "title": "Have 30+ trades in a CSV?",
+                    "desc": "Stop guessing your stats. Get your real Strategy Score now.",
+                    "cta": "Upload My Trade History"
+                },
+                "h2_winrate": "The Relationship Between Win Rate and R:R",
+                "p_winrate": "A common mistake is obsessing over a high win rate. In reality, a strategy with a 25% win rate can be more profitable if the risk-to-reward ratio is high enough.",
+                "h3_metrics": "Key Metrics for your Edge Report",
+                "leaderboardLink": "See Pricing & Plans",
+                "finalLink": "Calculate your edge with real trade data →"
+            }
+        }
+    },
+    "pricing": {
+        "title": "Level up your trading with {brand}",
+        "desc": "Unlock advanced metrics, Monte Carlo simulations and unlimited analysis to refine your edge.",
+        "errorCheckout": "Could not start checkout. Please try again.",
+        "errorNetwork": "Network error. Please try again.",
+        "month": "mo",
+        "cancelAnytime": "Cancel anytime",
+        "recommended": "RECOMMENDED",
+        "activePlan": "Active Plan",
+        "basePlan": "Base Plan",
+        "currentPlan": "Current Plan",
+        "upgradeBtn": "Upgrade to Pro ✨",
+        "alreadyPro": {
+            "title": "You're already Pro!",
+            "desc": "You have full access to all NodoQuant Pro's advanced tools.",
+            "cta": "Go to Dashboard →"
+        },
+        "free": {
+            "name": "Free",
+            "features": [
+                "1 saved analysis",
+                "Up to 500 trades per analysis",
+                "Public reports & Leaderboard",
+                "Monte Carlo Simulator",
+                "Advanced Edge Alerts",
+                "Strategy Journal"
+            ]
+        },
+        "pro": {
+            "name": "NodoQuant Pro",
+            "features": [
+                "Unlimited saved analyses",
+                "Unlimited trades per analysis",
+                "Automatic Evolution Comparison",
+                "Edge Alerts (Consistency & Risk)",
+                "Monte Carlo Simulator (Risk of Ruin)",
+                "Interactive Strategy Journal",
+                "Access to future Pro features"
+            ]
+        }
+    },
+    "dashboard": {
+        "title": "Welcome back",
+        "greeting": "Welcome back",
+        "subtitle": "Here is the current state of your quant strategies.",
+        "analytics": {
+            "title": "Advanced Analytics",
+            "proNotice": "This is a Pro feature. If you are seeing this, it's because you have an active subscription."
+        },
+        "upgrade": "Upgrade to Pro ✨",
+        "stats": {
+            "strategies": "Strategies",
+            "totalAnalyses": "Total Analyses",
+            "avgWinrate": "Avg Winrate",
+            "bestPF": "Best Profit Factor"
+        },
+        "history": {
+            "title": "Strategy History",
+            "analyzeNew": "Analyze new →",
+            "empty": "You don't have any analyzed strategies yet.",
+            "tryAnalyzer": "Try Analyzer →",
+            "analysis": "Analysis",
+            "trades": "Trades",
+            "winrate": "Winrate",
+            "profitFactor": "Profit F."
         }
     },
     "fullReport": {
-            "metadata": {
-                "title": "Strategy Report — NodoQuant",
-                "description": "View this trading strategy's statistical edge: Win Rate, Profit Factor, Max Drawdown, Expectancy and Strategy Score — analyzed with NodoQuant."
-            },
-            "status": {
-                "loading": "Loading strategy report...",
-                "notFound": {
-                    "title": "Report Not Found",
-                    "desc": "This report may be private or the link may be incorrect.",
-                    "cta": "Analyze your own strategy →"
-                }
-            },
-            "header": {
-                "label": "Strategy analyzed with NodoQuant",
-                "defaultTitle": "Trading Strategy Report",
-                "certificate": "Get Official Certificate 📜",
-                "library": "Library View",
-                "publish": "Publish in Library 🌎"
-            },
-            "score": {
-                "label": "Strategy Score",
-                "basedOn": "Based on {count} trades",
-                "validated": "Strategy Validated",
-                "noEdge": "No Statistical Edge",
-                "marginalEdge": "Marginal Edge",
-                "positiveEdge": "Positive Edge",
-                "strongEdge": "Strong Edge",
-                "analyzed": "Score · {count} trades analyzed"
-            },
-            "sharing": {
-                "label": "Share your results",
-                "shareX": "Share on X",
-                "shareWhatsapp": "WhatsApp",
-                "copyLink": "Copy link",
-                "copied": "Copied!",
-                "hideCard": "Hide score card",
-                "downloadCard": "Download score card image ↓",
-                "downloading": "Generating PNG...",
-                "downloadBtn": "Download as image",
-                "defaultName": "My Strategy",
-                "analysisLabel": "Strategy Analysis",
-                "tradingStrategy": "Trading Strategy",
-                "shareTextX": "My trading strategy scored {score}/100 on NodoQuant.\n\nWin Rate: {wr}%\nProfit Factor: {pf}\nTrades analyzed: {count}\n\nAnalyze your strategy:\nhttps://nodoquant.com/analyzer",
-                "shareTextWhatsapp": "My strategy scored {score}/100 on NodoQuant! Check it out: {url}"
-            },
-            "metrics": {
-                "title": "Key Metrics",
-                "winrate": {
-                    "label": "Win Rate",
-                    "above": "Above average",
-                    "below": "Below 50%"
-                },
-                "profitFactor": {
-                    "label": "Profit Factor",
-                    "excellent": "Excellent",
-                    "profitable": "Profitable",
-                    "losing": "Losing"
-                },
-                "expectancy": {
-                    "label": "Expectancy",
-                    "perTrade": "Per trade"
-                },
-                "maxDrawdown": {
-                    "label": "Max Drawdown",
-                    "desc": "Worst peak-to-trough"
-                },
-                "sampleSize": {
-                    "label": "Sample Size",
-                    "robust": "Statistically robust",
-                    "moderate": "Moderate confidence",
-                    "small": "Small sample"
-                }
-            },
-            "evolution": {
-                "title": "Strategy Evolution",
-                "desc": "Monitoring edge stability across recent trade samples.",
-                "reqTrades": "Req. {count} trades"
-            },
-            "health": {
-                "title": "Edge Health",
-                "stable": "Stable Edge",
-                "moderate": "Moderate Stability",
-                "drift": "Edge Drift Detected",
-                "score": "Stability Score"
-            },
-            "equity": {
-                "title": "Equity Curve",
-                "proLock": "The progressive capital curve and trade-by-trade drawdown chart is reserved for Pro users."
-            },
-            "journal": {
-                "title": "Strategy Journal",
-                "proLock": "Keep track of your emotions, market context and error analysis.",
-                "placeholder": "Market analysis, psychology notes, adjustments to make...",
-                "save": "Save notes",
-                "saving": "Saving...",
-                "saved": "Saved!"
-            },
-            "alerts": {
-                "title": "Edge Alerts",
-                "proLock": "Unlock advanced risk and consistency alerts for your operations."
-            },
-            "reliability": {
-                "title": "Statistical Reliability Warning:",
-                "desc": "This analysis is based on only {count} trades. At minimum 30 trades are required for metrics to carry statistical weight."
-            },
-            "viral": {
-                "label": "Powered by NodoQuant",
-                "title": "Does your strategy have a real statistical edge?",
-                "subtitle": "Upload your trade history and get a full quantitative report in under 60 seconds. Free.",
-                "cta": "Analyze your own strategy — it's free",
-                "footer": "No credit card required · Results in 60 seconds"
-            },
-            "publishModal": {
-                "title": "Create Strategy Profile",
-                "subtitle": "Share your performance with the world",
-                "errorRequired": "Strategy name is required",
-                "errorFailed": "Failed to publish strategy",
-                "nameLabel": "Strategy Name *",
-                "namePlaceholder": "e.g. EURUSD London Breakout",
-                "descLabel": "Philosophy / Description",
-                "descPlaceholder": "Briefly explain the logic, session or edge of this strategy...",
-                "marketLabel": "Market",
-                "symbolLabel": "Symbol",
-                "symbolPlaceholder": "e.g. EURUSD",
-                "visibilityLabel": "Visibility Mode",
-                "publicProfile": "Public Profile",
-                "privateProfile": "Private (Only Me)",
-                "infoBox": "Public strategies appear in the library and search results. Private strategies are only visible to you. Your raw trade data is always kept secure and never shared.",
-                "cancel": "Cancel",
-                "confirm": "Confirm & Publish",
-                "publishing": "Publishing...",
-                "markets": {
-                    "Forex": "Forex",
-                    "Crypto": "Crypto",
-                    "Futures": "Futures",
-                    "Stocks": "Stocks"
-                }
+        "metadata": {
+            "title": "Strategy Report — NodoQuant",
+            "description": "View this trading strategy's statistical edge: Win Rate, Profit Factor, Max Drawdown, Expectancy and Strategy Score — analyzed with NodoQuant."
+        },
+        "status": {
+            "loading": "Loading strategy report...",
+            "notFound": {
+                "title": "Report Not Found",
+                "desc": "This report may be private or the link may be incorrect.",
+                "cta": "Analyze your own strategy →"
             }
         },
-        "strategies": {
-            "metadata": {
-                "title": "Public Strategy Library — NodoQuant",
-                "description": "Discover top-performing trading strategies. Browse backtested results for Forex, Crypto, Stocks, and Futures from our community."
+        "header": {
+            "label": "Strategy analyzed with NodoQuant",
+            "defaultTitle": "Trading Strategy Report",
+            "certificate": "Get Official Certificate 📜",
+            "library": "Library View",
+            "publish": "Publish in Library 🌎"
+        },
+        "score": {
+            "label": "Strategy Score",
+            "basedOn": "Based on {count} trades",
+            "validated": "Strategy Validated",
+            "noEdge": "No Statistical Edge",
+            "marginalEdge": "Marginal Edge",
+            "positiveEdge": "Positive Edge",
+            "strongEdge": "Strong Edge",
+            "analyzed": "Score · {count} trades analyzed"
+        },
+        "sharing": {
+            "label": "Share your results",
+            "shareX": "Share on X",
+            "shareWhatsapp": "WhatsApp",
+            "copyLink": "Copy link",
+            "copied": "Copied!",
+            "hideCard": "Hide score card",
+            "downloadCard": "Download score card image ↓",
+            "downloading": "Generating PNG...",
+            "downloadBtn": "Download as image",
+            "defaultName": "My Strategy",
+            "analysisLabel": "Strategy Analysis",
+            "tradingStrategy": "Trading Strategy",
+            "shareTextX": "My trading strategy scored {score}/100 on NodoQuant.\n\nWin Rate: {wr}%\nProfit Factor: {pf}\nTrades analyzed: {count}\n\nAnalyze your strategy:\nhttps://nodoquant.com/analyzer",
+            "shareTextWhatsapp": "My strategy scored {score}/100 on NodoQuant! Check it out: {url}"
+        },
+        "metrics": {
+            "title": "Key Metrics",
+            "winrate": {
+                "label": "Win Rate",
+                "above": "Above average",
+                "below": "Below 50%"
             },
-            "hero": {
-                "title": "Strategy",
-                "titleAccent": "Library",
-                "subtitle": "Explore winning trading edges verified by the NodoQuant algorithm. Real data, real statistics, real consistency."
+            "profitFactor": {
+                "label": "Profit Factor",
+                "excellent": "Excellent",
+                "profitable": "Profitable",
+                "losing": "Losing"
             },
-            "filters": {
-                "marketLabel": "Market",
-                "sortLabel": "Sort by:",
-                "recent": "Most Recent",
-                "top": "Top Score",
-                "all": "All"
+            "expectancy": {
+                "label": "Expectancy",
+                "perTrade": "Per trade"
             },
-            "empty": {
-                "title": "No strategies found",
-                "desc": "We couldn't find any public strategies matching your current filters. Be the first to publish one!",
-                "cta": "Analyze my strategy →"
+            "maxDrawdown": {
+                "label": "Max Drawdown",
+                "desc": "Worst peak-to-trough"
             },
-            "card": {
-                "publishedAt": "Published {date}",
-                "viewAnalysis": "View Analysis",
-                "score": "Score",
+            "sampleSize": {
+                "label": "Sample Size",
+                "robust": "Statistically robust",
+                "moderate": "Moderate confidence",
+                "small": "Small sample"
+            }
+        },
+        "evolution": {
+            "title": "Strategy Evolution",
+            "desc": "Monitoring edge stability across recent trade samples.",
+            "reqTrades": "Req. {count} trades"
+        },
+        "health": {
+            "title": "Edge Health",
+            "stable": "Stable Edge",
+            "moderate": "Moderate Stability",
+            "drift": "Edge Drift Detected",
+            "score": "Stability Score"
+        },
+        "equity": {
+            "title": "Equity Curve",
+            "proLock": "The progressive capital curve and trade-by-trade drawdown chart is reserved for Pro users."
+        },
+        "journal": {
+            "title": "Strategy Journal",
+            "proLock": "Keep track of your emotions, market context and error analysis.",
+            "placeholder": "Market analysis, psychology notes, adjustments to make...",
+            "save": "Save notes",
+            "saving": "Saving...",
+            "saved": "Saved!"
+        },
+        "alerts": {
+            "title": "Edge Alerts",
+            "proLock": "Unlock advanced risk and consistency alerts for your operations."
+        },
+        "reliability": {
+            "title": "Statistical Reliability Warning:",
+            "desc": "This analysis is based on only {count} trades. At minimum 30 trades are required for metrics to carry statistical weight."
+        },
+        "viral": {
+            "label": "Powered by NodoQuant",
+            "title": "Does your strategy have a real statistical edge?",
+            "subtitle": "Upload your trade history and get a full quantitative report in under 60 seconds. Free.",
+            "cta": "Analyze your own strategy — it's free",
+            "footer": "No credit card required · Results in 60 seconds"
+        },
+        "publishModal": {
+            "title": "Create Strategy Profile",
+            "subtitle": "Share your performance with the world",
+            "errorRequired": "Strategy name is required",
+            "errorFailed": "Failed to publish strategy",
+            "nameLabel": "Strategy Name *",
+            "namePlaceholder": "e.g. EURUSD London Breakout",
+            "descLabel": "Philosophy / Description",
+            "descPlaceholder": "Briefly explain the logic, session or edge of this strategy...",
+            "marketLabel": "Market",
+            "symbolLabel": "Symbol",
+            "symbolPlaceholder": "e.g. EURUSD",
+            "visibilityLabel": "Visibility Mode",
+            "publicProfile": "Public Profile",
+            "privateProfile": "Private (Only Me)",
+            "infoBox": "Public strategies appear in the library and search results. Private strategies are only visible to you. Your raw trade data is always kept secure and never shared.",
+            "cancel": "Cancel",
+            "confirm": "Confirm & Publish",
+            "publishing": "Publishing...",
+            "markets": {
+                "Forex": "Forex",
+                "Crypto": "Crypto",
+                "Futures": "Futures",
+                "Stocks": "Stocks"
+            }
+        }
+    },
+    "strategies": {
+        "metadata": {
+            "title": "Public Strategy Library — NodoQuant",
+            "description": "Discover top-performing trading strategies. Browse backtested results for Forex, Crypto, Stocks, and Futures from our community."
+        },
+        "hero": {
+            "title": "Strategy",
+            "titleAccent": "Library",
+            "subtitle": "Explore winning trading edges verified by the NodoQuant algorithm. Real data, real statistics, real consistency."
+        },
+        "filters": {
+            "marketLabel": "Market",
+            "sortLabel": "Sort by:",
+            "recent": "Most Recent",
+            "top": "Top Score",
+            "all": "All"
+        },
+        "empty": {
+            "title": "No strategies found",
+            "desc": "We couldn't find any public strategies matching your current filters. Be the first to publish one!",
+            "cta": "Analyze my strategy →"
+        },
+        "card": {
+            "publishedAt": "Published {date}",
+            "viewAnalysis": "View Analysis",
+            "score": "Score",
+            "trades": "Trades",
+            "winRate": "Win Rate",
+            "profitFactor": "Profit Factor"
+        },
+        "profile": {
+            "performanceMetrics": "Performance Metrics",
+            "robustness": "Robustness",
+            "headerLabel": "Strategy Analysis Report",
+            "shareStrategy": "Share Strategy",
+            "copiedUrl": "Copied URL!",
+            "viewLatest": "View Latest Dataset",
+            "leaderboard": "Leaderboard",
+            "lastUpdate": "Last update: {date}",
+            "datasetsCount": "{count} dataset",
+            "datasetsCountPlural": "{count} datasets",
+            "verdictTitle": "Strategy Verdict",
+            "verdictDesc": "Overall evaluation based on statistical strength, evidence quality, and overfitting risk.",
+            "behaviorTitle": "Strategy Behavior",
+            "behaviorDesc": "Behavioral fingerprint — trading style, risk structure, and distribution characteristics.",
+            "stabilityTitle": "Strategy Stability",
+            "stabilityDesc": "Consistency and reliability across datasets and time.",
+            "analysisTitle": "Dataset Analysis",
+            "analysisDesc": "Performance breakdown of individual datasets.",
+            "bestEdge": "Best Edge",
+            "lowestDD": "Lowest DD",
+            "highestPF": "Highest PF",
+            "avgEdge": "Avg Edge",
+            "tableHeader": {
+                "created": "Created",
+                "dataset": "Dataset",
                 "trades": "Trades",
-                "winRate": "Win Rate",
-                "profitFactor": "Profit Factor"
-            },
-            "profile": {
-                "backLink": "Explore Strategies",
-                "verifiedLabel": "Verified Analysis",
-                "defaultDescription": "A quantitative strategy analysis focused on statistical edge and robustness performance metrics.",
-                "shareX": "Share on X",
-                "copyLink": "Copy Link",
-                "copiedAlert": "Link copied to clipboard!",
-                "scoreSub": "Quantitative edge verified by NodoQuant",
-                "performanceTitle": "01 PERFORMANCE JOURNEY (CUMULATIVE R)",
-                "certificateTitle": "Official Certificate",
-                "certificateDesc": "Download the high-resolution certified scorecard for this strategy. Optimized for social sharing and professional portfolios.",
-                "certificateBtn": "View Official Certificate",
-                "ctaTitle": "Test your own strategy",
-                "ctaDesc": "Do you have a real statistical edge? Get your quantitative report in seconds.",
-                "ctaBtn": "Analyze Free",
-                "metadataTitle": "Metadata Context",
-                "tradesAnalyzed": "Trades Analyzed",
-                "fingerprint": "Analysis Fingerprint",
-                "shareText": "My trading strategy scored {score}/100 on NodoQuant.\n\nWin Rate: {wr}%\nProfit Factor: {pf}\nTrades analyzed: {count}\n\nAnalyze your own strategy:\n",
-                "metrics": {
-                    "accuracy": "Accuracy",
-                    "yield": "Yield Quality",
-                    "edge": "Market Edge",
-                    "risk": "Risk Exposure"
-                }
-            }
-        },
-        "leaderboard": {
-            "metadata": {
-                "title": "Global Strategy Leaderboard — NodoQuant",
-                "description": "The world's most consistent trading strategies, ranked by the NodoQuant algorithm. Compare Forex, Crypto, and Stocks performance."
-            },
-            "hero": {
-                "badge": "Global Ranking",
-                "title": "Strategy",
-                "titleAccent": "Leaderboard",
-                "subtitle": "Comparing the most robust trading edges in the world. Ranked by the proprietary NodoQuant consistency score."
-            },
-            "table": {
-                "rank": "Rank",
-                "name": "Strategy Name",
-                "score": "Score",
-                "winRate": "Win Rate",
+                "wr": "WR",
                 "pf": "PF",
-                "trades": "Trades",
-                "action": "View Profile"
+                "maxDD": "Max DD",
+                "edge": "Edge"
             },
-            "tiers": {
-                "elite": "Elite",
-                "strong": "Strong Edge",
-                "moderate": "Moderate Edge",
-                "weak": "Weak Edge"
+            "datasetPerformance": "Dataset Performance",
+            "equityCurve": "Equity Curve",
+            "drawdownCurve": "Drawdown Curve",
+            "footer": {
+                "analyzedWith": "Analyzed with",
+                "lab": "Quant Strategy Lab",
+                "cta": "Analyze your strategy →"
             },
-            "empty": "No strategies found for this market ranking.",
-            "note": "Note: Rankings are recalculated every 24 hours based on Strategy Score, Risk-Adjusted Return, and Statistical Robustness. Only strategies with verified trade history are eligible for the Global Leaderboard."
-        },
-        "auth": {
-            "login": {
-                "title": "Sign In",
-                "subtitle": "Welcome back to NodoQuant.",
-                "emailLabel": "Email",
-                "emailPlaceholder": "your@email.com",
-                "passwordLabel": "Password",
-                "passwordPlaceholder": "••••••••",
-                "submit": "Sign in to my account",
-                "loading": "Signing in...",
-                "noAccount": "Don't have an account?",
-                "signupLink": "Sign up here"
+            "summary": {
+                "robust": "Robust strategy with strong statistical support.",
+                "strong": "Strong performance with solid evidence, but monitor overfitting signals.",
+                "overfit": "High performance but potential overfitting risk detected. Validate with more datasets.",
+                "promising": "Promising strategy but limited evidence. More datasets recommended.",
+                "moderate": "Moderate edge with solid data backing. Room for optimization.",
+                "signal": "Moderate signal detected. Increase sample size to confirm edge.",
+                "noClear": "No clear edge despite strong data — consider reviewing strategy logic.",
+                "insufficient": "Insufficient data and weak signal. More testing required."
             },
-            "signup": {
-                "title": "Create your account",
-                "subtitle": "Start validating your strategies today.",
-                "emailLabel": "Email",
-                "emailPlaceholder": "your@email.com",
-                "passwordLabel": "Password",
-                "passwordPlaceholder": "Min. 6 characters",
-                "submit": "Create my free account",
-                "loading": "Creating account...",
-                "haveAccount": "Already have an account?",
-                "loginLink": "Sign in here",
-                "success": "Account created! Redirecting..."
+            "backLink": "Explore Strategies",
+            "verifiedLabel": "Verified Analysis",
+            "defaultDescription": "A quantitative strategy analysis focused on statistical edge and robustness performance metrics.",
+            "shareX": "Share on X",
+            "copyLink": "Copy Link",
+            "copiedAlert": "Link copied to clipboard!",
+            "scoreSub": "Quantitative edge verified by NodoQuant",
+            "performanceTitle": "01 PERFORMANCE JOURNEY (CUMULATIVE R)",
+            "certificateTitle": "Official Certificate",
+            "certificateDesc": "Download the high-resolution certified scorecard for this strategy. Optimized for social sharing and professional portfolios.",
+            "certificateBtn": "View Official Certificate",
+            "ctaTitle": "Test your own strategy",
+            "ctaDesc": "Do you have a real statistical edge? Get your quantitative report in seconds.",
+            "ctaBtn": "Analyze Free",
+            "metadataTitle": "Metadata Context",
+            "tradesAnalyzed": "Trades Analyzed",
+            "fingerprint": "Analysis Fingerprint",
+            "shareText": "My trading strategy scored {score}/100 on NodoQuant.\n\nWin Rate: {wr}%\nProfit Factor: {pf}\nTrades analyzed: {count}\n\nAnalyze your own strategy:\n",
+            "metrics": {
+                "accuracy": "Accuracy",
+                "yield": "Yield Quality",
+                "edge": "Market Edge",
+                "risk": "Risk Exposure"
             }
+        }
+    },
+    "leaderboard": {
+        "metadata": {
+            "title": "Global Strategy Leaderboard — NodoQuant",
+            "description": "The world's most consistent trading strategies, ranked by the NodoQuant algorithm. Compare Forex, Crypto, and Stocks performance."
         },
-        "layout": {
+        "hero": {
+            "badge": "Global Ranking",
+            "title": "Strategy",
+            "titleAccent": "Leaderboard",
+            "subtitle": "Comparing the most robust trading edges in the world. Ranked by the proprietary NodoQuant consistency score."
+        },
+        "table": {
+            "rank": "Rank",
+            "name": "Strategy Name",
+            "score": "Score",
+            "winRate": "Win Rate",
+            "pf": "PF",
+            "trades": "Trades",
+            "action": "View Profile"
+        },
+        "tiers": {
+            "elite": "Elite",
+            "strong": "Strong Edge",
+            "moderate": "Moderate Edge",
+            "weak": "Weak Edge"
+        },
+        "empty": "No strategies found for this market ranking.",
+        "note": "Note: Rankings are recalculated every 24 hours based on Strategy Score, Risk-Adjusted Return, and Statistical Robustness. Only strategies with verified trade history are eligible for the Global Leaderboard."
+    },
+    "auth": {
+        "login": {
+            "title": "Sign In",
+            "subtitle": "Welcome back to NodoQuant.",
+            "emailLabel": "Email",
+            "emailPlaceholder": "your@email.com",
+            "passwordLabel": "Password",
+            "passwordPlaceholder": "••••••••",
+            "submit": "Sign in to my account",
+            "loading": "Signing in...",
+            "noAccount": "Don't have an account?",
+            "signupLink": "Sign up here"
+        },
+        "signup": {
+            "title": "Create your account",
+            "subtitle": "Start validating your strategies today.",
+            "emailLabel": "Email",
+            "emailPlaceholder": "your@email.com",
+            "passwordLabel": "Password",
+            "passwordPlaceholder": "Min. 6 characters",
+            "submit": "Create my free account",
+            "loading": "Creating account...",
+            "haveAccount": "Already have an account?",
+            "loginLink": "Sign in here",
+            "success": "Account created! Redirecting..."
+        }
+    },
+    "whyTraders": {
+        "title": "Why Traders Use NodoQuant",
+        "card1Title": "Avoid Overfitted Strategies",
+        "card1Desc": "Test if your backtest results are robust or just perfectly fitted to past noise.",
+        "card2Title": "Identify Hidden Risk",
+        "card2Desc": "Uncover the true probability of ruin and worst-case drawdown scenarios before going live.",
+        "card3Title": "Verify Your Real Trading Edge",
+        "card3Desc": "Calculate if your strategy's expectancy is statistically significant or driven by luck.",
+        "card4Title": "Prepare for Prop Firm Challenges",
+        "card4Desc": "Ensure your strategy's risk parameters align with strict proprietary trading rules."
+    },
+    "layout": {
         "metadata": {
             "title": "NodoQuant — Discover Your Trading Edge",
             "description": "Upload your trading history and discover if your strategy has a real statistical edge. Quantitative analysis for serious traders.",
             "keywords": "backtesting, trading strategy analysis, quant trading, trade analysis, strategy edge, quantitative laboratory"
         }
-    },
-    "charts": {
-        "equityTitle": "Equity Curve",
-        "equityLabel": "Cumulative Profit",
-        "noData": "No equity data available",
-        "trades": "Trades",
-        "tradeNum": "Trade #{num}"
     },
     "legal": {
         "backToHome": "Back to Home",

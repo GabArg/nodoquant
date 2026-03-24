@@ -1,13 +1,16 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useTranslations } from 'next-intl';
 
 interface EquityCurveChartProps {
     data: { index: number; r_multiple: number; cumulative_r: number }[];
 }
 
 export default function EquityCurveChart({ data }: EquityCurveChartProps) {
+    const t = useTranslations('analyzer.dashboard');
+
     return (
         <div className="card p-6 rounded-2xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
-            <h3 className="text-lg font-semibold text-white mb-4">Curva de Capital (R-Multiples)</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">{t('equityCurve')}</h3>
             <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>

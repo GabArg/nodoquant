@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
     simulations: number[][];
@@ -8,6 +9,7 @@ interface Props {
 }
 
 export default function MonteCarloChart({ simulations, averageCaseReturn }: Props) {
+    const t = useTranslations("analyzer.report.monteCarlo");
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
@@ -104,9 +106,9 @@ export default function MonteCarloChart({ simulations, averageCaseReturn }: Prop
             ctx.fillStyle = "#374151";
             ctx.font = "9px Inter, sans-serif";
             ctx.textAlign = "left";
-            ctx.fillText("Inicial", pad.left, pad.top + chartH + 18);
+            ctx.fillText(t("labels.initial") || "Initial", pad.left, pad.top + chartH + 18);
             ctx.textAlign = "right";
-            ctx.fillText(`Operación ${points}`, pad.left + chartW, pad.top + chartH + 18);
+            ctx.fillText(`${t("labels.operation") || "Operation"} ${points}`, pad.left + chartW, pad.top + chartH + 18);
         });
 
     }, [simulations, averageCaseReturn]);

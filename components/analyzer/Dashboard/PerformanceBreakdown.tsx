@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface PerformanceBreakdownProps {
     symbolData?: any[];
@@ -9,11 +10,12 @@ interface PerformanceBreakdownProps {
 }
 
 export default function PerformanceBreakdown({ symbolData = [], sessionData = [], weekdayData = [] }: PerformanceBreakdownProps) {
+    const t = useTranslations("analyzer.performanceBreakdown");
     const [activeTab, setActiveTab] = useState<"symbol" | "session" | "weekday">("symbol");
 
     const renderTable = (data: any[], keyName: string) => {
         if (!data || data.length === 0) {
-            return <div className="p-4 text-center text-gray-500">No hay datos suficientes para este desglose.</div>;
+            return <div className="p-4 text-center text-gray-500">{t("insufficientData")}</div>;
         }
 
         return (
@@ -22,9 +24,9 @@ export default function PerformanceBreakdown({ symbolData = [], sessionData = []
                     <thead className="text-xs uppercase bg-white/5 text-gray-400">
                         <tr>
                             <th className="px-4 py-3">{keyName}</th>
-                            <th className="px-4 py-3">Trades</th>
-                            <th className="px-4 py-3">Win Rate</th>
-                            <th className="px-4 py-3">Expectancy (R)</th>
+                            <th className="px-4 py-3">{t("trades")}</th>
+                            <th className="px-4 py-3">{t("winRate")}</th>
+                            <th className="px-4 py-3">{t("expectancy")}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -49,33 +51,33 @@ export default function PerformanceBreakdown({ symbolData = [], sessionData = []
     return (
         <div className="card p-6 rounded-2xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
-                <h3 className="text-lg font-semibold text-white">Desglose de Rendimiento</h3>
+                <h3 className="text-lg font-semibold text-white">{t("title")}</h3>
 
                 <div className="flex space-x-2 mt-4 sm:mt-0 bg-black/40 p-1 rounded-lg border border-white/10">
                     <button
                         onClick={() => setActiveTab("symbol")}
                         className={`px-4 py-1.5 rounded-md text-sm transition-colors ${activeTab === "symbol" ? "bg-indigo-600/50 text-white" : "text-gray-400 hover:text-white"}`}
                     >
-                        Activo
+                        {t("tabs.symbol")}
                     </button>
                     <button
                         onClick={() => setActiveTab("session")}
                         className={`px-4 py-1.5 rounded-md text-sm transition-colors ${activeTab === "session" ? "bg-indigo-600/50 text-white" : "text-gray-400 hover:text-white"}`}
                     >
-                        Sesión
+                        {t("tabs.session")}
                     </button>
                     <button
                         onClick={() => setActiveTab("weekday")}
                         className={`px-4 py-1.5 rounded-md text-sm transition-colors ${activeTab === "weekday" ? "bg-indigo-600/50 text-white" : "text-gray-400 hover:text-white"}`}
                     >
-                        Día
+                        {t("tabs.weekday")}
                     </button>
                 </div>
             </div>
 
-            {activeTab === "symbol" && renderTable(symbolData, "Activo / Par")}
-            {activeTab === "session" && renderTable(sessionData, "Sesión")}
-            {activeTab === "weekday" && renderTable(weekdayData, "Día de la Semana")}
+            {activeTab === "symbol" && renderTable(symbolData, t("columns.symbol"))}
+            {activeTab === "session" && renderTable(sessionData, t("columns.session"))}
+            {activeTab === "weekday" && renderTable(weekdayData, t("columns.weekday"))}
         </div>
     );
 }

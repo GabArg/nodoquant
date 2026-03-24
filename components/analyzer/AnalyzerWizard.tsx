@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useMemo, useEffect } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import ScoreExplanation from "@/components/analyzer/ScoreExplanation";
 import StrategyDiagnostics from "@/components/analyzer/StrategyDiagnostics";
@@ -22,6 +22,8 @@ import ImportSourceSelector from "@/components/import/ImportSourceSelector";
 import BinanceImportPanel from "@/components/import/BinanceImportPanel";
 import MT4ImportPanel from "@/components/import/MT4ImportPanel";
 import MT5ImportPanel from "@/components/import/MT5ImportPanel";
+import ComparisonDashboard from "@/components/analyzer/ComparisonDashboard";
+import { useComparison } from "@/hooks/useComparison";
 import { parseTrades, type ParseResult } from "@/lib/analyzer/parser";
 import {
     calcBasicMetrics,
@@ -47,6 +49,7 @@ function getUIStepIndex(s: Step) {
 
 export default function AnalyzerWizard() {
     const t = useTranslations("analyzer.wizard");
+    const locale = useLocale();
     const [step, setStep] = useState<Step>("source");
     const [importSource, setImportSource] = useState<ImportSource | null>(null);
     const [fileState, setFileState] = useState<{ content: string; name: string } | null>(null);
@@ -58,6 +61,9 @@ export default function AnalyzerWizard() {
     const [unlockedEmail, setUnlockedEmail] = useState("");
     const [isPro, setIsPro] = useState(false);
     const [strategyId, setStrategyId] = useState("");
+    const [showComparison, setShowComparison] = useState(false);
+    const { comparisonList, addToComparison, removeFromComparison, isFull } = useComparison(isPro);
+    const compT = useTranslations("analyzer.comparison");
     const [analysisId, setAnalysisId] = useState<string | null>(null);
     const [datasetName, setDatasetName] = useState("");
     const [pendingNormalized, setPendingNormalized] = useState<{ trades: NormalizedTrade[]; source: ImportSource } | null>(null);
@@ -156,6 +162,22 @@ export default function AnalyzerWizard() {
         }
     }, [searchParams, isHydrated]);
 
+    // Fetch PRO status
+    useEffect(() => {
+        async function checkPlan() {
+            try {
+                const res = await fetch(`/${locale}/api/user/plan`);
+                const data = await res.json();
+                if (data.isPro) {
+                    setIsPro(true);
+                }
+            } catch (e) {
+                console.error("Error fetching plan status:", e);
+            }
+        }
+        checkPlan();
+    }, [locale]);
+
     const UI_STEPS = useMemo(() => [
         { id: "upload", label: t("steps.upload") },
         { id: "mapping", label: t("steps.mapping") },
@@ -163,14 +185,27 @@ export default function AnalyzerWizard() {
         { id: "report", label: t("steps.report") },
     ], [t]);
 
+    const [loadingStage, setLoadingStage] = useState<"parsing" | "normalizing" | "diagnostics" | "finalizing">("parsing");
+
     const handleFile = useCallback((content: string, fileName: string) => {
         setParseError(null);
         setLoading(true);
+        setStep("upload");
+        setLoadingStage("parsing");
+        
+        // Multi-stage loading for professional perceived depth
+        const stages: Array<"parsing" | "normalizing" | "diagnostics" | "finalizing"> = ["parsing", "normalizing", "diagnostics", "finalizing"];
+        
+        stages.forEach((stage, i) => {
+            setTimeout(() => setLoadingStage(stage), (i + 1) * 300);
+        });
+
         setTimeout(() => {
             setFileState({ content, name: fileName });
             setStep("importing");
             setLoading(false);
-        }, 50);
+            trackEvent("analysis_started", { fileName });
+        }, 1300);
     }, []);
 
     const handleNormalizedImport = useCallback((trades: NormalizedTrade[], source: ImportSource) => {
@@ -212,6 +247,12 @@ export default function AnalyzerWizard() {
                 profit_factor: basic.profitFactor,
                 removed_duplicates: legacyTrades.length - uniqueTrades.length
             });
+
+            trackEvent("analysis_completed", { 
+                trades: basic.totalTrades, 
+                profitFactor: basic.profitFactor,
+                isPro
+            });
         } catch (err: unknown) {
             setParseError(err instanceof Error ? err.message : "Error calculating metrics.");
             setStep("source");
@@ -247,6 +288,12 @@ export default function AnalyzerWizard() {
                 win_rate: basic.winrate,
                 profit_factor: basic.profitFactor,
                 removed_duplicates: result.trades.length - uniqueTrades.length
+            });
+
+            trackEvent("analysis_completed", { 
+                trades: basic.totalTrades, 
+                profitFactor: basic.profitFactor,
+                isPro
             });
         } catch (err: unknown) {
             setParseError(err instanceof Error ? err.message : "Error calculando métricas.");
@@ -314,10 +361,10 @@ export default function AnalyzerWizard() {
             <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
                 <div className="section-label mt-8">{t("freeTool")}</div>
                 <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-3 leading-tight">
-                    {t("title")}
+                    {t("heroTitle")}
                 </h1>
                 <p className="text-base" style={{ color: "#9ca3af" }}>
-                    {t("description")}
+                    {t("heroDescription")}
                 </p>
 
                 <div className="flex items-center gap-0 mt-8">
@@ -425,8 +472,37 @@ export default function AnalyzerWizard() {
                         {(!importSource || importSource === "csv" || importSource === "generic") && (
                             <div className="space-y-6">
                                 <OnboardingPanel importSource={importSource as "csv" | "mt4" | "mt5" | "binance" | null} />
-                                <div ref={uploadRef}>
+                                <div ref={uploadRef} className="relative">
                                     <FileUpload onFile={handleFile} loading={loading} />
+                                    
+                                    {/* Professional Loading Overlay */}
+                                    {loading && (
+                                        <div className="absolute inset-0 z-50 rounded-xl overflow-hidden flex flex-col items-center justify-center p-8 transition-all animate-fade-in"
+                                            style={{ background: "rgba(5,5,5,0.85)", backdropFilter: "blur(12px)" }}>
+                                            
+                                            <div className="relative mb-8">
+                                                <div className="w-16 h-16 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
+                                                <div className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-indigo-400">
+                                                    {Math.round((UI_STEPS.findIndex(s => s.id === "report") + 1) * 25)}%
+                                                </div>
+                                            </div>
+
+                                            <div className="text-center space-y-2">
+                                                <p className="text-xs font-black text-white uppercase tracking-[0.3em] animate-pulse">
+                                                    {t(`loading.${loadingStage}`)}
+                                                </p>
+                                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                                                    {t("freeTool")}
+                                                </p>
+                                            </div>
+
+                                            {/* Progress line */}
+                                            <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/[0.02]">
+                                                <div className="h-full bg-indigo-500 transition-all duration-300" 
+                                                    style={{ width: loadingStage === "parsing" ? "25%" : loadingStage === "normalizing" ? "50%" : loadingStage === "diagnostics" ? "75%" : "100%" }} />
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="flex justify-center animate-fade-in pb-8">
                                     <button
@@ -475,15 +551,15 @@ export default function AnalyzerWizard() {
 
                 {step === "basic" && basicMetrics && parseResult && fullMetrics && (
                     <div className="space-y-12 animate-fade-in">
-                        {/* 1. Strategy Score */}
+                        {/* 1. Strategy Diagnosis Panel (Integrated) */}
                         <div className="order-1">
                             <BasicResults
                                 metrics={basicMetrics}
+                                fullMetrics={fullMetrics}
                                 format={parseResult.format}
                                 fileName={parseResult.fileName}
                                 trades={parseResult.trades}
                                 onReset={resetToSource}
-                                hideMetrics={true}
                             />
                         </div>
 
@@ -492,24 +568,29 @@ export default function AnalyzerWizard() {
                             <EquityChart data={fullMetrics.equityCurve} />
                         </div>
 
-                        {/* 3. Key Metrics */}
+                        {/* 3. Deep Statistical Insights */}
                         <div className="order-3 animate-fade-in" style={{ animationDelay: "300ms" }}>
-                            <BasicResults
-                                metrics={basicMetrics}
-                                format={parseResult.format}
-                                trades={parseResult.trades}
-                                onReset={resetToSource}
-                                hideScore={true}
-                            />
-                        </div>
-
-                        {/* 2.5 Score Explanation (NEW) */}
-                        <div className="order-3 animate-fade-in" style={{ animationDelay: "350ms" }}>
                             <ScoreExplanation />
                         </div>
 
-                        {/* 4. Strategy Insights */}
-                        <div className="order-4 animate-fade-in" style={{ animationDelay: "450ms" }}>
+                        {/* 4. Behavioral Analysis (Sessions/Days) */}
+                        <div className="order-4 animate-fade-in" style={{ animationDelay: "400ms" }}>
+                            <StrategyDiagnostics 
+                                metrics={basicMetrics}
+                                fullMetrics={fullMetrics}
+                                trades={parseResult.trades}
+                                onAddToComparison={() => addToComparison({
+                                    name: parseResult.fileName || "Strategy",
+                                    metrics: basicMetrics,
+                                    fullMetrics: fullMetrics,
+                                    trades: parseResult.trades
+                                })}
+                                isInComparison={comparisonList.some(s => s.name === parseResult.fileName)}
+                            />
+                        </div>
+
+                        {/* 5. Edge Validation Insights */}
+                        <div className="order-5 animate-fade-in" style={{ animationDelay: "500ms" }}>
                             <StrategyInsight
                                 profitFactor={basicMetrics.profitFactor}
                                 winrate={basicMetrics.winrate}
@@ -519,16 +600,8 @@ export default function AnalyzerWizard() {
                             />
                         </div>
 
-                        {/* 4.5 Strategy Diagnostics (NEW) */}
-                        <div className="order-5 animate-fade-in" style={{ animationDelay: "500ms" }}>
-                            <StrategyDiagnostics 
-                                metrics={basicMetrics}
-                                trades={parseResult.trades}
-                            />
-                        </div>
-
-                        {/* 5. Next Actions Panel */}
-                        <div className="order-5 pt-16 border-t border-white/[0.05] animate-fade-in" style={{ animationDelay: "600ms" }}>
+                        {/* 6. Professional Next Steps Gateway */}
+                        <div className="order-6 pt-16 border-t border-white/[0.05] animate-fade-in" style={{ animationDelay: "600ms" }}>
                             <div className="text-center mb-10">
                                 <h3 className="text-2xl font-black text-white mb-2 tracking-tight italic uppercase">{t("nextStepsTitle")}</h3>
                                 <p className="text-sm text-gray-400 font-medium max-w-lg mx-auto leading-relaxed">
@@ -612,6 +685,7 @@ export default function AnalyzerWizard() {
                     <div className="space-y-4">
                         <BasicResults
                             metrics={basicMetrics}
+                            fullMetrics={fullMetrics || undefined}
                             format={parseResult.format}
                             fileName={parseResult.fileName}
                             trades={parseResult.trades}
@@ -663,6 +737,13 @@ export default function AnalyzerWizard() {
                             email={unlockedEmail}
                             analysisId={analysisId}
                             onSimulate={() => setStep("sim")}
+                            onAddToComparison={() => addToComparison({
+                                name: parseResult.fileName || "Strategy",
+                                metrics: basicMetrics!,
+                                fullMetrics: fullMetrics,
+                                trades: parseResult.trades
+                            })}
+                            isInComparison={comparisonList.some(s => s.name === parseResult.fileName)}
                             isPro={isPro}
                         />
 
@@ -682,7 +763,7 @@ export default function AnalyzerWizard() {
 
                 {step === "sim" && parseResult && (
                     <div className="space-y-10">
-                        <PropFirmSimulator trades={parseResult.trades} />
+                        <PropFirmSimulator trades={parseResult.trades} isPro={isPro} />
                         <div className="flex flex-col items-center gap-6">
                             <div className="flex flex-wrap justify-center gap-4">
                                 <button 
@@ -705,7 +786,42 @@ export default function AnalyzerWizard() {
                         </div>
                     </div>
                 )}
+
+                {showComparison && (
+                    <ComparisonDashboard 
+                        strategies={comparisonList}
+                        onRemove={removeFromComparison}
+                        onBack={() => setShowComparison(false)}
+                    />
+                )}
             </div>
+
+            {/* Floating Comparison Bar */}
+            {comparisonList.length > 0 && !showComparison && (
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-bounce-in">
+                    <div className="flex items-center gap-4 px-6 py-4 rounded-3xl bg-indigo-600/90 border border-white/20 backdrop-blur-xl shadow-[0_20px_50px_rgba(99,102,241,0.5)]">
+                        <div className="flex -space-x-3 overflow-hidden">
+                            {comparisonList.map((s, i) => (
+                                <div key={s.id} className="w-10 h-10 rounded-2xl bg-white/20 border-2 border-indigo-600 flex items-center justify-center text-xs font-black text-white shadow-xl">
+                                    {i + 1}
+                                </div>
+                            ))}
+                            {Array.from({ length: 3 - comparisonList.length }).map((_, i) => (
+                                <div key={i} className="w-10 h-10 rounded-2xl bg-black/20 border-2 border-indigo-600 border-dashed flex items-center justify-center text-indigo-300 text-[10px] font-black">
+                                    +
+                                </div>
+                            ))}
+                        </div>
+                        <div className="h-8 w-px bg-white/10 mx-2" />
+                        <button
+                            onClick={() => setShowComparison(true)}
+                            className="bg-white text-indigo-600 px-6 py-2.5 rounded-2xl text-[10px] font-black tracking-widest uppercase hover:bg-indigo-50 transition-all active:scale-[0.98] shadow-lg"
+                        >
+                            {compT("view")} ({comparisonList.length}/3)
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {(step === "full" || step === "sim") && (
                 <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">

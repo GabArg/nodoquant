@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 28" height="28" fill="white">
+  <!-- Coinbase: filled circle with white C cutout -->
+  <circle cx="14" cy="14" r="13"/>
+  <!-- C cutout in dark (removes inner area to create C shape) -->
+  <path d="M19 9.5 A8 8 0 1 0 19 18.5 L14 18.5 A3 3 0 1 1 14 9.5 Z" fill="black"/>
+  <!-- Text -->
+  <text x="33" y="19" font-family="'Arial', sans-serif" font-weight="700" font-size="13" fill="white">Coinbase</text>
+</svg>

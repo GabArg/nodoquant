@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 28" height="28" fill="white">
+  <!-- IC sphere icon: circle + meridian lines -->
+  <circle cx="14" cy="14" r="12" stroke="white" stroke-width="2" fill="none"/>
+  <ellipse cx="14" cy="14" rx="5.5" ry="12" stroke="white" stroke-width="1.5" fill="none"/>
+  <line x1="2" y1="14" x2="26" y2="14" stroke="white" stroke-width="1.5"/>
+  <!-- Stacked wordmark -->
+  <text x="32" y="12" font-family="'Arial', sans-serif" font-weight="700" font-size="10" letter-spacing="1" fill="white">IC</text>
+  <text x="32" y="24" font-family="'Arial', sans-serif" font-weight="400" font-size="9" letter-spacing="1.5" fill="white">MARKETS</text>
+</svg>

@@ -1,0 +1,87 @@
+﻿
+[1m[46m RUN [49m[22m [36mv4.1.0 [39m[90mC:/Users/Admin/Desktop/Proyectos/NodoQuant[39m
+
+ [31mÔØ»[39m tests/analyzer/validation_stress_test.test.ts [2m([22m[2m7 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 72[2mms[22m[39m
+     [32mÔ£ô[39m should correctly handle small samples (N < 20)[32m 10[2mms[22m[39m
+     [32mÔ£ô[39m should detect clustered sequences with high Z-Score[32m 12[2mms[22m[39m
+[31m     [31m├ù[31m should identify a lack of edge in a random walk[39m[32m 15[2mms[22m[39m
+     [32mÔ£ô[39m should identify a robust strategy correctly[32m 12[2mms[22m[39m
+[31m     [31m├ù[31m should flag Martingale-style strategies as fragile[39m[32m 16[2mms[22m[39m
+     [32mÔ£ô[39m should penalize overfitted small samples[32m 4[2mms[22m[39m
+     [32mÔ£ô[39m should verify SQN formula accuracy[32m 2[2mms[22m[39m
+node.exe : 
+En línea: 1 Carácter: 1
++ & "C:\Program Files\nodejs/node.exe" 
+"C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandEr 
+   ror
+ 
+[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m[1m[41m 
+Failed Tests 2 
+[49m[22m[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m
+
+[41m[1m FAIL [22m[49m tests/analyzer/valid
+ation_stress_test.test.ts[2m > 
+[22mAnalytics Engine Stress Tests[2m > 
+[22mshould identify a lack of edge in a 
+random walk
+[31m[1mAssertionError[22m: expected 43 to 
+be less than 40[39m
+[36m [2mÔØ»[22m tests/analyzer/validation_s
+tress_test.test.ts:[2m46:50[22m[39m
+    [90m 44|[39m         [35mconst[39m 
+metrics [33m=[39m 
+[34mcalcFullMetrics[39m(trades)[33m;[39m
+    [90m 45|[39m
+    [90m 46|[39m         [34mexpect[39m(me
+trics[33m.[39madvanced[33m?.[39medgeConfid
+ence)[33m.[39m[34mtoBeLessThan[39m([34m40
+[39m)[33m;[39m
+    [90m   |[39m                            
+                      [31m^[39m
+    [90m 47|[39m         expect(['fragile', 
+'moderate']).toContain(metrics.advanced?.roÔÇª
+    [90m 48|[39m     })[33m;[39m
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»Ô
+Ä»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[1/2]ÔÄ»[2
+2m[39m
+
+[41m[1m FAIL [22m[49m tests/analyzer/valid
+ation_stress_test.test.ts[2m > 
+[22mAnalytics Engine Stress Tests[2m > 
+[22mshould flag Martingale-style strategies 
+as fragile
+[31m[1mAssertionError[22m: expected 6 to 
+be greater than 7.3[39m
+[36m [2mÔØ»[22m tests/analyzer/validation_s
+tress_test.test.ts:[2m72:51[22m[39m
+    [90m 70|[39m         [34mexpect[39m(me
+trics[33m.[39mwinrate)[33m.[39m[34mtoBeGr
+eaterThan[39m([34m90[39m)[33m;[39m
+    [90m 71|[39m         [90m// Peak 
+drawdown in Monte Carlo should be high[39m
+    [90m 72|[39m         expect(metrics.mont
+eCarlo.drawdownAt5Pct).toBeGreaterThan(metrÔÇª
+    [90m   |[39m                            
+                       [31m^[39m
+    [90m 73|[39m         [34mexpect[39m(me
+trics[33m.[39madvanced[33m?.[39mrobustness
+Level)[33m.[39m[34mtoBe[39m([32m'fragile'
+[39m)[33m;[39m
+    [90m 74|[39m     })[33m;[39m
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»Ô
+Ä»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[2/2]ÔÄ»[2
+2m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m5 passed[39m[22m[90m (7)[39m
+[2m   Start at [22m 18:29:06
+[2m   Duration [22m 676ms[2m (transform 50ms, setup 0ms, import 66ms, tests 72ms, environment 0ms)[22m
+

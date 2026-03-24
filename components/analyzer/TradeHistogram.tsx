@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
     histogram: number[];
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export default function TradeHistogram({ histogram, minProfit, maxProfit }: Props) {
+    const t = useTranslations("analyzer.report.visualizations");
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
@@ -93,17 +95,17 @@ export default function TradeHistogram({ histogram, minProfit, maxProfit }: Prop
     return (
         <div className="w-full">
             <p className="text-xs font-medium mb-2" style={{ color: "#6b7280" }}>
-                Distribución de trades (P&amp;L)
+                {t("tradesDistribution") || "Trade Distribution (P&L)"}
             </p>
             <canvas ref={canvasRef} style={{ width: "100%", height: "140px", display: "block" }} />
             <div className="flex gap-4 mt-2">
                 <span className="text-xs flex items-center gap-1.5" style={{ color: "#6b7280" }}>
                     <span className="inline-block w-2.5 h-2.5 rounded-sm" style={{ background: "rgba(59,130,246,0.75)" }} />
-                    Ganadores
+                    {t("winners") || "Winners"}
                 </span>
                 <span className="text-xs flex items-center gap-1.5" style={{ color: "#6b7280" }}>
                     <span className="inline-block w-2.5 h-2.5 rounded-sm" style={{ background: "rgba(239,68,68,0.65)" }} />
-                    Perdedores
+                    {t("losers") || "Losers"}
                 </span>
             </div>
         </div>

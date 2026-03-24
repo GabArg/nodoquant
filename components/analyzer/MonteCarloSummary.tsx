@@ -16,7 +16,7 @@ function formatMoney(val: number) {
 }
 
 export default function MonteCarloSummary({ worstCase, averageCase, bestCase, riskOfRuin }: Props) {
-    const t = useTranslations("analyzer.monteCarlo.labels");
+    const t = useTranslations("analyzer.report.monteCarlo.labels");
 
     return (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">

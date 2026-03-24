@@ -1,5 +1,4 @@
-"use client";
-
+import { useTranslations } from "next-intl";
 import type { ImportSource } from "@/lib/import/normalizedTrade";
 
 interface SourceCard {
@@ -16,40 +15,40 @@ const SOURCES: SourceCard[] = [
     {
         id: "csv",
         icon: "📄",
-        label: "Upload CSV",
-        description: "Any CSV or TSV export from your broker, EA backtester, or trading journal.",
+        label: "sources.csv.label",
+        description: "sources.csv.desc",
         badge: "Universal",
         badgeColor: "#6366f1",
     },
     {
         id: "mt4",
         icon: "📊",
-        label: "MT4 Statement",
-        description: "Import an HTML or CSV account statement exported directly from MetaTrader 4.",
+        label: "sources.mt4.label",
+        description: "sources.mt4.desc",
         badge: "MetaTrader 4",
         badgeColor: "#0ea5e9",
     },
     {
         id: "mt5",
         icon: "📈",
-        label: "MT5 Statement",
-        description: "Import an HTML or CSV Deals report exported from MetaTrader 5.",
+        label: "sources.mt5.label",
+        description: "sources.mt5.desc",
         badge: "MetaTrader 5",
         badgeColor: "#8b5cf6",
     },
     {
-        id: "binance-spot",
+        id: "binance",
         icon: "🔑",
-        label: "Binance API",
-        description: "Connect via API key to import Spot and/or USDT-M Futures trade history automatically.",
+        label: "sources.binance.label",
+        description: "sources.binance.desc",
         badge: "Spot + Futures",
         badgeColor: "#f59e0b",
     },
     {
         id: "generic",
         icon: "🔮",
-        label: "More brokers",
-        description: "Interactive Brokers, Bybit, OKX, KuCoin and more — coming soon.",
+        label: "sources.generic.label",
+        description: "sources.generic.desc",
         disabled: true,
     },
 ];
@@ -59,55 +58,61 @@ interface Props {
 }
 
 export default function ImportSourceSelector({ onSelect }: Props) {
+    const t = useTranslations("analyzer.sourceSelector");
+
     return (
-        <div className="space-y-6">
-            <div>
-                <h2 className="text-xl font-bold text-white mb-1">Import your trading history</h2>
-                <p className="text-sm" style={{ color: "#9ca3af" }}>
-                    Choose how you want to import your trades. All sources produce the same analysis.
+        <div className="py-12 space-y-10">
+            <div className="text-center mb-12">
+                <h2 className="text-3xl sm:text-4xl font-black text-white mb-4 tracking-tight uppercase italic italic">
+                    {t("title")}
+                </h2>
+                <p className="text-sm font-medium max-w-lg mx-auto leading-relaxed" style={{ color: "#9ca3af" }}>
+                    {t("description")}
                 </p>
+                
+                {/* Outcome Clarity Message */}
+                <div className="mt-6 flex justify-center">
+                    <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        {t("outcomeNote")}
+                    </span>
+                </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
                 {SOURCES.map((src) => (
                     <button
                         key={src.id}
                         onClick={() => !src.disabled && onSelect(src.id)}
                         disabled={src.disabled}
-                        className="text-left rounded-xl p-4 border transition-all group relative"
+                        className="text-left rounded-2xl p-6 border transition-all group relative overflow-hidden"
                         style={{
                             background: src.disabled
                                 ? "rgba(255,255,255,0.01)"
                                 : "rgba(255,255,255,0.02)",
                             borderColor: src.disabled
                                 ? "rgba(255,255,255,0.04)"
-                                : "rgba(255,255,255,0.08)",
+                                : src.id === "csv" ? "rgba(99,102,241,0.2)" : "rgba(255,255,255,0.08)",
                             cursor: src.disabled ? "not-allowed" : "pointer",
                             opacity: src.disabled ? 0.45 : 1,
                         }}
-                        onMouseEnter={e => {
-                            if (!src.disabled) {
-                                (e.currentTarget as HTMLElement).style.borderColor = "rgba(99,102,241,0.35)";
-                                (e.currentTarget as HTMLElement).style.background = "rgba(99,102,241,0.05)";
-                            }
-                        }}
-                        onMouseLeave={e => {
-                            (e.currentTarget as HTMLElement).style.borderColor = src.disabled
-                                ? "rgba(255,255,255,0.04)"
-                                : "rgba(255,255,255,0.08)";
-                            (e.currentTarget as HTMLElement).style.background = src.disabled
-                                ? "rgba(255,255,255,0.01)"
-                                : "rgba(255,255,255,0.02)";
-                        }}
                     >
-                        <div className="flex items-start gap-3">
-                            <span className="text-2xl shrink-0 mt-0.5">{src.icon}</span>
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                                    <span className="text-sm font-semibold text-white">{src.label}</span>
+                        {src.id === "csv" && !src.disabled && (
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 blur-[40px] pointer-events-none" />
+                        )}
+                        
+                        <div className="flex items-start gap-4 h-full">
+                            <span className="text-3xl shrink-0">{src.icon}</span>
+                            <div className="flex-1 min-w-0 flex flex-col justify-center h-full">
+                                <div className="flex items-center gap-2 flex-wrap mb-1">
+                                    <span className="text-base font-bold text-white tracking-tight">
+                                        {t(src.label)}
+                                    </span>
                                     {src.badge && (
                                         <span
-                                            className="text-xs px-2 py-0.5 rounded-full font-medium"
+                                            className="text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-wider"
                                             style={{
                                                 background: src.disabled
                                                     ? "rgba(255,255,255,0.06)"
@@ -118,30 +123,21 @@ export default function ImportSourceSelector({ onSelect }: Props) {
                                                 border: `1px solid ${src.disabled ? "rgba(255,255,255,0.06)" : `${src.badgeColor}30`}`,
                                             }}
                                         >
-                                            {src.disabled ? "Coming Soon" : src.badge}
+                                            {src.disabled ? t("soon") : src.badge}
                                         </span>
                                     )}
                                 </div>
                                 <p className="text-xs leading-relaxed" style={{ color: "#6b7280" }}>
-                                    {src.description}
+                                    {t(src.description)}
                                 </p>
                             </div>
-                            {!src.disabled && (
-                                <svg
-                                    className="shrink-0 mt-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    width="14" height="14"
-                                    viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2.5"
-                                >
-                                    <path d="M5 12h14M12 5l7 7-7 7" />
-                                </svg>
-                            )}
                         </div>
                     </button>
                 ))}
             </div>
 
-            <p className="text-xs text-center" style={{ color: "#374151" }}>
-                All import methods produce the same quantitative report. Your data is never shared.
+            <p className="text-[10px] font-bold text-center uppercase tracking-[0.3em]" style={{ color: "#374151" }}>
+                {t("privacyNote")}
             </p>
         </div>
     );

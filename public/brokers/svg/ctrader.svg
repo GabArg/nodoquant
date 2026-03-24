@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 48" fill="none" height="48">
+  <!-- cTrader stylized C icon -->
+  <path d="M24 6 A18 18 0 1 0 24 42 L24 34 A10 10 0 1 1 24 14 Z" fill="#ffffff"/>
+  <rect x="20" y="21" width="18" height="6" rx="3" fill="#ffffff"/>
+  <!-- cTrader text -->
+  <text x="52" y="33" font-family="Arial, sans-serif" font-weight="400" font-size="22" fill="#ffffff">c<tspan font-weight="700">Trader</tspan></text>
+</svg>

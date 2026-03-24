@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48" fill="none" height="48">
+  <!-- Ninja shuriken / star icon -->
+  <g fill="#ffffff" transform="translate(24,24)">
+    <polygon points="0,-18 4,-4 18,0 4,4 0,18 -4,4 -18,0 -4,-4" opacity="0.9"/>
+    <circle cx="0" cy="0" r="4" fill="#000000" opacity="0"/>
+    <polygon points="0,-18 4,-4 18,0 4,4 0,18 -4,4 -18,0 -4,-4" fill="none" stroke="#000000" stroke-width="0"/>
+  </g>
+  <!-- Inner circle cutout feel -->
+  <circle cx="24" cy="24" r="5" fill="none" stroke="#000000" stroke-width="0"/>
+  <!-- NinjaTrader text -->
+  <text x="52" y="20" font-family="Arial, sans-serif" font-weight="700" font-size="13" fill="#ffffff">NINJA</text>
+  <text x="52" y="36" font-family="Arial, sans-serif" font-weight="400" font-size="13" fill="#ffffff" letter-spacing="0.5">TRADER</text>
+</svg>

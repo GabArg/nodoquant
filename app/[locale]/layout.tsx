@@ -62,10 +62,8 @@ export default async function RootLayout({
                                 ) : (
                                     <>
                                         <div className="flex items-center gap-5 text-gray-400 mr-4">
-                                            <Link href="/strategies" className="hover:text-white transition-colors">{t("library")}</Link>
-                                            <Link href="/leaderboard" className="hover:text-white transition-colors">{t("leaderboard")}</Link>
-                                            <Link href="/#hero" className="hover:text-white transition-colors">{t("product")}</Link>
                                             <Link href="/#process" className="hover:text-white transition-colors">{t("howItWorks")}</Link>
+                                            <Link href="/#example" className="hover:text-white transition-colors">{t("exampleReport")}</Link>
                                             <Link href="/#score" className="hover:text-white transition-colors">{t("strategyScore")}</Link>
                                             <Link href="/#faq" className="hover:text-white transition-colors">{t("faq")}</Link>
                                         </div>

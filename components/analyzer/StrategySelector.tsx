@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 
 export interface Strategy {
     id: string;
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export default function StrategySelector({ onSelect, onBack }: Props) {
+    const t = useTranslations("analyzer.strategySelector");
     const [strategies, setStrategies] = useState<Strategy[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedId, setSelectedId] = useState("");
@@ -49,7 +51,7 @@ export default function StrategySelector({ onSelect, onBack }: Props) {
 
     async function handleCreate() {
         if (!newName.trim()) {
-            setError("El nombre es obligatorio.");
+            setError(t("nameRequired"));
             return;
         }
         setCreating(true);
@@ -70,7 +72,7 @@ export default function StrategySelector({ onSelect, onBack }: Props) {
             console.log("[StrategySelector] API response:", data);
 
             if (!data.ok) {
-                setError(data.error ?? "Error al crear la estrategia.");
+                setError(data.error ?? t("createError"));
                 return;
             }
             // Success! Append to list and select it
@@ -81,7 +83,7 @@ export default function StrategySelector({ onSelect, onBack }: Props) {
             setNewDesc("");
         } catch (err) {
             console.error("[StrategySelector] Fetch error:", err);
-            setError("Error de red.");
+            setError(t("networkError"));
         } finally {
             setCreating(false);
         }
@@ -89,11 +91,11 @@ export default function StrategySelector({ onSelect, onBack }: Props) {
 
     function handleContinue() {
         if (!selectedId) {
-            setError("Seleccioná una estrategia.");
+            setError(t("selectStrategyError"));
             return;
         }
         if (!datasetName.trim()) {
-            setError("Ingresá un nombre para el dataset.");
+            setError(t("datasetNameError"));
             return;
         }
         setError(null);
@@ -104,18 +106,18 @@ export default function StrategySelector({ onSelect, onBack }: Props) {
         <div className="w-full max-w-xl mx-auto animate-fade-in">
             <div className="card rounded-2xl p-6 space-y-5">
                 <div>
-                    <div className="section-label">Organizar análisis</div>
-                    <h2 className="text-xl font-bold text-white mb-1">Seleccioná tu estrategia</h2>
+                    <div className="section-label">{t("organizeLabel")}</div>
+                    <h2 className="text-xl font-bold text-white mb-1">{t("title")}</h2>
                     <p className="text-sm" style={{ color: "#6b7280" }}>
-                        Agrupá tus análisis por estrategia para compararlos después.
+                        {t("subtitle")}
                     </p>
                 </div>
 
                 {/* Strategy dropdown */}
                 <div>
-                    <label className="form-label" htmlFor="strategy-select">Estrategia</label>
+                    <label className="form-label" htmlFor="strategy-select">{t("strategyLabel")}</label>
                     {loading ? (
-                        <div className="text-sm text-gray-500">Cargando estrategias...</div>
+                        <div className="text-sm text-gray-500">{t("loadingStrategies")}</div>
                     ) : (
                         <div className="flex gap-2">
                             <select
@@ -132,12 +134,12 @@ export default function StrategySelector({ onSelect, onBack }: Props) {
                                 }}
                             >
                                 {strategies.length === 0 && (
-                                    <option value="" disabled>No hay estrategias</option>
+                                    <option value="" disabled>{t("noStrategies")}</option>
                                 )}
                                 {strategies.map((s) => (
                                     <option key={s.id} value={s.id}>{s.name}</option>
                                 ))}
-                                <option value="__new__">+ Crear nueva estrategia</option>
+                                <option value="__new__">{t("createNew")}</option>
                             </select>
                         </div>
                     )}
@@ -153,27 +155,27 @@ export default function StrategySelector({ onSelect, onBack }: Props) {
                         }}
                     >
                         <p className="text-xs font-semibold text-indigo-400 uppercase tracking-widest">
-                            Nueva estrategia
+                            {t("newStrategy")}
                         </p>
                         <div>
-                            <label className="form-label" htmlFor="new-strategy-name">Nombre</label>
+                            <label className="form-label" htmlFor="new-strategy-name">{t("nameLabel")}</label>
                             <input
                                 id="new-strategy-name"
                                 type="text"
                                 className="form-input"
-                                placeholder="Ej: Scalping EUR/USD"
+                                placeholder={t("namePlaceholder")}
                                 value={newName}
                                 onChange={(e) => setNewName(e.target.value)}
                                 disabled={creating}
                             />
                         </div>
                         <div>
-                            <label className="form-label" htmlFor="new-strategy-desc">Descripción (opcional)</label>
+                            <label className="form-label" htmlFor="new-strategy-desc">{t("descLabel")}</label>
                             <input
                                 id="new-strategy-desc"
                                 type="text"
                                 className="form-input"
-                                placeholder="Breve descripción de la estrategia"
+                                placeholder={t("descPlaceholder")}
                                 value={newDesc}
                                 onChange={(e) => setNewDesc(e.target.value)}
                                 disabled={creating}
@@ -185,7 +187,7 @@ export default function StrategySelector({ onSelect, onBack }: Props) {
                                 onClick={handleCreate}
                                 disabled={creating}
                             >
-                                {creating ? "Creando..." : "Crear"}
+                                {creating ? t("creating") : t("create")}
                             </button>
                             <button
                                 className="text-sm"
@@ -195,7 +197,7 @@ export default function StrategySelector({ onSelect, onBack }: Props) {
                                     if (strategies.length > 0) setSelectedId(strategies[0].id);
                                 }}
                             >
-                                Cancelar
+                                {t("cancel")}
                             </button>
                         </div>
                     </div>
@@ -204,13 +206,13 @@ export default function StrategySelector({ onSelect, onBack }: Props) {
                 {/* Dataset name */}
                 <div>
                     <label className="form-label" htmlFor="dataset-name">
-                        Nombre del dataset
+                        {t("datasetNameLabel")}
                     </label>
                     <input
                         id="dataset-name"
                         type="text"
                         className="form-input"
-                        placeholder="Ej: Backtest 2023, Forward Test, Live trades"
+                        placeholder={t("datasetPlaceholder")}
                         value={datasetName}
                         onChange={(e) => setDatasetName(e.target.value)}
                     />
@@ -218,13 +220,13 @@ export default function StrategySelector({ onSelect, onBack }: Props) {
 
                 {error && (
                     <div className="p-3 rounded-lg text-sm bg-red-500/10 border border-red-500/20 text-red-400">
-                        <strong>Error:</strong> {error}
+                        <strong>{t("errorPrefix")}:</strong> {error}
                     </div>
                 )}
 
                 <div className="flex gap-3 pt-2">
                     <button className="btn-primary flex-1 justify-center" onClick={handleContinue}>
-                        Continuar al análisis
+                        {t("continueBtn")}
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M5 12h14M12 5l7 7-7 7" />
                         </svg>
