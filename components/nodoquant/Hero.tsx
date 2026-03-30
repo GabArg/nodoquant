@@ -21,9 +21,12 @@ export default function Hero() {
                         </p>
 
                         {/* H1 */}
-                        <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter text-white mb-8 animate-slide-up leading-[0.95] max-w-[800px]">
+                        <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter text-white mb-6 animate-slide-up leading-[0.95] max-w-[800px]">
                             {t("title")}
                         </h1>
+                        <p className="text-xl md:text-2xl text-indigo-400 font-extrabold mb-10 animate-slide-up delay-100 tracking-tight">
+                            {t("title2")}
+                        </p>
 
                         {/* Subtitle / H2 */}
                         <h2 className="text-lg sm:text-2xl text-gray-300 font-medium mb-10 max-w-xl animate-slide-up leading-relaxed text-balance">
@@ -31,24 +34,39 @@ export default function Hero() {
                         </h2>
 
                         {/* CTAs (Order matters for mobile) */}
-                        <div className="flex flex-col sm:flex-row items-center gap-4 animate-fade-in mb-10 w-full sm:w-auto">
-                            <a href="/analyzer" className="btn-primary w-full sm:w-auto px-10 py-5 text-sm font-black uppercase tracking-widest transition-all hover:scale-[1.05] active:scale-[0.95] group shadow-[0_20px_40px_-5px_rgba(99,102,241,0.5)] rounded-[14px]">
-                                {tCommon("analyzeCta")}
-                                <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                </svg>
-                            </a>
-                            <a href="/analyzer?sample=true" className="w-full sm:w-auto px-10 py-5 text-sm font-black uppercase tracking-widest border border-white/10 hover:bg-white/5 transition-all rounded-[14px] text-gray-300 backdrop-blur-md flex items-center justify-center gap-2 group">
-                                <span className="opacity-60 group-hover:opacity-100 transition-opacity">🧪</span>
-                                {t("ctaSample")}
-                            </a>
+                        <div className="flex flex-col items-center sm:items-start gap-4 animate-fade-in mb-10 w-full sm:w-auto mt-2">
+                            <div className="flex flex-col sm:flex-row items-center gap-6 w-full sm:w-auto">
+                                <a href="/analyzer" className="btn-primary w-full sm:w-auto px-12 py-6 text-base font-black uppercase tracking-widest transition-all hover:scale-[1.05] active:scale-[0.95] group shadow-[0_20px_40px_-5px_rgba(99,102,241,0.5)] rounded-[18px]">
+                                    {tCommon("analyzeCta")}
+                                    <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                    </svg>
+                                </a>
+                                <a href="/analyzer?sample=true" className="w-full sm:w-auto px-6 py-4 text-[11px] font-black uppercase tracking-[0.2em] text-gray-500 hover:text-white transition-all flex items-center justify-center gap-2 group border-b border-transparent hover:border-white/20">
+                                    <span className="opacity-40 group-hover:opacity-100 transition-opacity">🧪</span>
+                                    {t("ctaSample")}
+                                </a>
+                            </div>
+                            <div className="flex flex-col sm:flex-row items-center gap-x-4 gap-y-1 pl-1">
+                                <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em] animate-pulse">
+                                    {t("ctaSubtext")}
+                                </p>
+                                <span className="hidden sm:inline text-gray-700 font-bold">•</span>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">
+                                    {t("ctaMicrocopy")}
+                                </p>
+                            </div>
                         </div>
                         
                         {/* Final Trust Microcopy */}
-                        <div className="flex flex-col mb-10 -mt-6 animate-fade-in pl-1">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1.5">
-                                {t("ctaMicrocopy")}
-                            </p>
+                        <div className="flex items-center gap-3 mb-10 -mt-2 animate-fade-in pl-1">
+                            <div className="flex -space-x-2">
+                                {[1, 2, 3].map((i) => (
+                                    <div key={i} className="w-6 h-6 rounded-full border-2 border-black bg-gray-800 flex items-center justify-center text-[10px] font-black text-gray-400">
+                                        {i}
+                                    </div>
+                                ))}
+                            </div>
                             <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em]">
                                 {tCommon("trustSupport")}
                             </p>

@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl";
 export default function SampleReport() {
     const t = useTranslations("sampleReport");
     const tCommon = useTranslations("common");
+    const tTooltips = useTranslations("tooltips");
 
     return (
         <section className="py-24 border-t border-white/5 bg-[#050505]" id="sample-report">
@@ -45,7 +46,7 @@ export default function SampleReport() {
                                 { label: t("metrics.maxDrawdown"), value: "-12.5%", color: "text-red-400", tooltip: "maxDrawdown" },
                                 { label: t("metrics.trades"), value: "436", color: "text-indigo-300", tooltip: "trades" },
                             ].map((m) => (
-                                <div key={m.label} title={tCommon(`tooltips.${m.tooltip}`)} className="p-5 bg-white/[0.03] rounded-2xl border border-white/[0.05] flex flex-col justify-center hover:bg-white/[0.06] hover:border-white/[0.1] transition-all cursor-help relative group/item">
+                                <div key={m.label} title={tTooltips(m.tooltip)} className="p-5 bg-white/[0.03] rounded-2xl border border-white/[0.05] flex flex-col justify-center hover:bg-white/[0.06] hover:border-white/[0.1] transition-all cursor-help relative group/item">
                                     <div className="flex items-center gap-1.5 mb-2">
                                         <span className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">{m.label}</span>
                                         <svg className="w-3 h-3 text-gray-600 group-hover/item:text-indigo-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -59,7 +60,7 @@ export default function SampleReport() {
                     </div>
 
                     {/* Equity Curve Fake Graphic */}
-                    <div className="w-full h-56 bg-white/[0.02] rounded-2xl border border-white/5 p-8 relative overflow-hidden flex flex-col justify-end group/curve transition-all hover:bg-white/[0.04]">
+                    <div className="w-full h-56 bg-white/[0.02] rounded-2xl border border-white/5 p-8 relative overflow-hidden flex flex-col justify-end group/curve transition-all hover:bg-white/[0.04] mb-8">
                         <span className="absolute top-6 left-8 text-xs font-black text-gray-600 uppercase tracking-[0.2em]">{t("equityCurve")}</span>
                         <svg className="w-full h-full opacity-60 mt-8 group-hover:opacity-80 transition-opacity" preserveAspectRatio="none" viewBox="0 0 100 40">
                             <defs>
@@ -74,6 +75,19 @@ export default function SampleReport() {
                         
                         {/* Overlay Gradient to hide sharp edges */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+                    </div>
+
+                    {/* Interpretative Layer - Styled as Final Verdict */}
+                    <div className="p-8 bg-indigo-500/10 border border-indigo-500/20 rounded-[24px] relative overflow-hidden animate-fade-in group/verdict">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500 opacity-50" />
+                        <div className="flex flex-col gap-3">
+                            <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em] mb-1">
+                                [ {t("verdictLabel")} ]
+                            </span>
+                            <p className="text-base sm:text-lg text-white font-semibold leading-relaxed italic">
+                                "{t("interpretation")}"
+                            </p>
+                        </div>
                     </div>
 
                     <div className="mt-12 flex justify-center">

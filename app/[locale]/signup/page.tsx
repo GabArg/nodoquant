@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/auth/client";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
@@ -14,6 +14,8 @@ export default function SignupPage() {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectUrl = searchParams.get("redirect");
 
     async function handleSignup(e: React.FormEvent) {
         e.preventDefault();
@@ -42,7 +44,7 @@ export default function SignupPage() {
                     console.error("Trial enrollment fallback failed:", e);
                 }
             }
-            router.push(`/${locale}/dashboard`);
+            router.push(redirectUrl || `/${locale}/dashboard`);
             router.refresh();
         }
     }

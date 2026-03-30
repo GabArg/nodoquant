@@ -1,16 +1,9 @@
-import type { Metadata } from "next";
 import Hero from "@/components/nodoquant/Hero";
-import Credibility from "@/components/nodoquant/Credibility";
-import SocialProof from "@/components/nodoquant/SocialProof";
-
 import SupportedPlatforms from "@/components/nodoquant/SupportedPlatforms";
-import AnalysisSnapshot from "@/components/nodoquant/AnalysisSnapshot";
-import WhyQuant from "@/components/nodoquant/WhyQuant";
 import StrategyScoreSection from "@/components/nodoquant/StrategyScoreSection";
 import HowItWorks from "@/components/nodoquant/HowItWorks";
 import SampleReport from "@/components/nodoquant/SampleReport";
-import Testimonials from "@/components/nodoquant/Testimonials";
-import WhyTraders from "@/components/nodoquant/WhyTraders";
+import WhyItMatters from "@/components/nodoquant/WhyItMatters";
 import FAQ from "@/components/nodoquant/FAQ";
 import FinalCTA from "@/components/nodoquant/FinalCTA";
 import FooterNote from "@/components/nodoquant/FooterNote";
@@ -32,17 +25,11 @@ export default function Home() {
                 }}
             />
             <Hero />
-            <Credibility />
             <SampleReport />
-
-            <SupportedPlatforms />
             <HowItWorks />
-            <SocialProof />
-            <AnalysisSnapshot />
-            <WhyQuant />
+            <SupportedPlatforms />
+            <WhyItMatters />
             <StrategyScoreSection />
-            <WhyTraders />
-            <Testimonials />
             <FAQ />
             <FinalCTA />
             <FooterNote />

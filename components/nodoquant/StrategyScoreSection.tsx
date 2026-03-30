@@ -11,11 +11,13 @@ export default function StrategyScoreSection() {
 
             <div className="container relative z-10">
                 <div className="max-w-[720px] mx-auto mb-20 text-center text-balance">
-                    <p className="section-label mb-6 inline-block">{t("label")}</p>
-                    <h2 className="text-4xl sm:text-5xl font-extrabold text-white mb-6 leading-tight tracking-tight">
+                    <p className="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.3em] mb-6 bg-white/5 border border-white/10 text-indigo-400 inline-block">
+                        {t("label")}
+                    </p>
+                    <h2 className="text-4xl sm:text-5xl font-black text-white mb-6 leading-tight tracking-tight">
                         {t("title")}
                     </h2>
-                    <p className="text-lg text-gray-300 font-medium">
+                    <p className="text-lg text-gray-400 font-medium leading-relaxed">
                         {t("desc")}
                     </p>
                 </div>
@@ -47,6 +49,18 @@ export default function StrategyScoreSection() {
                             );
                         })}
                     </div>
+                </div>
+
+                {/* Statistical Reliability Note */}
+                <div className="max-w-[800px] mx-auto mt-16 px-6 py-4 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center gap-4 animate-fade-in group hover:bg-white/[0.04] transition-all">
+                    <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center flex-shrink-0">
+                        <svg className="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-gray-500 leading-relaxed italic">
+                        "{t("reliabilityNote")}"
+                    </p>
                 </div>
 
                 <div className="mt-20 text-center animate-fade-in flex flex-col items-center">

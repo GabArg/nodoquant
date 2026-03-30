@@ -25,15 +25,23 @@ export default function FinalCTA() {
                 </p>
 
                 <div className="flex flex-col items-center justify-center gap-6 animate-fade-in">
-                    <a href="/analyzer" className="btn-primary inline-flex items-center gap-4 px-12 py-5 text-lg font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-[0_20px_50px_rgba(79,70,229,0.3)] hover:shadow-[0_25px_60px_rgba(79,70,229,0.4)]">
+                    <a href="/analyzer" className="btn-primary inline-flex items-center gap-4 px-12 py-6 text-lg font-black uppercase tracking-widest transition-all hover:scale-[1.05] active:scale-95 shadow-[0_20px_50px_rgba(79,70,229,0.4)] hover:shadow-[0_25px_60px_rgba(79,70,229,0.6)] group">
                         {tCommon("analyzeCta")}
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-6 h-6 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
                     </a>
-                    <p className="text-xs text-gray-600 font-black uppercase tracking-[0.2em] opacity-60">
-                        {t("note")}
-                    </p>
+                    <div className="flex flex-col items-center gap-2">
+                        <p className="text-[10px] text-indigo-400 font-black uppercase tracking-[0.3em] animate-pulse">
+                            {t("note")}
+                        </p>
+                        <p className="text-[9px] text-gray-500 font-black uppercase tracking-[0.2em] mt-1">
+                            {t("pressure")}
+                        </p>
+                        <p className="text-[9px] text-gray-600 font-black uppercase tracking-[0.2em] opacity-40">
+                            {tCommon("ctaSubtext")}
+                        </p>
+                    </div>
                 </div>
             </div>
         </section>

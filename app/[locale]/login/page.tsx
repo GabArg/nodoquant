@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/auth/client";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
@@ -14,6 +14,8 @@ export default function LoginPage() {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectUrl = searchParams.get("redirect");
 
     async function handleLogin(e: React.FormEvent) {
         e.preventDefault();
@@ -30,7 +32,7 @@ export default function LoginPage() {
             setError(error.message);
             setLoading(false);
         } else {
-            router.push(`/${locale}/dashboard`);
+            router.push(redirectUrl || `/${locale}/dashboard`);
             router.refresh();
         }
     }
