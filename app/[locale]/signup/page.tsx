@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/auth/client";
+import { getBaseUrl } from "@/lib/url";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
 
@@ -26,6 +27,9 @@ export default function SignupPage() {
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
+            options: {
+                emailRedirectTo: `${getBaseUrl()}/api/auth/callback?next=${encodeURIComponent(redirectUrl || `/${locale}/dashboard`)}&locale=${locale}`,
+            },
         });
 
         if (error) {
