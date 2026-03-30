@@ -22,8 +22,8 @@
         "trustSupport": "Supports CSV • MT4 • MT5 • Binance"
     },
     "home": {
-        "title": "You might be winning… without any real advantage.",
-        "title2": "Verify it before the market does.",
+        "title": "You're probably winning by luck.",
+        "title2": "Verify it before the market takes it back.",
         "subtitle": "Upload your history. Know if you have a strategy… or just got lucky.",
         "description": "Verify it before the market takes it from you.",
         "label": "Immediate Action Required",
@@ -64,12 +64,12 @@
     "whyQuant": {
         "label": "Real Risk",
         "title": "Many traders believe they are profitable… until they aren't.",
-        "desc": "The market doesn't forgive self-deception.",
-        "r1_title": "Winning multiple times doesn’t mean you have an edge.",
+        "desc": "The market doesn't forgive delusion.",
+        "r1_title": "Winning doesn't mean you're right.",
         "r1_desc": "Profit is not proof of a strategy.",
-        "r2_title": "Your strategy can stop working without warning.",
+        "r2_title": "Your strategy will stop working.",
         "r2_desc": "The market doesn't wait for your permission.",
-        "r3_title": "Profitable strategies still blow accounts.",
+        "r3_title": "Profitable strategies still destroy accounts.",
         "r3_desc": "Variance eventually catches up to the unprepared.",
         "cta": "Test My Strategy Now",
         "cta_note": "Free · CSV, MT4 or MT5 file"
@@ -98,7 +98,7 @@
     "strategyScore": {
         "label": "Diagnosis",
         "title": "A strategy can make money… and still be wrong.",
-        "desc": "If your sample isn’t large enough, you’re just guessing.",
+        "desc": "Most strategies never reach this level. If your sample isn't large enough, you're just guessing.",
         "reliabilityNote": "Small samples invalidate any positive conclusion. Stop trading on hope.",
         "s1_range": "0 - 40",
         "s1_desc": "Negative Expectancy",
@@ -113,7 +113,7 @@
     "howItWorks": {
         "label": "Verification",
         "title": "Verdict in 60 seconds",
-        "desc": "No registration. No waiting.",
+        "desc": "No signup. No excuses. No black boxes.",
         "step1_title": "1. Upload History",
         "step1_desc": "CSV, MT4, MT5, or Binance.",
         "step2_title": "2. Filter Randomness",
@@ -143,12 +143,12 @@
         "label": "Final Decision",
         "title": "Stop guessing before it costs you real money.",
         "desc": "Verify if your strategy is real… before it fails.",
-        "note": "Instant result. No signup.",
+        "note": "Every day you don't verify, you're risking capital blindly.",
         "pressure": "Most traders never verify this. That’s why they fail."
     },
     "sampleReport": {
         "title": "Market Verdict",
-        "desc": "Don't trade with doubts. The truth about your system, without filters.",
+        "desc": "Most traders never find this out — until they lose money. Don't be one of them.",
         "verdictLabel": "Final Judgment",
         "scoreLabel": "Strategy Score",
         "scoreStatus": "Verdict Issued",
@@ -159,9 +159,9 @@
             "maxDrawdown": "Max Drawdown",
             "trades": "Sample"
         },
-        "equityCurve": "Probability Curve",
+        "equityCurve": "Looks profitable… but is it real?",
         "cta": "Know My Verdict",
-        "interpretation": "This strategy is profitable… but unreliable."
+        "interpretation": "This strategy is profitable… but unreliable. It works… until it doesn't."
     },
     "analyzer": {
         "metadata": {
