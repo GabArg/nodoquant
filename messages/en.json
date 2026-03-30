@@ -212,21 +212,21 @@
             "heroTitle": "Discover Whether Your Trading Strategy Truly Has an Edge",
             "heroDescription": "Upload your trades and analyze your strategy with professional quantitative metrics and Monte Carlo validation.",
             "diagnosticOutcome": "Diagnostic Outcome",
-            "diagnosticEdgeFound": "Mathematical edge detected. The strategy demonstrates a reliable statistical advantage in the provided sample.",
-            "diagnosticInconsistent": "Inconsistent edge detected. The performance fluctuates significantly; further stabilization is required.",
-            "diagnosticNoEdge": "No statistical edge detected. The current data sample suggests a negative or random expectancy.",
+            "diagnosticEdgeFound": "Your strategy has a statistical edge. Your results are consistent with a real advantage.",
+            "diagnosticInconsistent": "Your strategy is unstable. Performance is inconsistent — you are likely trading noise, not edge.",
+            "diagnosticNoEdge": "Your strategy is not reliable. You are likely trading without a real edge.",
             "sampleDataCta": "Use sample data (test analysis)",
             "errorReading": "Analysis failed:",
             "nextStepsTitle": "Next Diagnostics",
-            "nextStepsDescGood": "The mathematical foundation is solid. Run further simulations to discover stability under heavy variance.",
-            "nextStepsDescBad": "Statistical edge not detected. Review recent data samples or adjust risk parameters.",
+            "nextStepsDescGood": "Your foundation is solid. Run deeper simulations to confirm this edge holds under extreme conditions.",
+            "nextStepsDescBad": "No edge detected. Fix this before risking more capital.",
             "steps": {
                 "upload": "Upload",
                 "mapping": "Mapping",
                 "analysis": "Analysis",
                 "report": "Report"
             },
-            "viewReport": "Full Diagnostic Report",
+            "viewReport": "Unlock full analysis",
             "importAnother": "Analyze another file",
             "freeTool": "Professional Diagnostic Tool",
             "loading": {
@@ -258,7 +258,9 @@
                 "title": "Expert Quant Development",
                 "desc": "Our team builds professional custom bots and backtesting indicators.",
                 "cta": "Contact Our Dev Team"
-            }
+            },
+            "viewReportSubtitle": "See failure scenarios, risk simulations, and real expectancy. Know the truth before it costs you real money.",
+            "ctaSub": "See failure scenarios, risk simulations, and real expectancy."
         },
         "sourceSelector": {
             "title": "Strategy Diagnostics",
@@ -388,11 +390,11 @@
                 "noEdge": "No Edge",
                 "unstableEdge": "Unstable Edge",
                 "insufficientSample": "Insufficient Sample",
-                "strongDesc": "Your strategy demonstrates a statistically significant positive expectancy and consistent performance.",
-                "weakDesc": "The strategy shows positive expectancy but statistical confidence is currently limited.",
-                "noDesc": "This strategy does not demonstrate a reliable statistical advantage.",
-                "unstableDesc": "The strategy shows positive signals but performance stability is inconsistent.",
-                "insufficientDesc": "A minimum of 30 trades is required for a statistically significant diagnosis.",
+                "strongDesc": "Your strategy has a verified statistical advantage. Your results are consistent with a real, repeatable edge.",
+                "weakDesc": "Your edge exists but is fragile. One bad stretch could erase it entirely.",
+                "noDesc": "Your strategy is not reliable. You are likely trading without a real edge. Right now, you are risking capital without statistical proof.",
+                "unstableDesc": "Your strategy is breaking down. Performance is inconsistent — results will not hold long-term.",
+                "insufficientDesc": "You do not have enough data yet. Do not risk real capital until you have at least 30 trades.",
                 "edgeContext": "Edge Confidence estimates how likely it is that profitability is due to skill rather than luck."
             },
             "keySignals": {
@@ -419,8 +421,8 @@
                 "recoveryFactor": "Recovery Factor"
             },
             "stability": {
-                "title": "Edge Stability Over Time",
-                "subtitle": "Monitoring performance consistency across recent trade samples."
+                "title": "How Stable Your Strategy Really Is",
+                "subtitle": "Can your results survive randomness?"
             },
             "health": {
                 "title": "Edge Health Status",
@@ -553,15 +555,15 @@
             "narrative": {
                 "elite": "Your strategy shows exceptional statistical robustness and risk control.",
                 "strong": "Your strategy shows signs of a statistical edge based on historical trades.",
-                "promising": "Promising performance metrics. Some optimizations could lead to elite results.",
+                "promising": "Promising performance metrics. Optmization is required to reach elite results.",
                 "unstable": "Profitable but vulnerable. Review drawdown periods to identify potential risks.",
-                "none": "Current data doesn't show a reliable statistical edge.",
+                "none": "You are likely trading without a real edge. Right now, you are risking capital without statistical proof.",
                 "gainR": "Your strategy earns +{val}R per trade on average — that's a real statistical edge.",
                 "breakEvenR": "Your strategy breaks even with 0.00R per trade. The edge needs improvement.",
                 "lossR": "Your strategy loses {val}R per trade on average — review entry/exit rules.",
                 "highPf": "Profit Factor {val} — your strategy returns {val} units for every 1 unit lost. A solid edge.",
                 "marginalPf": "Profit Factor {val} is profitable but marginal. Small improvements in R:R or entry timing could significantly boost returns.",
-                "lowPf": "A Profit Factor below 1.0 means losses outweigh gains. Review entry timing and stop loss placement before live trading.",
+                "lowPf": "Your losses are stronger than your gains — this will drain your account over time. Review entry timing and stop loss placement before live trading.",
                 "explainScore": "How Strategy Score is Calculated",
                 "scoreExplanation": {
                     "title": "Strategy Score Components",
@@ -584,66 +586,68 @@
                 "title": "Strategy Diagnosis",
                 "badgeLabel": "Diagnosis",
                 "strongEdge": {
-                    "label": "Strong Statistical Edge Detected",
+                    "label": "Your strategy has a statistical edge.",
                     "icon": "✅",
-                    "explanation": "Your strategy shows exceptional statistical robustness and risk control."
+                    "explanation": "This strategy would likely survive real market conditions.",
+                    "subtitle": "Your results are consistent with a real advantage."
                 },
                 "weakEdge": {
-                    "label": "Limited Statistical Edge",
+                    "label": "Your edge is weak and likely not last.",
                     "icon": "📈",
-                    "explanation": "Your strategy demonstrates a small edge that may be vulnerable to market changes."
+                    "explanation": "Your results are marginal. One bad stretch and the edge disappears."
                 },
                 "unstableEdge": {
-                    "label": "Unstable Performance",
+                    "label": "Your strategy is breaking down.",
                     "icon": "⚠️",
-                    "explanation": "The performance varies significantly across cycles; the edge is not yet stable."
+                    "explanation": "You are trading an inconsistent system. Results will not hold long-term."
                 },
                 "noEdge": {
-                    "label": "No Reliable Edge Detected",
+                    "label": "Your strategy is not reliable.",
                     "icon": "❌",
-                    "explanation": "Current data does not demonstrate a reliable statistical advantage."
+                    "explanation": "Right now, you are risking capital without statistical proof.",
+                    "subtitle": "You are likely trading without a real edge."
                 },
                 "insufficientSample": {
-                    "label": "Insufficient Data Sample",
+                    "label": "Not enough data to reach a verdict.",
                     "icon": "📊",
-                    "explanation": "At least 30 trades are required for a statistically relevant diagnosis."
+                    "explanation": "Do not risk real capital until you have enough trades for a reliable diagnosis."
                 }
             },
             "interpretation": {
-                "title": "What This Means",
+                "title": "What This Means For You",
                 "strongEdge": [
-                    "Strategy shows solid statistical edge",
-                    "Risk of ruin is exceptionally low",
-                    "Performance is stable across cycles"
+                    "Your strategy has a proven statistical edge",
+                    "Your risk of ruin is exceptionally low",
+                    "Your performance is stable and repeatable"
                 ],
                 "weakEdge": [
-                    " Edge exists but remains marginal",
-                    "Sensitive to slippage or high spreads",
-                    "Requires optimization of R:R"
+                    "Your edge exists but is fragile",
+                    "You are exposed to slippage and spread erosion",
+                    "Your R:R ratio needs immediate improvement"
                 ],
                 "unstableEdge": [
-                    "Performance varies significantly",
-                    "Recent metrics differ from baseline",
-                    "Higher probability of deep drawdowns"
+                    "Your performance is inconsistent",
+                    "Your recent results are diverging from your baseline",
+                    "You are at higher risk of deep drawdowns"
                 ],
                 "noEdge": [
-                    "Losses outweigh gains statistically",
-                    "Expectancy is random or negative",
-                    "High dependency on individual wins"
+                    "Your losses are stronger than your gains — this will drain your account over time.",
+                    "You are likely losing money over time.",
+                    "Your results depend on luck, not skill."
                 ],
                 "insufficientSample": [
-                    "More operations are needed",
-                    "Metrics are prone to high variance",
-                    "Diagnosis is purely preliminary"
+                    "You need more trades before any verdict is valid.",
+                    "Your current metrics are unreliable.",
+                    "Do not risk real capital until you have proof."
                 ]
             },
             "nextSteps": {
-                "title": "Suggested Next Step",
-                "strongEdge": "Run a Prop Firm simulation to see if your strategy can scale professionally.",
-                "weakEdge": "Conduct a deep dive into losing trades to refine your entry criteria.",
-                "unstableEdge": "Reduce position sizes until performance stabilizes across the next 30 trades.",
-                "noEdge": "Review your core logic; the current data suggest a negative edge.",
-                "insufficientSample": "Continue trading with minimum risk until reaching 50-100 trades."
+                "title": "What You Should Do Now",
+                "strongEdge": "Run a Prop Firm simulation to confirm your edge holds under professional capital constraints.",
+                "weakEdge": "Review your losing trades now. A small improvement in R:R will unlock a real edge.",
+                "unstableEdge": "Cut your position size immediately. Do not scale until performance stabilizes over 30+ trades.",
+                "noEdge": "Fix this before risking more capital.",
+                "insufficientSample": "Do not risk real capital yet. You need more trades before any result is meaningful."
             },
             "tooltips": {
                 "score": "The Strategy Score combines metrics like Profit Factor and Expectancy to assess strategy quality.",
@@ -957,8 +961,21 @@
             "skipBtn": "Skip this step →"
         },
         "shareReport": {
-            "markets": ["Forex", "Crypto", "Indices", "Stocks", "Futures"],
-            "styles": ["Scalping", "Swing", "Trend Following", "Mean Reversion", "Breakout", "Arbitrage"],
+            "markets": [
+                "Forex",
+                "Crypto",
+                "Indices",
+                "Stocks",
+                "Futures"
+            ],
+            "styles": [
+                "Scalping",
+                "Swing",
+                "Trend Following",
+                "Mean Reversion",
+                "Breakout",
+                "Arbitrage"
+            ],
             "shared": "Shared",
             "shareBtn": "Share analysis",
             "title": "Share analysis",

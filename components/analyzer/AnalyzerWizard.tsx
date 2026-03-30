@@ -664,15 +664,20 @@ export default function AnalyzerWizard() {
                             </div>
 
                             <div className="flex flex-col items-center gap-6">
-                                <button
-                                    onClick={() => setStep("gate")}
-                                    className="btn-primary px-12 py-4 w-full sm:w-auto text-[11px] font-black uppercase tracking-widest shadow-[0_20px_40px_-5px_rgba(99,102,241,0.4)] group rounded-2xl"
-                                >
-                                    {t("viewReport")}
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="group-hover:translate-x-1 transition-transform">
-                                        <path d="M5 12h14M12 5l7 7-7 7" />
-                                    </svg>
-                                </button>
+                                <div className="flex flex-col items-center gap-3 w-full sm:w-auto">
+                                    <button
+                                        onClick={() => setStep("gate")}
+                                        className="btn-primary px-12 py-4 w-full sm:w-auto text-[11px] font-black uppercase tracking-widest shadow-[0_20px_40px_-5px_rgba(99,102,241,0.4)] group rounded-2xl"
+                                    >
+                                        {t("viewReport") || "Unlock full analysis"}
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="group-hover:translate-x-1 transition-transform">
+                                            <path d="M5 12h14M12 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                    <p className="text-xs text-indigo-300/80 font-medium">
+                                        {t("viewReportSubtitle") || "See failure scenarios, risk simulations, and real expectancy."}
+                                    </p>
+                                </div>
                                 <button
                                     onClick={resetToSource}
                                     className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-600 hover:text-gray-400 transition-colors py-2 flex items-center gap-2"

@@ -256,17 +256,22 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
                                     </p>
                                 </div>
                                 
-                                <div className="flex flex-wrap justify-center gap-4">
-                                    <button onClick={onViewFullReport} 
-                                            className="px-8 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-black uppercase tracking-widest transition-all shadow-xl shadow-indigo-600/30 active:scale-95">
-                                        {wizT("viewReport") || "Unlock Full Report"}
-                                    </button>
-                                    {onReset && (
-                                        <button onClick={onReset}
-                                                className="px-8 py-4 rounded-2xl bg-white/5 border border-white/10 text-gray-400 text-[11px] font-black uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all active:scale-95">
-                                            {wizT("importAnother")}
+                                <div className="flex flex-col items-center gap-4 w-full">
+                                    <div className="flex flex-wrap justify-center gap-4">
+                                        <button onClick={onViewFullReport} 
+                                                className="px-8 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-black uppercase tracking-widest transition-all shadow-xl shadow-indigo-600/30 active:scale-95">
+                                            {wizT("viewReport") || "Unlock full analysis"}
                                         </button>
-                                    )}
+                                        {onReset && (
+                                            <button onClick={onReset}
+                                                    className="px-8 py-4 rounded-2xl bg-white/5 border border-white/10 text-gray-400 text-[11px] font-black uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all active:scale-95">
+                                                {wizT("importAnother")}
+                                            </button>
+                                        )}
+                                    </div>
+                                    <p className="text-xs text-indigo-300/80 font-medium">
+                                        {wizT("viewReportSubtitle") || "See failure scenarios, risk simulations, and real expectancy."}
+                                    </p>
                                 </div>
                             </div>
                         </div>

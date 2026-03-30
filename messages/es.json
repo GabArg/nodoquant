@@ -721,9 +721,9 @@
             "heroTitle": "Descubre si tu Estrategia de Trading Realmente Tiene una Ventaja",
             "heroDescription": "Sube tus trades y analiza tu estrategia con métricas cuantitativas profesionales y validación Monte Carlo.",
             "diagnosticOutcome": "Resultado del Diagnóstico",
-            "diagnosticEdgeFound": "Edge matemático detectado. La estrategia demuestra una ventaja estadística confiable en la muestra proporcionada.",
+            "diagnosticEdgeFound": "Tu estrategia tiene ventaja estadística. Tus resultados son consistentes con una ventaja real.",
             "diagnosticInconsistent": "Edge inconsistente detectado. El rendimiento fluctúa significativamente; se requiere mayor estabilización.",
-            "diagnosticNoEdge": "Sin edge estadístico detectado. La muestra de datos actual sugiere una expectativa negativa o aleatoria.",
+            "diagnosticNoEdge": "Tu estrategia no es confiable. Probablemente estás operando sin una ventaja real.",
             "sampleDataCta": "Usar datos de muestra (análisis de prueba)",
             "errorReading": "El análisis falló:",
             "nextStepsTitle": "Siguientes Diagnósticos",
@@ -735,7 +735,7 @@
                 "analysis": "Análisis",
                 "report": "Reporte"
             },
-            "viewReport": "Reporte Diagnóstico Completo",
+            "viewReport": "Desbloquear análisis completo",
             "importAnother": "Analizar otro archivo",
             "freeTool": "Herramienta de Diagnóstico Profesional",
             "loading": {
@@ -767,7 +767,9 @@
                 "title": "Desarrollo Quant Experto",
                 "desc": "Nuestro equipo construye bots personalizados e indicadores de alto rendimiento.",
                 "cta": "Contactar con Desarrollo"
-            }
+            },
+            "viewReportSubtitle": "Ver escenarios de falla, simulaciones de riesgo y esperanza real. Conoce la verdad antes de que te cueste dinero real.",
+            "ctaSub": "Ver escenarios de falla, simulaciones de riesgo y esperanza real."
         },
         "sourceSelector": {
             "title": "Diagnóstico de Estrategia",
@@ -913,7 +915,7 @@
                 "insufficientSample": "Muestra Insuficiente",
                 "strongDesc": "La estrategia demuestra una ventaja comercial estadísticamente significativa.",
                 "weakDesc": "La estrategia muestra una expectativa positiva pero la confianza estadística aún es limitada.",
-                "noDesc": "La estrategia no demuestra una ventaja estadística confiable.",
+                "noDesc": "Tu estrategia no es confiable. Probablemente estás operando sin una ventaja real. Ahora mismo, estás arriesgando capital sin pruebas estadísticas.",
                 "unstableDesc": "La estrategia muestra algunas señales positivas pero la estabilidad del rendimiento es inconsistente.",
                 "insufficientDesc": "Se requieren al menos 30 operaciones para un diagnóstico estadísticamente significativo.",
                 "edgeContext": "La Confianza del Edge estima qué tan probable es que la rentabilidad observada se deba a la habilidad en lugar de la aleatoriedad."
@@ -991,7 +993,6 @@
                     "trades": "trades"
                 }
             },
-
             "actions": {
                 "title": "Siguientes pasos",
                 "contextGood": "Tu estrategia muestra una ventaja estadística sólida. Estas herramientas pueden ayudarte a validar y escalar este rendimiento.",
@@ -1080,15 +1081,15 @@
             "narrative": {
                 "elite": "Tu estrategia muestra una robustez estadística y control de riesgo excepcionales.",
                 "strong": "Tu estrategia muestra signos de una ventaja estadística basada en los trades históricos.",
-                "promising": "Métricas de rendimiento prometedoras. Algunas optimizaciones podrían llevar a resultados de élite.",
+                "promising": "Promising performance metrics. Optmization is required to reach elite results.",
                 "unstable": "Rentable pero vulnerable. Revisa los periodos de drawdown para identificar riesgos potenciales.",
-                "none": "Los datos actuales no muestran una ventaja estadística confiable.",
+                "none": "Probablemente estás operando sin una ventaja real. Ahora mismo, estás arriesgando capital sin pruebas estadísticas.",
                 "gainR": "Tu estrategia gana +{val}R por operación en promedio — eso es una ventaja estadística real.",
                 "breakEvenR": "Tu estrategia queda en punto de equilibrio con 0.00R por operación. La ventaja necesita mejorar.",
                 "lossR": "Tu estrategia pierde {val}R por operación en promedio — revisa las reglas de entrada/salida.",
                 "highPf": "Factor de Beneficio {val} — tu estrategia devuelve {val} unidades por cada 1 unidad perdida. Una ventaja sólida.",
                 "marginalPf": "Factor de Beneficio {val} es rentable pero marginal. Pequeñas mejoras en el R:R o el timing de entrada podrían aumentar significativamente los retornos.",
-                "lowPf": "Un Factor de Beneficio por debajo de 1.0 significa que las pérdidas superan a las ganancias. Revisa el momento de entrada y la colocación del stop loss antes de operar en vivo.",
+                "lowPf": "Tus pérdidas son más fuertes que tus ganancias — esto drenará tu cuenta con el tiempo. Revisa el momento de entrada y la colocación del stop loss antes de operar en vivo.",
                 "explainScore": "Cómo se calcula el Puntaje de Estrategia",
                 "scoreExplanation": {
                     "title": "Componentes del Puntaje de Estrategia",
@@ -1111,9 +1112,10 @@
                 "title": "Diagnóstico de Estrategia",
                 "badgeLabel": "Diagnóstico",
                 "strongEdge": {
-                    "label": "Edge Estadístico Fuerte Detectado",
+                    "label": "Tu estrategia tiene ventaja estadística.",
                     "icon": "✅",
-                    "explanation": "Tu estrategia muestra una robustez estadística y un control de riesgo excepcionales."
+                    "explanation": "Esta estrategia probablemente sobreviviría en condiciones reales de mercado.",
+                    "subtitle": "Tus resultados son consistentes con una ventaja real."
                 },
                 "weakEdge": {
                     "label": "Edge Estadístico Limitado",
@@ -1126,9 +1128,10 @@
                     "explanation": "El rendimiento varía significativamente entre ciclos; el edge aún no es estable."
                 },
                 "noEdge": {
-                    "label": "Sin Edge Confiable Detectado",
+                    "label": "Tu estrategia no es confiable.",
                     "icon": "❌",
-                    "explanation": "Los datos actuales no demuestran una ventaja estadística confiable."
+                    "explanation": "Ahora mismo, estás arriesgando capital sin pruebas estadísticas.",
+                    "subtitle": "Probablemente estás operando sin una ventaja real."
                 },
                 "insufficientSample": {
                     "label": "Muestra de Datos Insuficiente",
@@ -1154,27 +1157,27 @@
                     "Mayor probabilidad de drawdowns profundos"
                 ],
                 "noEdge": [
-                    "Las pérdidas superan a las ganancias",
-                    "La esperanza es aleatoria o negativa",
-                    "Alta dependencia de aciertos individuales"
+                    "Tus pérdidas son más fuertes que tus ganancias — esto drenará tu cuenta con el tiempo.",
+                    "Es probable que pierdas dinero con el tiempo.",
+                    "Tus resultados dependen de la suerte, no de la habilidad."
                 ],
                 "insufficientSample": [
-                    "Se necesitan más operaciones",
-                    "Métricas propensas a alta varianza",
-                    "Diagnóstico meramente preliminar"
+                    "Necesitas más operaciones para un veredicto válido.",
+                    "Tus métricas actuales no son confiables.",
+                    "No arriesgues capital real hasta que tengas pruebas."
                 ]
             },
             "stability": {
-                "title": "Estabilidad Monte Carlo",
+                "title": "Qué tan estable es realmente tu estrategia",
                 "confidence": "{val}% de Confianza",
-                "microcopy": "La mayoría de las simulaciones muestran que la estrategia sigue siendo rentable."
+                "microcopy": "¿Pueden tus resultados sobrevivir a la aleatoriedad? La mayoría de las estrategias fallan aquí."
             },
             "nextSteps": {
                 "title": "Siguiente Paso Sugerido",
                 "strongEdge": "Ejecuta una simulación de Prop Firm para ver si tu estrategia es escalable a nivel profesional.",
                 "weakEdge": "Realiza una inmersión profunda en las operaciones perdedoras para perfeccionar tus criterios de entrada.",
                 "unstableEdge": "Reduce el tamaño de las posiciones hasta que el rendimiento se estabilice en las próximas 30 operaciones.",
-                "noEdge": "Revisa tu lógica central; los datos actuales sugieren una ventaja negativa.",
+                "noEdge": "Soluciona esto antes de arriesgar más capital.",
                 "insufficientSample": "Continúa operando con riesgo mínimo hasta alcanzar de 50 a 100 operaciones."
             },
             "tooltips": {
@@ -1489,8 +1492,21 @@
             "skipBtn": "Saltar este paso →"
         },
         "shareReport": {
-            "markets": ["Forex", "Cripto", "Índices", "Acciones", "Futuros"],
-            "styles": ["Scalping", "Swing", "Seguimiento de Tendencia", "Reversión a la Media", "Ruptura", "Arbitraje"],
+            "markets": [
+                "Forex",
+                "Cripto",
+                "Índices",
+                "Acciones",
+                "Futuros"
+            ],
+            "styles": [
+                "Scalping",
+                "Swing",
+                "Seguimiento de Tendencia",
+                "Reversión a la Media",
+                "Ruptura",
+                "Arbitraje"
+            ],
             "shared": "Compartido",
             "shareBtn": "Compartir análisis",
             "title": "Compartir análisis",
@@ -1624,7 +1640,6 @@
             "shareTextX": "Mi estrategia de trading obtuvo un puntaje de {score}/100 en NodoQuant.\n\nWin Rate: {wr}%\nProfit Factor: {pf}\nTrades analizados: {count}\n\nAnaliza tu estrategia:\nhttps://nodoquant.com/analyzer",
             "shareTextWhatsapp": "¡Mi estrategia obtuvo {score}/100 en NodoQuant! Mírala acá: {url}"
         },
-
         "metrics": {
             "title": "Métricas Clave",
             "winrate": {
