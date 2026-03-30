@@ -25,7 +25,7 @@
         "title": "You're probably winning by luck.",
         "title2": "Verify it before the market takes it back.",
         "subtitle": "Upload your history. Know if you have a strategy… or just got lucky.",
-        "description": "Verify it before the market takes it from you.",
+        "description": "If you're wrong, you won't realize until it's too late.",
         "label": "Immediate Action Required",
         "bullet1": "Detect if you’ve just been lucky",
         "bullet2": "See what happens when conditions change",
@@ -63,15 +63,15 @@
     },
     "whyQuant": {
         "label": "Real Risk",
-        "title": "Many traders believe they are profitable… until they aren't.",
+        "title": "You probably believe you're profitable. You might not be.",
         "desc": "The market doesn't forgive delusion.",
-        "r1_title": "Winning doesn't mean you're right.",
+        "r1_title": "You can be winning… and still be wrong.",
         "r1_desc": "Profit is not proof of a strategy.",
-        "r2_title": "Your strategy will stop working.",
+        "r2_title": "Your strategy will stop working — and you won't see it coming.",
         "r2_desc": "The market doesn't wait for your permission.",
-        "r3_title": "Profitable strategies still destroy accounts.",
-        "r3_desc": "Variance eventually catches up to the unprepared.",
-        "cta": "Test My Strategy Now",
+        "r3_title": "Even profitable strategies can destroy your account.",
+        "r3_desc": "Variance eventually catches up — without warning.",
+        "cta": "Verify My Strategy Now",
         "cta_note": "Free · CSV, MT4 or MT5 file"
     },
     "snapshot": {
@@ -144,11 +144,11 @@
         "title": "Stop guessing before it costs you real money.",
         "desc": "Verify if your strategy is real… before it fails.",
         "note": "Every day you don't verify, you're risking capital blindly.",
-        "pressure": "Most traders never verify this. That’s why they fail."
+        "pressure": "The only question is: do you want to know?"
     },
     "sampleReport": {
         "title": "Market Verdict",
-        "desc": "Most traders never find this out — until they lose money. Don't be one of them.",
+        "desc": "You've been trading blind. Here is the reality of your performance.",
         "verdictLabel": "Final Judgment",
         "scoreLabel": "Strategy Score",
         "scoreStatus": "Verdict Issued",
@@ -161,7 +161,7 @@
         },
         "equityCurve": "Looks profitable… but is it real?",
         "cta": "Know My Verdict",
-        "interpretation": "This strategy is profitable… but unreliable. It works… until it doesn't."
+        "interpretation": "This strategy is profitable… but unreliable. It works… until it doesn't. And when it fails, it won't warn you."
     },
     "analyzer": {
         "metadata": {

@@ -25,11 +25,11 @@
         "title": "Probablemente estás ganando por suerte.",
         "title2": "Verificalo antes de que el mercado te lo quite.",
         "subtitle": "Subí tu historial. Sabé si tenés una estrategia… o si fue suerte.",
-        "description": "Verifícalo antes de que el mercado te lo quite.",
+        "description": "Si estás equivocado, no lo vas a saber hasta que sea tarde.",
         "label": "Acción Inmediata Requerida",
-        "bullet1": "Detecta si estás teniendo suerte",
-        "bullet2": "Mira qué pasa cuando el mercado cambia",
-        "bullet3": "Comprueba si tu ventaja realmente existe",
+        "bullet1": "Detectá si estás teniendo suerte",
+        "bullet2": "Mirá qué pasa cuando el mercado cambia",
+        "bullet3": "Comprobá si tu ventaja realmente existe",
         "ctaSubtext": "Toma menos de 1 minuto. Sin registro.",
         "trustSignal1": "Detección de Varianza",
         "trustSignal2": "Simulación Monte Carlo",
@@ -63,15 +63,15 @@
     },
     "whyQuant": {
         "label": "Riesgo Real",
-        "title": "Muchos traders creen que son rentables… hasta que dejan de serlo.",
+        "title": "Probablemente creés que sos rentable. Puede que no lo seas.",
         "desc": "El mercado no perdona la ilusión.",
-        "r1_title": "Ganar no significa que tenés razón.",
+        "r1_title": "Podés estar ganando… y aun así estar equivocado.",
         "r1_desc": "El beneficio no es prueba de una estrategia.",
-        "r2_title": "Tu estrategia va a dejar de funcionar.",
+        "r2_title": "Tu estrategia va a dejar de funcionar — y no lo vas a ver venir.",
         "r2_desc": "El mercado no espera tu permiso.",
-        "r3_title": "Estrategias rentables también destruyen cuentas.",
-        "r3_desc": "La varianza tarde o temprano alcanza a los que no están preparados.",
-        "cta": "Testear Mi Estrategia Ahora",
+        "r3_title": "Hasta las estrategias rentables pueden destruir tu cuenta.",
+        "r3_desc": "La varianza te alcanza tarde o temprano — sin aviso.",
+        "cta": "Verificar Mi Estrategia Ahora",
         "cta_note": "Gratis · CSV, MT4 o MT5"
     },
     "snapshot": {
@@ -144,11 +144,11 @@
         "title": "Dejá de adivinar antes de que te cueste dinero real.",
         "desc": "Verificá si tu estrategia es real… antes de que falle.",
         "note": "Cada día que no verificás, estás arriesgando capital a ciegas.",
-        "pressure": "La mayoría de los traders nunca verifica esto. Por eso fallan."
+        "pressure": "La única pregunta es: ¿querés saberlo?"
     },
     "sampleReport": {
         "title": "Veredicto del Mercado",
-        "desc": "La mayoría de los traders nunca lo descubre — hasta que pierden dinero.",
+        "desc": "La mayoría de los traders nunca lo descubre — y vos probablemente sos uno de ellos.",
         "verdictLabel": "Dictamen Final",
         "scoreLabel": "Strategy Score",
         "scoreStatus": "Veredicto Emitido",
@@ -161,7 +161,7 @@
         },
         "equityCurve": "Parece rentable… ¿pero es real?",
         "cta": "Saber Mi Veredicto",
-        "interpretation": "Esta estrategia es rentable… pero no es fiable. Funciona… hasta que no."
+        "interpretation": "Esta estrategia es rentable… pero no es fiable. Funciona… hasta que no. Y cuando falla, no te avisa."
     },
     "platforms": {
         "title": "Funciona con las plataformas que ya usas",
