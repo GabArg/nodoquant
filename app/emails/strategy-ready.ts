@@ -42,17 +42,20 @@ export function strategyReadyEmail({ name, reportUrl }: StrategyReadyEmailProps)
               <p style="margin:0 0 16px 0;font-size:15px;color:#111111;line-height:1.6;">
                 Hi ${name},
               </p>
-              <p style="margin:0 0 12px 0;font-size:15px;color:#333333;line-height:1.6;">
-                Your strategy has been analyzed.
+              <p style="margin:0 0 12px 0;font-size:15px;color:#333333;line-height:1.6;font-weight:700;">
+                Your strategy has a verdict.
+              </p>
+              <p style="margin:0 0 16px 0;font-size:15px;color:#333333;line-height:1.6;">
+                Most traders never see this.
               </p>
               <p style="margin:0 0 12px 0;font-size:15px;color:#333333;line-height:1.6;">
                 We evaluated your performance, risk, and statistical edge.
               </p>
-              <p style="margin:0 0 8px 0;font-size:15px;color:#333333;line-height:1.6;">
-                The results may surprise you.
+              <p style="margin:0 0 12px 0;font-size:15px;color:#333333;line-height:1.6;">
+                The result is not what most traders expect.
               </p>
               <p style="margin:0 0 28px 0;font-size:16px;font-weight:700;color:#111111;line-height:1.6;">
-                Your verdict is ready.
+                See it before you trade again.
               </p>
 
               <!-- CTA Button -->

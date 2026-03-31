@@ -47,23 +47,61 @@ interface Props {
     initialData?: ReportData;
 }
 
+/** Score mapping for verdict and interpretation */
+function getVerdict(score: number, t: any) {
+    if (score >= 75) {
+        return {
+            label: "You may have an edge — but it's not stable yet",
+            explanation: "Your strategy shows signs of a statistical edge, but instability means it may break under pressure.",
+            color: "#10b981", // Green
+            bg: "rgba(16,185,129,0.1)",
+            border: "rgba(16,185,129,0.2)"
+        };
+    } else if (score >= 55) {
+        return {
+            label: "Your results may depend more on luck than edge",
+            explanation: "Your performance is inconsistent. Small changes in execution or market conditions can flip results.",
+            color: "#f59e0b", // Yellow/Amber
+            bg: "rgba(245,158,11,0.1)",
+            border: "rgba(245,158,11,0.2)"
+        };
+    } else if (score >= 40) {
+        return {
+            label: "This strategy is likely not profitable over time",
+            explanation: "Your strategy struggles to produce consistent results. Risk is likely outweighing reward.",
+            color: "#ef4444", // Red
+            bg: "rgba(239,68,68,0.1)",
+            border: "rgba(239,68,68,0.2)"
+        };
+    } else {
+        return {
+            label: "There is no clear statistical edge in your strategy",
+            explanation: "There is no evidence of a statistical edge. Continuing to trade this strategy may lead to losses.",
+            color: "#ef4444", // Red
+            bg: "rgba(239,68,68,0.1)",
+            border: "rgba(239,68,68,0.2)"
+        };
+    }
+}
+
 /** Score badge with tier label */
 function ScoreBadge({ score }: { score: number }) {
     const t = useTranslations("fullReport.score");
-    let color = "#34d399", bg = "rgba(16,185,129,0.1)", border = "rgba(16,185,129,0.25)", label = t("validated");
-    if (score < 40) { 
-        color = "#f87171"; bg = "rgba(239,68,68,0.1)"; border = "rgba(239,68,68,0.25)"; label = t("noEdge"); 
-    }
-    else if (score < 70) { 
-        color = "#fbbf24"; bg = "rgba(251,191,36,0.1)"; border = "rgba(251,191,36,0.25)"; label = t("marginalEdge"); 
-    }
+    const verdict = getVerdict(score, t);
     return (
-        <div className="flex flex-col items-center gap-2">
-            <div className="text-7xl font-black tabular-nums" style={{ color }}>{Math.round(score)}</div>
-            <div className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full"
-                style={{ background: bg, border: `1px solid ${border}`, color }}>
-                {label}
+        <div className="flex flex-col items-center gap-2 text-center">
+            <div className="text-8xl font-black tabular-nums tracking-tighter" style={{ color: verdict.color }}>
+                {Math.round(score)}
+                <span className="text-2xl font-bold opacity-30 ml-1">/100</span>
             </div>
+            <div className="text-sm font-bold uppercase tracking-widest px-4 py-1.5 rounded-full"
+                style={{ background: verdict.bg, border: `1px solid ${verdict.border}`, color: verdict.color }}>
+                {verdict.label}
+            </div>
+            {/* Micro Trust Line */}
+            <p className="text-[10px] mt-2 font-medium uppercase tracking-[0.15em] text-gray-500 opacity-80">
+                This is based on real trade data. Not assumptions.
+            </p>
         </div>
     );
 }
@@ -312,15 +350,46 @@ export default function PublicReportClient({ reportId, locale, initialData }: Pr
                     />
                 )}
 
-                {/* ── Strategy Score Hero ── */}
-                <div className="flex flex-col items-center mb-8 py-10 rounded-2xl border"
-                    style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.06)" }}>
-                    <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "#6b7280" }}>{t("score.label")}</p>
-                    <ScoreBadge score={metrics.strategy_score} />
-                    <p className="text-sm mt-4 mb-8" style={{ color: "#6b7280" }}>{t("score.basedOn", { count: metrics.total_trades })}</p>
+                {/* ── Verdict Section ── */}
+                <div className="mb-8 p-10 rounded-3xl border text-center"
+                    style={{ 
+                        background: "linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)", 
+                        borderColor: "rgba(255,255,255,0.06)" 
+                    }}>
+                    <h2 className="text-sm font-bold uppercase tracking-[0.2em] mb-8" style={{ color: "#4b5563" }}>
+                        Your Strategy Verdict
+                    </h2>
                     
-                    {/* Score Explanation Integration */}
-                    <ScoreExplanation />
+                    <ScoreBadge score={metrics.strategy_score} />
+
+                    <div className="mt-12 max-w-2xl mx-auto">
+                        <h3 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#6b7280" }}>
+                            What this means
+                        </h3>
+                        <p className="text-lg leading-relaxed font-medium" style={{ color: "#d1d5db" }}>
+                            {getVerdict(metrics.strategy_score, t).explanation}
+                        </p>
+                    </div>
+                </div>
+
+                {/* ── Main Lock Block (Post-Verdict Tension) ── */}
+                <div className="mb-12 py-16 px-10 rounded-3xl border border-white/5 bg-white/[0.01] text-center max-w-3xl mx-auto overflow-hidden relative">
+                    <h2 className="text-2xl font-bold text-white mb-6">You're only seeing part of the picture.</h2>
+                    <div className="space-y-4 max-w-xl mx-auto mb-10">
+                        <p className="text-gray-300 font-medium">
+                            Based on your results, you're currently making trading decisions without seeing critical data.
+                        </p>
+                        <p className="text-gray-400">
+                            Most traders realize this too late.
+                        </p>
+                        <p className="text-indigo-400 font-bold">
+                            The real risk — and the real edge — is hidden below.
+                        </p>
+                    </div>
+                    <Link href={`/${locale}/pricing`}
+                        className="btn-primary px-8 py-3 w-fit mx-auto">
+                        Unlock Full Strategy Diagnostics →
+                    </Link>
                 </div>
 
                 {/* ── Social Sharing Bar ── */}
@@ -366,18 +435,22 @@ export default function PublicReportClient({ reportId, locale, initialData }: Pr
                 </div>
 
                 {/* ── Strategy Diagnostics (NEW) ── */}
-                <div className="mb-8">
-                     <StrategyDiagnostics 
-                        metrics={{
-                            totalTrades: metrics.total_trades,
-                            winrate: wr,
-                            profitFactor: metrics.profit_factor,
-                            maxDrawdown: metrics.max_drawdown,
-                            sumProfit: 0, // Not used in diagnostics
-                        } as any}
-                        trades={toTradeArray(data.raw_metrics_json?.trades || [])}
-                     />
-                </div>
+                <ProLockOverlay isPro={data.is_pro} 
+                    title="Strategy Diagnostics"
+                    description="Surface-level analysis hides the fragility of your edge.">
+                    <div className="mb-8">
+                         <StrategyDiagnostics 
+                            metrics={{
+                                totalTrades: metrics.total_trades,
+                                winrate: wr,
+                                profitFactor: metrics.profit_factor,
+                                maxDrawdown: metrics.max_drawdown,
+                                sumProfit: 0, // Not used in diagnostics
+                            } as any}
+                            trades={toTradeArray(data.raw_metrics_json?.trades || [])}
+                         />
+                    </div>
+                </ProLockOverlay>
 
                 {/* ── Edge Alerts ── */}
                 <div className="mb-8">
@@ -402,14 +475,30 @@ export default function PublicReportClient({ reportId, locale, initialData }: Pr
                         <MetricCard label={t("metrics.winrate.label")} value={winRateDisplay}
                             sub={wr >= 50 ? t("metrics.winrate.above") : t("metrics.winrate.below")}
                             highlight={wr >= 50 ? "#34d399" : undefined} />
-                        <MetricCard label={t("metrics.profitFactor.label")} value={metrics.profit_factor.toFixed(2)}
-                            sub={metrics.profit_factor > 1.5 ? t("metrics.profitFactor.excellent") : metrics.profit_factor > 1 ? t("metrics.profitFactor.profitable") : t("metrics.profitFactor.losing")}
-                            highlight={metrics.profit_factor >= 1.5 ? "#34d399" : metrics.profit_factor >= 1 ? "#fbbf24" : "#f87171"} />
-                        <MetricCard label={t("metrics.expectancy.label")}
-                            value={`${metrics.expectancy_r >= 0 ? "+" : ""}${metrics.expectancy_r.toFixed(2)} R`}
-                            sub={t("metrics.expectancy.perTrade")}
-                            highlight={metrics.expectancy_r > 0 ? "#34d399" : "#f87171"} />
-                        <MetricCard label={t("metrics.maxDrawdown.label")} value={drawdownDisplay} sub={t("metrics.maxDrawdown.desc")} highlight="#f87171" />
+                        
+                        <ProLockOverlay isPro={data.is_pro} 
+                            title="Profit Factor"
+                            description="Without this, you don't know if your wins actually outweigh your losses.">
+                            <MetricCard label={t("metrics.profitFactor.label")} value={metrics.profit_factor.toFixed(2)}
+                                sub={metrics.profit_factor > 1.5 ? t("metrics.profitFactor.excellent") : metrics.profit_factor > 1 ? t("metrics.profitFactor.profitable") : t("metrics.profitFactor.losing")}
+                                highlight={metrics.profit_factor >= 1.5 ? "#34d399" : metrics.profit_factor >= 1 ? "#fbbf24" : "#f87171"} />
+                        </ProLockOverlay>
+
+                        <ProLockOverlay isPro={data.is_pro} 
+                            title="Expectancy"
+                            description="Trading without this data is guesswork.">
+                            <MetricCard label={t("metrics.expectancy.label")}
+                                value={`${metrics.expectancy_r >= 0 ? "+" : ""}${metrics.expectancy_r.toFixed(2)} R`}
+                                sub={t("metrics.expectancy.perTrade")}
+                                highlight={metrics.expectancy_r > 0 ? "#34d399" : "#f87171"} />
+                        </ProLockOverlay>
+
+                        <ProLockOverlay isPro={data.is_pro} 
+                            title="Maximum Drawdown"
+                            description="Without this, you don't know how much your strategy can lose before recovering.">
+                            <MetricCard label={t("metrics.maxDrawdown.label")} value={drawdownDisplay} sub={t("metrics.maxDrawdown.desc")} highlight="#f87171" />
+                        </ProLockOverlay>
+
                         <MetricCard label={t("metrics.sampleSize.label")} value={metrics.total_trades.toLocaleString()}
                             sub={metrics.total_trades >= 100 ? t("metrics.sampleSize.robust") : metrics.total_trades >= 30 ? t("metrics.sampleSize.moderate") : t("metrics.sampleSize.small")}
                             highlight={metrics.total_trades >= 100 ? "#34d399" : metrics.total_trades >= 30 ? "#fbbf24" : "#f87171"} />
@@ -419,7 +508,7 @@ export default function PublicReportClient({ reportId, locale, initialData }: Pr
                 {/* ── Equity Curve ── */}
                 {equity_curve.length > 1 && (
                     <section className="mb-8">
-                        <ProLockOverlay title={t("equity.title")} description={t("equity.proLock")} isPro={data.is_pro}>
+                        <ProLockOverlay title="Equity Curve Analysis" description="You're trading blindly without seeing the structural growth of your capital." isPro={data.is_pro}>
                             <div className={!data.is_pro ? "blur-md grayscale opacity-40 rounded-2xl p-6 border" : "rounded-2xl p-6 border"} style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.06)" }}>
                                 <h2 className="text-sm font-semibold uppercase tracking-widest mb-4" style={{ color: "#6b7280" }}>{t("equity.title")}</h2>
                                 <EquityCurveChart data={equity_curve.map((val, i) => ({
@@ -472,6 +561,43 @@ export default function PublicReportClient({ reportId, locale, initialData }: Pr
                     <p className="text-xs mt-4" style={{ color: "#4b5563" }}>
                         {t("viral.footer")}
                     </p>
+                </div>
+
+                {/* ── Hidden Picture Tension Block ── */}
+                <div className="mt-16 mb-12 p-10 rounded-3xl border border-white/5 bg-gradient-to-b from-white/[0.03] to-transparent max-w-2xl mx-auto text-center"
+                    style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                    <h2 className="text-xl font-bold text-white mb-6">You're only seeing part of the picture</h2>
+                    <div className="space-y-4 mb-8 text-left inline-block">
+                        <p className="text-gray-300">You're only seeing a surface-level analysis. You still don't know:</p>
+                        <ul className="space-y-2 text-gray-400 text-sm">
+                            <li className="flex items-center gap-2">
+                                <span className="text-indigo-500">•</span> If your edge survives different market conditions
+                            </li>
+                            <li className="flex items-center gap-2">
+                                <span className="text-indigo-500">•</span> How fragile your strategy really is
+                            </li>
+                            <li className="flex items-center gap-2">
+                                <span className="text-indigo-500">•</span> What happens under drawdown pressure
+                            </li>
+                        </ul>
+                    </div>
+                    <div className="border-t border-white/5 pt-6">
+                        <p className="text-gray-300 font-medium italic">
+                            "Most traders believe they have an edge. <br/> Few actually do."
+                        </p>
+                    </div>
+                </div>
+
+                {/* ── Reveal Final Block ── */}
+                <div className="mt-12 text-center max-w-2xl mx-auto py-12 px-6 rounded-3xl border border-white/5 bg-white/[0.02]">
+                    <h2 className="text-2xl font-bold text-white mb-3">Go deeper into your strategy</h2>
+                    <p className="text-gray-400 mb-8">
+                        Unlock full diagnostics, advanced metrics, and deeper insights to fully master your statistical edge.
+                    </p>
+                    <Link href={`/${locale}/pricing`}
+                        className="btn-primary px-8 py-4 justify-center">
+                        Reveal what your strategy is really doing →
+                    </Link>
                 </div>
 
             </div>

@@ -28,6 +28,7 @@ export async function sendStrategyReadyEmail({
             console.error("EMAIL ERROR:", error);
         } else {
             console.log("EMAIL SENT:", data?.id);
+            console.log("EMAIL TO:", to);
         }
     } catch (err) {
         // Never throw — email is non-critical; does not break the save flow
