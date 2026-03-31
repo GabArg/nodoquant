@@ -24,11 +24,12 @@ export default function SignupPage() {
         setLoading(true);
 
         const supabase = createClient();
+        const baseUrl = getBaseUrl();
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
             options: {
-                emailRedirectTo: `${getBaseUrl()}/api/auth/callback?next=${encodeURIComponent(redirectUrl || `/${locale}/dashboard`)}&locale=${locale}`,
+                emailRedirectTo: `${baseUrl}/api/auth/callback?next=${encodeURIComponent(redirectUrl || `/${locale}/dashboard`)}&locale=${locale}`,
             },
         });
 
