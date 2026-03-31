@@ -200,12 +200,12 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
                                     {/* Monte Carlo Comparison Insight */}
                                     <div className="flex items-center gap-6 pt-4 mt-4 border-t border-white/5">
                                         <div className="space-y-1">
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Historical DD</p>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">{stabT("histDD")}</p>
                                             <p className="text-lg font-black text-white">{Math.abs(metrics.maxDrawdown).toFixed(1)}%</p>
                                         </div>
                                         <div className="w-px h-8 bg-white/5" />
                                         <div className="space-y-1">
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">MC Worst case</p>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">{stabT("mcWorstCase")}</p>
                                             <p className="text-lg font-black text-red-500">{fullMetrics.monteCarlo.drawdownAt5Pct.toFixed(1)}%</p>
                                         </div>
                                     </div>

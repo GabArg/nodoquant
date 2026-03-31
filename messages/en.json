@@ -654,6 +654,13 @@
                 "pf": "The ratio of gross profit to gross loss. A PF > 1.4 suggests a healthy statistical edge.",
                 "expectancy": "The average amount you expect to win (or lose) per dollar risked.",
                 "maxDrawdown": "The peak-to-valley percentage drop in your account equity during analysis."
+            },
+            "stability": {
+                "title": "Monte Carlo Stability",
+                "confidence": "{val}% Edge Confidence",
+                "microcopy": "Based on 1,000 simulations of your trade sequence to identify real-world survival probability.",
+                "histDD": "Historical DD",
+                "mcWorstCase": "MC Worst case"
             }
         },
         "edgeConfidence": {

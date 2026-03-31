@@ -1168,9 +1168,11 @@
                 ]
             },
             "stability": {
-                "title": "Qué tan estable es realmente tu estrategia",
-                "confidence": "{val}% de Confianza",
-                "microcopy": "¿Pueden tus resultados sobrevivir a la aleatoriedad? La mayoría de las estrategias fallan aquí."
+                "title": "Estabilidad Monte Carlo",
+                "confidence": "{val}% Confianza del Edge",
+                "microcopy": "Basado en 1,000 simulaciones de tu secuencia de trades para identificar la probabilidad de supervivencia real.",
+                "histDD": "DD Histórico",
+                "mcWorstCase": "Peor Caso MC"
             },
             "nextSteps": {
                 "title": "Siguiente Paso Sugerido",
