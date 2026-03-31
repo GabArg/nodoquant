@@ -6,7 +6,8 @@
  */
 export const getBaseUrl = () => {
     let url =
-        process?.env?.NEXT_PUBLIC_SITE_URL ?? // Set this to https://nodoquant.com in production
+        process?.env?.NEXT_PUBLIC_APP_URL ??   // Explicit app URL (highest priority)
+        process?.env?.NEXT_PUBLIC_SITE_URL ??   // Set this to https://nodoquant.com in production
         process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Set automatically by Vercel
         "http://localhost:3000"; // Local fallback
 

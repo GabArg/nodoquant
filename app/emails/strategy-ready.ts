@@ -9,7 +9,7 @@ export function strategyReadyEmail({ name, reportUrl }: StrategyReadyEmailProps)
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Your strategy results are ready</title>
+  <title>Your strategy has a verdict</title>
   <meta name="color-scheme" content="light" />
   <meta name="supported-color-schemes" content="light" />
 </head>
@@ -37,19 +37,22 @@ export function strategyReadyEmail({ name, reportUrl }: StrategyReadyEmailProps)
           <tr>
             <td style="padding:32px 32px 0 32px;">
               <h1 style="margin:0 0 20px 0;font-size:22px;font-weight:700;color:#111111;line-height:1.3;">
-                Your strategy has been analyzed 📊
+                Your strategy has a verdict ⚠️
               </h1>
-              <p style="margin:0 0 8px 0;font-size:15px;color:#111111;line-height:1.6;">
+              <p style="margin:0 0 16px 0;font-size:15px;color:#111111;line-height:1.6;">
                 Hi ${name},
               </p>
-              <p style="margin:0 0 16px 0;font-size:15px;color:#333333;line-height:1.6;">
-                Your trading strategy has been processed successfully.
+              <p style="margin:0 0 12px 0;font-size:15px;color:#333333;line-height:1.6;">
+                Your strategy has been analyzed.
               </p>
-              <p style="margin:0 0 16px 0;font-size:15px;color:#333333;line-height:1.6;">
-                We've analyzed your performance, risk profile, and statistical edge.
+              <p style="margin:0 0 12px 0;font-size:15px;color:#333333;line-height:1.6;">
+                We evaluated your performance, risk, and statistical edge.
               </p>
-              <p style="margin:0 0 28px 0;font-size:15px;font-weight:600;color:#111111;line-height:1.6;">
-                Your results are ready.
+              <p style="margin:0 0 8px 0;font-size:15px;color:#333333;line-height:1.6;">
+                The results may surprise you.
+              </p>
+              <p style="margin:0 0 28px 0;font-size:16px;font-weight:700;color:#111111;line-height:1.6;">
+                Your verdict is ready.
               </p>
 
               <!-- CTA Button -->
@@ -58,8 +61,8 @@ export function strategyReadyEmail({ name, reportUrl }: StrategyReadyEmailProps)
                   <td>
                     <a href="${reportUrl}"
                        target="_blank"
-                       style="display:inline-block;background-color:#000000;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;padding:12px 24px;border-radius:8px;margin-top:4px;letter-spacing:-0.01em;">
-                      View Your Report →
+                       style="display:inline-block;background-color:#000000;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;padding:14px 28px;border-radius:8px;letter-spacing:-0.01em;">
+                      See Your Strategy Verdict →
                     </a>
                   </td>
                 </tr>
@@ -72,12 +75,12 @@ export function strategyReadyEmail({ name, reportUrl }: StrategyReadyEmailProps)
             <td style="padding:36px 32px 0 32px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td style="padding:20px 20px;background-color:#f9fafb;border-radius:8px;border-left:3px solid #e5e7eb;">
-                    <p style="margin:0 0 6px 0;font-size:14px;color:#374151;line-height:1.5;font-style:italic;">
-                      "Most traders lose money because they don't measure their edge.
+                  <td style="padding:18px 20px;background-color:#f9fafb;border-radius:8px;border-left:3px solid #d1d5db;">
+                    <p style="margin:0 0 4px 0;font-size:14px;color:#374151;line-height:1.6;">
+                      Most traders lose money because they don't measure their edge.
                     </p>
-                    <p style="margin:0;font-size:14px;color:#374151;line-height:1.5;font-style:italic;">
-                      Now you know yours."
+                    <p style="margin:0;font-size:14px;font-weight:600;color:#111111;line-height:1.6;">
+                      Now you do.
                     </p>
                   </td>
                 </tr>

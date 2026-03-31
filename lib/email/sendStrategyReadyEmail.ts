@@ -17,20 +17,20 @@ export async function sendStrategyReadyEmail({
     try {
         const html = strategyReadyEmail({ name, reportUrl });
 
-        const { error } = await resend.emails.send({
+        const { data, error } = await resend.emails.send({
             from: "NodoQuant <hola@nodoquant.com>",
             to,
-            subject: "Your strategy results are ready 📊",
+            subject: "Your strategy has a verdict ⚠️",
             html,
         });
 
         if (error) {
-            console.error("[Email] Failed to send strategy-ready email:", error);
+            console.error("EMAIL ERROR:", error);
         } else {
-            console.log("[Email] strategy-ready sent to:", to);
+            console.log("EMAIL SENT:", data?.id);
         }
     } catch (err) {
-        // Never throw — email is non-critical; don't break the save flow
-        console.error("[Email] Unexpected error sending strategy-ready email:", err);
+        // Never throw — email is non-critical; does not break the save flow
+        console.error("EMAIL ERROR:", err);
     }
 }
