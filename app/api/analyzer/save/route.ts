@@ -4,6 +4,8 @@ import { createClient } from "@/lib/auth/server";
 import { writeFile, readFile } from "fs/promises";
 import path from "path";
 import { getUserSubscription, isProUser, canCreateStrategy, FREE_PLAN_LIMITS } from "@/lib/payments/subscription";
+import { sendStrategyReadyEmail } from "@/lib/email/sendStrategyReadyEmail";
+import { getBaseUrl } from "@/lib/url";
 
 export interface SaveAnalysisBody {
     trades_count: number;
@@ -151,6 +153,21 @@ export async function POST(req: NextRequest) {
                 id: data?.id,
                 trades_count,
             });
+
+            // Trigger strategy-ready email (non-blocking)
+            const userEmail = session?.user?.email;
+            if (userEmail && data?.id) {
+                const userName = session?.user?.user_metadata?.full_name
+                    || session?.user?.user_metadata?.name
+                    || "Trader";
+                const reportUrl = `${getBaseUrl()}/report/${data.id}`;
+                void sendStrategyReadyEmail({
+                    to: userEmail,
+                    name: userName,
+                    reportUrl,
+                });
+            }
+
             return NextResponse.json({ ok: true, id: data?.id ?? null });
         }
 

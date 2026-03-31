@@ -18,7 +18,8 @@
     "next-intl": "^4.8.3",
     "react": "^18",
     "react-dom": "^18",
-    "recharts": "^3.8.0"
+    "recharts": "^3.8.0",
+    "resend": "^6.10.0"
   },
   "devDependencies": {
     "@types/node": "^20",
