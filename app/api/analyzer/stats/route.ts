@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseServer } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
 /**
  * GET /api/analyzer/stats
@@ -7,15 +8,15 @@ import { getSupabaseServer } from "@/lib/supabase";
  * Falls back to mock values if Supabase is not configured.
  */
 export async function GET() {
-    const supabase = getSupabaseServer();
+    const supabaseAdmin = getSupabaseAdmin();
 
-    if (supabase) {
+    if (supabaseAdmin) {
         try {
-            const { count: analysisCount, error: e1 } = await supabase
+            const { count: analysisCount, error: e1 } = await supabaseAdmin
                 .from("trade_analysis")
                 .select("*", { count: "exact", head: true });
 
-            const { count: leadsCount, error: e2 } = await supabase
+            const { count: leadsCount, error: e2 } = await supabaseAdmin
                 .from("nodoquant_leads")
                 .select("*", { count: "exact", head: true });
 

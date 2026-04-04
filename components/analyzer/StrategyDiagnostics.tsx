@@ -22,6 +22,8 @@ interface Props {
   trades: Trade[];
   onAddToComparison?: () => void;
   isInComparison?: boolean;
+  isPro?: boolean;
+  isNoEdge?: boolean;
 }
 
 const SESSION_MAP = (hour: number): "asia" | "london" | "newyork" | "outOfHours" => {
@@ -31,7 +33,7 @@ const SESSION_MAP = (hour: number): "asia" | "london" | "newyork" | "outOfHours"
   return "outOfHours";
 };
 
-export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAddToComparison, isInComparison }: Props) {
+export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAddToComparison, isInComparison, isPro, isNoEdge }: Props) {
   const t = useTranslations("analyzer.diagnostics");
   const ti = useTranslations("analyzer.insights");
   const sqnT = useTranslations("analyzer.sqn");
@@ -39,15 +41,14 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
   const mcT = useTranslations("analyzer.monteCarlo");
   const pfT = useTranslations("analyzer.propFirm");
   const intelT = useTranslations("analyzer.intelligence");
-  const tipT = useTranslations("analyzer.expertTips");
-  const compT = useTranslations("analyzer.comparison");
+  const tFunnel = useTranslations("analyzer.funnel");
 
   if (trades.length < 20) return null;
 
   // 1. Weekday Analysis
   const dayNames: string[] = ti.raw("days");
   const byDay: Record<number, number[]> = {};
-  trades.forEach((tr) => {
+  trades.forEach((tr: Trade) => {
     const dt = tr.exit_time ?? tr.datetime;
     if (dt) {
       const d = dt.getDay();
@@ -67,7 +68,7 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
 
   // 2. Session Analysis
   const bySession: Record<string, number[]> = { asia: [], london: [], newyork: [], outOfHours: [] };
-  trades.forEach((tr) => {
+  trades.forEach((tr: Trade) => {
     const dt = tr.exit_time ?? tr.datetime;
     if (dt) {
       const key = SESSION_MAP(dt.getUTCHours());
@@ -159,9 +160,9 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
         icon: "🎲",
         value: fullMetrics?.monteCarlo?.riskOfRuin || 0,
         extra: [
-            { label: mcT("medianOutcome"), value: `${(fullMetrics?.monteCarlo?.averageCase ?? 0) >= 0 ? "+" : ""}${fullMetrics?.monteCarlo?.averageCase || 0}` },
-            { label: mcT("worstCaseDD"), value: `${fullMetrics?.monteCarlo?.drawdownAt5Pct || 0}%` },
-            { label: mcT("ruinProb"), value: `${fullMetrics?.monteCarlo?.riskOfRuin || 0}%` }
+            { label: tFunnel("ruinProbLabel"), value: `??? ${tFunnel("mcPlaceholder")}` },
+            { label: tFunnel("expectedDdLabel"), value: `???%` },
+            { label: tFunnel("timeToBreakLabel"), value: `??? trades` }
         ]
     }
   ];
@@ -190,13 +191,7 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
                 Agregado
               </>
             ) : (
-              <>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                  <line x1="12" y1="5" x2="12" y2="19" />
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-                {compT("add")}
-              </>
+                "Agregar a Comparativa"
             )}
           </button>
         )}
@@ -215,9 +210,9 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
                        {"value" in d && <span className="text-xs font-black text-indigo-400">{(d as any).value}</span>}
                    </div>
                    <div className="flex items-center gap-2">
-                        <span className={`w-1.5 h-1.5 rounded-full ${d.level === "positive" ? "bg-emerald-500" : d.level === "negative" ? "bg-red-500" : d.level === "info" ? "bg-blue-500" : "bg-amber-500"}`} />
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-gray-600">
-                            {d.level.toUpperCase()} DIAGNOSTIC
+                        <span className={`w-1.5 h-1.5 rounded-full ${isNoEdge && !isPro ? "bg-red-500" : d.level === "positive" ? "bg-emerald-500" : d.level === "negative" ? "bg-red-500" : d.level === "info" ? "bg-blue-500" : "bg-amber-500"}`} />
+                        <span className={`text-[9px] font-black uppercase tracking-widest ${isNoEdge && !isPro ? "text-red-500" : "text-gray-600"}`}>
+                            {isNoEdge && !isPro ? tFunnel("diagnosticNegative") : tFunnel(`diagnostic${d.level.charAt(0).toUpperCase() + d.level.slice(1)}`)}
                         </span>
                    </div>
                 </div>
@@ -230,15 +225,14 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
                 <div className="flex gap-3 relative cursor-help">
                     <div className="w-px bg-indigo-500/30 shrink-0" />
                     <p className="text-[11px] leading-relaxed font-medium text-gray-400 group-hover:text-gray-300 transition-colors">
-                        <span className="text-indigo-400 font-black mr-1 uppercase text-[9px] tracking-widest">DIAGNOSTIC TIP</span>
+                        <span className="text-indigo-400 font-black mr-1 uppercase text-[9px] tracking-widest">CONSEJO DE DIAGNÓSTICO</span>
                         {d.tip}
                     </p>
                 </div>
 
-                {/* ── Additional metrics for specific cards (like Monte Carlo) ── */}
                 {"extra" in d && (
                     <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/5 mt-5">
-                        {(d as any).extra.map((ex: any, i: number) => (
+                        {(d as any).extra.map((ex: { label: string; value: string }, i: number) => (
                             <div key={i} className="flex flex-col">
                                 <span className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-500 mb-1">{ex.label}</span>
                                 <span className="text-[10px] font-black text-indigo-100">{ex.value}</span>
@@ -251,7 +245,6 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
         ))}
       </div>
 
-      {/* ── Section: Prop Firm Readiness Module ── */}
       {fullMetrics?.propFirm && (
         <div className="pt-8 border-t border-white/5 space-y-8">
             <div className="flex flex-col items-center">
@@ -260,10 +253,8 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Main Gauge */}
                 <div className="lg:col-span-1 p-8 rounded-[40px] bg-white/[0.02] border border-white/5 flex flex-col items-center justify-center relative overflow-hidden group shadow-2xl">
                     <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    
                     <div className="relative w-32 h-32 mb-6">
                         <svg className="w-full h-full transform -rotate-90">
                             <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/5" />
@@ -284,7 +275,6 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
                             <span className="text-[8px] font-black uppercase tracking-widest text-gray-500">PROB.</span>
                         </div>
                     </div>
-
                     <div className={`px-4 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest mb-2 ${
                         fullMetrics.propFirm.passTier === "strong" ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
                         fullMetrics.propFirm.passTier === "good" ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400" :
@@ -294,7 +284,6 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
                     </div>
                 </div>
 
-                {/* Sub Metrics Grid */}
                 <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="p-6 rounded-[32px] bg-white/[0.01] border border-white/5 space-y-4">
                         <div className="flex justify-between items-center">
@@ -307,7 +296,6 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
                             <div className={`h-full transition-all duration-1000 ${fullMetrics.propFirm.failDailyDDProb > 10 ? "bg-red-500" : "bg-emerald-500"}`} style={{ width: `${fullMetrics.propFirm.failDailyDDProb}%` }} />
                         </div>
                     </div>
-
                     <div className="p-6 rounded-[32px] bg-white/[0.01] border border-white/5 space-y-4">
                         <div className="flex justify-between items-center">
                             <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{pfT("maxViolation")}</span>
@@ -319,7 +307,6 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
                             <div className={`h-full transition-all duration-1000 ${fullMetrics.propFirm.failMaxDDProb > 10 ? "bg-red-500" : "bg-emerald-500"}`} style={{ width: `${fullMetrics.propFirm.failMaxDDProb}%` }} />
                         </div>
                     </div>
-
                     <div className="p-6 rounded-[32px] bg-white/[0.01] border border-white/5 space-y-4">
                         <div className="flex justify-between items-center">
                             <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{pfT("consistency")}</span>
@@ -329,7 +316,6 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
                             <div className="h-full bg-indigo-500 transition-all duration-1000" style={{ width: `${fullMetrics.propFirm.consistencyScore}%` }} />
                         </div>
                     </div>
-
                     <div className="p-6 rounded-[32px] bg-white/[0.01] border border-white/5 flex items-center justify-around">
                         <div className="text-center">
                             <div className="text-[8px] font-black uppercase text-gray-600 mb-1">{pfT("metrics.target")}</div>
@@ -351,7 +337,7 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
         </div>
       )}
 
-      {/* ── Section: Strategy Intelligence Dashboard ── */}
+      {/* Intelligence layer */}
       {fullMetrics && (
         <div className="pt-12 border-t border-white/5 space-y-10">
             <div className="flex flex-col items-center">
@@ -361,7 +347,6 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                {/* 1. Equity Fan Chart (Future Projections) */}
                 <div className="p-8 rounded-[40px] bg-white/[0.02] border border-white/5 shadow-2xl space-y-6">
                     <div className="flex justify-between items-start">
                         <div>
@@ -377,7 +362,7 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
                     <div className="h-[280px] w-full mt-4">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart 
-                                data={fullMetrics.monteCarlo.percentilePaths.p50.map((v, i) => ({
+                                data={fullMetrics.monteCarlo.percentilePaths.p50.map((v: number, i: number) => ({
                                     idx: i,
                                     p5: fullMetrics.monteCarlo.percentilePaths.p5[i],
                                     p25: fullMetrics.monteCarlo.percentilePaths.p25[i],
@@ -411,47 +396,24 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
                                     itemStyle={{ color: '#fff', fontSize: '10px', fontWeight: 'bold' }}
                                     labelStyle={{ display: 'none' }}
                                 />
-                                
-                                {/* Inner Confidence (25-75%) */}
                                 <Area type="monotone" dataKey="p75" stackId="1" stroke="none" fill="url(#fanInner)" animationDuration={1500} />
                                 <Area type="monotone" dataKey="p25" stackId="1" stroke="none" fill="transparent" />
-
-                                {/* Outer Confidence (5-95%) */}
                                 <Area type="monotone" dataKey="p95" stroke="rgba(99,102,241,0.2)" strokeWidth={1} fill="url(#fanOuter)" animationDuration={2000} />
                                 <Area type="monotone" dataKey="p5" stroke="rgba(99,102,241,0.2)" strokeWidth={1} fill="transparent" />
-
-                                {/* Median Outcome */}
                                 <Area type="monotone" dataKey="p50" stroke="#818cf8" strokeWidth={3} fill="none" dot={false} strokeDasharray="5 5" />
                                 <ReferenceLine y={10000} stroke="rgba(255,255,255,0.1)" strokeDasharray="3 3" />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
-                    
-                    <div className="flex justify-center gap-6 mt-4">
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-indigo-500 opacity-60" />
-                            <span className="text-[8px] font-black uppercase text-gray-500">95% Confidence</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-indigo-400" />
-                            <span className="text-[8px] font-black uppercase text-gray-500">50% Probable</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-indigo-300" />
-                            <span className="text-[8px] font-black uppercase text-gray-500">Median Path</span>
-                        </div>
-                    </div>
                 </div>
 
                 <div className="space-y-8">
-                    {/* 2. Edge Health / Decay Signal */}
                     {fullMetrics.edgeDecay && (
                         <div className="p-8 rounded-[40px] bg-white/[0.02] border border-white/5 flex items-center gap-8 relative overflow-hidden group">
                            <div className={`absolute inset-y-0 left-0 w-1.5 ${
                                fullMetrics.edgeDecay.signal === "stable" ? "bg-emerald-500" :
                                fullMetrics.edgeDecay.signal === "caution" ? "bg-amber-500" : "bg-red-500"
                            }`} />
-                           
                            <div className="flex flex-col gap-1 flex-1">
                                <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400">{intelT("edgeDecay.title")}</h4>
                                <p className="text-[9px] text-gray-600 font-medium mb-2">{intelT("edgeDecay.subtitle")}</p>
@@ -465,22 +427,9 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
                                    <span className="text-xs font-black text-gray-500 mb-1">Score: {fullMetrics.edgeDecay.score}%</span>
                                </div>
                            </div>
-                           
-                           <div className="flex gap-4 p-4 rounded-2xl bg-white/[0.01] border border-white/5">
-                               <div className="text-center">
-                                   <div className="text-[8px] font-black text-gray-600 uppercase mb-1">Recent</div>
-                                   <div className="text-[10px] font-black text-white">{fullMetrics.edgeDecay.recentSQN} <span className="text-[8px] text-gray-500">SQN</span></div>
-                               </div>
-                               <div className="w-px h-6 bg-white/5" />
-                               <div className="text-center">
-                                   <div className="text-[8px] font-black text-gray-600 uppercase mb-1">Baseline</div>
-                                   <div className="text-[10px] font-black text-gray-400">{fullMetrics.edgeDecay.baselineSQN} <span className="text-[8px] text-gray-600">SQN</span></div>
-                               </div>
-                           </div>
                         </div>
                     )}
 
-                    {/* 3. Payoff Normalized Distribution */}
                     {fullMetrics.rHistogram && (
                         <div className="p-8 rounded-[40px] bg-white/[0.02] border border-white/5 space-y-4">
                             <div className="flex justify-between items-start">
@@ -493,7 +442,7 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
                             <div className="h-[140px] w-full mt-4">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart 
-                                        data={fullMetrics.rHistogram.counts.map((c, i) => ({
+                                        data={fullMetrics.rHistogram.counts.map((c: number, i: number) => ({
                                             r: fullMetrics.rHistogram ? fullMetrics.rHistogram.min + (i * ((fullMetrics.rHistogram.max - fullMetrics.rHistogram.min) / fullMetrics.rHistogram.counts.length)) : i,
                                             val: c
                                         }))}
@@ -526,36 +475,7 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
                             </div>
                         </div>
                     )}
-                </div>
-            </div>
-        </div>
-      )}
-
-      {/* ── Section: Expert Tips Engine ── */}
-      {fullMetrics?.advanced?.expertTips && fullMetrics.advanced.expertTips.length > 0 && (
-        <div className="pt-8 border-t border-white/5">
-            <div className="flex items-center gap-4 mb-8">
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-500 whitespace-nowrap">
-                    {tipT("title")}
-                </h4>
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {fullMetrics.advanced.expertTips.map((tipKey, idx) => (
-                    <div key={idx} className="p-6 rounded-[32px] bg-white/[0.02] border border-white/5 hover:border-indigo-500/30 transition-all flex gap-4 items-start group">
-                        <div className="w-8 h-8 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-xs shrink-0 group-hover:bg-indigo-500/20 transition-colors">
-                            👨‍🔬
-                        </div>
-                        <p className="text-xs text-gray-400 font-medium leading-relaxed group-hover:text-gray-300 transition-colors">
-                            {tipT(tipKey, { 
-                                mcDD: fullMetrics.monteCarlo ? `${fullMetrics.monteCarlo.drawdownAt5Pct.toFixed(1)}%` : "N/A",
-                                histDD: `${Math.abs(metrics.maxDrawdown).toFixed(1)}%`
-                            })}
-                        </p>
-                    </div>
-                ))}
+               </div>
             </div>
         </div>
       )}

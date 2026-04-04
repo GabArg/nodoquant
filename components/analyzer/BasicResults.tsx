@@ -62,6 +62,7 @@ export default function BasicResults({ metrics, fullMetrics, format, fileName, t
     const wizT = useTranslations("analyzer.wizard");
     const confT = useTranslations("analyzer.edgeConfidence");
     const robustT = useTranslations("analyzer.robustness");
+    const tFunnel = useTranslations("analyzer.funnel");
     
     const [copied, setCopied] = useState(false);
     
@@ -142,9 +143,29 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
                         )}
                     </div>
 
-                    <p className="text-sm text-gray-400 font-medium max-w-md italic leading-relaxed">
-                        "{stateInfo.explanation}"
+                    <p className="text-sm text-red-400 font-bold max-w-md italic whitespace-pre-line leading-relaxed bg-red-500/5 py-3 px-6 rounded-2xl border border-red-500/10">
+                        {diagState === "noEdge" 
+                            ? tFunnel("painMessage") 
+                            : `"${stateInfo.explanation}"`}
                     </p>
+
+                    <div className="flex flex-col items-center gap-4 w-full pt-4">
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 opacity-40">{tFunnel("incompleteResult")}</span>
+                        <button onClick={() => {
+                                    if (onViewFullReport) onViewFullReport();
+                                }} 
+                                className="px-12 py-5 rounded-3xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-[13px] font-black uppercase tracking-[0.2em] transition-all shadow-[0_20px_50px_rgba(79,70,229,0.4)] hover:shadow-[0_25px_60px_rgba(79,70,229,0.5)] active:scale-95 border border-white/10 ring-4 ring-indigo-500/10">
+                            {tFunnel("unlockFull")}
+                        </button>
+                        <div className="flex flex-col items-center gap-1.5 text-center">
+                            <p className="text-[11px] text-indigo-300 font-black uppercase tracking-[0.15em]">
+                                {tFunnel("basedOnTrades")}
+                            </p>
+                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.1em]">
+                                {tFunnel("oneTimePayment")}
+                            </p>
+                        </div>
+                    </div>
                 </div>
             )}
 
@@ -258,7 +279,10 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
                                 
                                 <div className="flex flex-col items-center gap-4 w-full">
                                     <div className="flex flex-wrap justify-center gap-4">
-                                        <button onClick={onViewFullReport} 
+                                        <button onClick={() => {
+                                                    console.log("[TOP BUTTON CLICKED]");
+                                                    if (onViewFullReport) onViewFullReport();
+                                                }} 
                                                 className="px-8 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-black uppercase tracking-widest transition-all shadow-xl shadow-indigo-600/30 active:scale-95">
                                             {wizT("viewReport") || "Unlock full analysis"}
                                         </button>
@@ -283,7 +307,7 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
             <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-6 opacity-40 hover:opacity-100 transition-opacity">
                 <div className="flex items-center gap-3">
                     <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[9px] font-bold text-gray-500 uppercase tracking-widest">
-                        {format.toUpperCase()} ANALYSIS
+                        ANÁLISIS DE {format.toUpperCase()}
                     </span>
                     <p className="text-[10px] font-black uppercase tracking-widest text-gray-600">
                         {t("basedOn", { count: metrics.totalTrades })}{fileName ? ` · ${fileName}` : ""}

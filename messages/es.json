@@ -677,6 +677,48 @@
             "title": "Analizador de Estrategia — NodoQuant",
             "description": "Sube tu historial de trading y obtén un análisis cuantitativo de tu estrategia. Compatible con CSV y export de MetaTrader 5. Gratis."
         },
+        "funnel": {
+            "painTitle": "Si operás así, vas a perder capital.",
+            "painSubtitle": "No es una opinión. Es estadística.",
+            "painMessage": "Si operás así, vas a perder capital.\nNo es una opinión. Es estadística.",
+            "fearMessage": "Si operás así, es cuestión de tiempo hasta que pierdas dinero.",
+            "incompleteResult": "Resultado incompleto",
+            "partialAnalysisTitle": "Este análisis parcial no muestra el riesgo real. El análisis completo revela:",
+            "benefit1": "Vas a ver exactamente cuándo tu estrategia colapsa",
+            "benefit2": "Cuánto capital podés perder en el peor escenario",
+            "benefit3": "Si realmente podés sobrevivir a largo plazo",
+            "credibilityFooter": "Simulación basada en más de 10,000 escenarios Monte Carlo usando tus datos reales.",
+            "mcPlaceholder": "(calculado con más de 10,000 simulaciones Monte Carlo)",
+            "closingLine": "Podés ignorar esto… o seguir operando sin saber cuánto estás arriesgando.",
+            "unlockNow": "Desbloquear ahora — 15 USDT",
+            "unlockFull": "Ver exactamente cuánto vas a perder — 15 USDT",
+            "unlockSubtext": "Pago único · Acceso inmediato · Basado en tus trades reales",
+            "shortTermImprovement": "Mejora a corto plazo detectada",
+            "longTermStabilityNotProven": "Estabilidad a largo plazo: NO comprobada",
+            "edgeInsightTip": "Este análisis parcial no puede confirmar una ventaja real. Necesitás la simulación completa de 10,000 escenarios para validar tu estrategia.",
+            "unvalidatedEdge": "Sin ventaja estadística",
+            "unvalidatedEdgeDesc": "Estás operando sin una ventaja comprobada",
+            "basedOnTrades": "Basado en tus trades reales · Sin suposiciones",
+            "oneTimePayment": "Pago único · Acceso inmediato · Sin suscripción",
+            "ruinProbLabel": "Probabilidad de ruina",
+            "expectedDdLabel": "Drawdown esperado",
+            "timeToBreakLabel": "Tiempo hasta quiebre",
+            "diagnosticPositive": "Diagnóstico Positivo",
+            "diagnosticNegative": "Diagnóstico Negativo",
+            "diagnosticInfo": "Diagnóstico Informativo",
+            "diagnosticNeutral": "Diagnóstico Neutral",
+            "diagnosticNoEdge": "Sin ventaja estadística",
+            "diagnosticStrongEdge": "Ventaja Sólida Verificada",
+            "diagnosticWeakEdge": "Ventaja Débil Detectada",
+            "diagnosticUnstableEdge": "Ventaja Inestable",
+            "diagnosticInsufficientSample": "Muestra Insuficiente",
+            "riskElevated": "Riesgo elevado",
+            "notSustainable": "Estrategia no sostenible",
+            "notProven": "No comprobada",
+            "shortTermHighWinrate": "Alta tasa de aciertos observada, pero sin ventaja estadística validada",
+            "shortTermLowDrawdown": "Drawdown bajo observado, pero no validado en escenarios adversos",
+            "shortTermProfitability": "Rentabilidad detectada, pero no consistente bajo simulación"
+        },
         "onboarding": {
             "title": "Analiza tu estrategia en 3 pasos",
             "subtitle": "Únete a miles de traders que usan datos para mejorar su ventaja.",
@@ -875,29 +917,49 @@
                 "errorRequired": "Por favor completa tu nombre y email para continuar.",
                 "errorSave": "Error al guardar",
                 "errorNetwork": "Error de red. Intenta de nuevo.",
-                "noSpam": "Sin spam. Solo te contactamos si muestras interés en automatizar tu estrategia."
+                "noSpam": "Sin spam. Solo te contactamos si muestras interés en automatizar tu estrategia.",
+                "generating": "Generando reporte profesional...",
+                "retry": "Reintentar",
+                "goDashboard": "Ir al Dashboard",
+                "complete": "Completado",
+                "unlockCta": "DESBLOQUEAR ANÁLISIS COMPLETO",
+                "createAccountCta": "CREAR CUENTA PARA DESBLOQUEAR",
+                "haveAccount": "¿Ya tienes una cuenta?",
+                "loginHere": "Inicia sesión aquí"
             }
         },
         "report": {
             "title": "Reporte Completo",
             "subtitle": "Análisis cuantitativo",
             "sentTo": "Reporte enviado a",
+            "share": {
+                "title": "Análisis de Estrategia NodoQuant",
+                "edgeConfidence": "Diagnóstico",
+                "profitFactor": "Profit Factor",
+                "sampleSize": "Operaciones analizadas",
+                "copyLink": "Copiar Link Público",
+                "linkCopied": "¡Link Copiado!",
+                "linkCopiedDetail": "Link copiado. Mostralo a otros traders y compará resultados.",
+                "whatsapp": "Compartir en WhatsApp",
+                "twitter": "Compartir en X",
+                "compareMicrocopy": "Compará tu estrategia con otros traders reales."
+            },
             "visualizations": {
                 "title": "Visualizaciones de Rendimiento",
-                "tradesDistribution": "Distribución de trades (P&L)",
+                "tradesDistribution": "Distribución de Trades",
                 "winners": "Ganadores",
                 "losers": "Perdedores"
             },
             "stability": {
                 "title": "Estabilidad del Edge en el Tiempo",
-                "subtitle": "Monitoreo de la consistencia del rendimiento en muestras recientes."
+                "subtitle": "Evolución histórica y consistencia probabilística de la ventaja estadística."
             },
             "health": {
                 "title": "Estado de Salud del Edge",
-                "stable": "Edge Estable",
-                "moderate": "Deriva Moderada",
-                "drift": "Alta Degradación",
-                "score": "Puntaje de Salud"
+                "stable": "Estable",
+                "moderate": "Moderado",
+                "drift": "Inestable",
+                "score": "Puntaje de Estabilidad"
             },
             "evolution": {
                 "title": "Evolución de la Estrategia",
@@ -907,6 +969,8 @@
             },
             "diagnosis": {
                 "title": "Diagnóstico de la Estrategia",
+                "scoreTitle": "Strategy Score",
+                "scoreSubtitle": "Basado en perfil de riesgo y simulación estocástica",
                 "verdict": "Veredicto:",
                 "strongEdge": "Edge Sólido",
                 "weakEdge": "Edge Débil",
@@ -935,19 +999,25 @@
                 "edgeConfidence": "Confianza del Edge",
                 "expectancy": "Expectativa",
                 "profitFactor": "Profit Factor",
-                "sampleSize": "Muestra"
+                "sampleSize": "Muestra",
+                "winRate": "Win Rate",
+                "maxDrawdown": "Max Drawdown"
             },
             "riskOverview": {
                 "title": "Resumen de Riesgo",
                 "riskOfRuin": "Riesgo de Ruina",
                 "avgDrawdown": "Drawdown Promedio",
-                "worstStreak": "Peor Racha Perdedora"
+                "worstStreak": "Peor Racha Perdedora",
+                "maxDrawdown": "Max Drawdown",
+                "sharpe": "Ratio de Sharpe",
+                "skewness": "Asimetría (Skew)",
+                "recoveryFactor": "Factor Recuperación"
             },
             "pro": {
                 "label": "Función PRO",
                 "lockedTitle": "Inteligencia Profunda Bloqueada",
                 "lockedDesc": "Desbloquea simulaciones de Monte Carlo, detección de degradación de ventaja y métricas de riesgo profesional.",
-                "upgradeCta": "Actualizar a NodoQuant PRO"
+                "upgradeCta": "Ver el análisis completo"
             },
             "performance": {
                 "title": "Métricas de Performance",
@@ -971,6 +1041,10 @@
                     "riskOfRuin": "Riesgo de Ruina"
                 },
                 "desc": "Simula miles de variaciones de tu estrategia para evaluar su robustez en el mundo real."
+            },
+            "propFirm": {
+                "title": "Evaluación Prop Firm",
+                "subtitle": "Simulá tu estrategia bajo las reglas de financiamiento más exigentes."
             },
             "risk": {
                 "title": "Métricas de Riesgo",
@@ -997,6 +1071,8 @@
                 "title": "Siguientes pasos",
                 "contextGood": "Tu estrategia muestra una ventaja estadística sólida. Estas herramientas pueden ayudarte a validar y escalar este rendimiento.",
                 "contextBad": "Tu estrategia actualmente no muestra una ventaja estadística clara. Estas herramientas pueden ayudarte a analizar su robustez con más detalle.",
+                "copySummary": "Copiar Resultados",
+                "copySuccess": "¡Copiado!",
                 "downloadCert": "Descargar Certificado",
                 "propFirmSim": "Simulación de Prop Firm Challenge (PRO)",
                 "propFirmSubtitle": "Evalúa si esta estrategia podría sobrevivir a las reglas comunes de las empresas de fondeo.",
@@ -1011,11 +1087,8 @@
                 "publishing": "Publicación de Estrategias",
                 "storage": "Almacenamiento de Estrategias"
             },
-            "share": {
-                "title": "NodoQuant Strategy Analysis",
-                "edgeConfidence": "Diagnosis",
-                "profitFactor": "Profit Factor",
-                "sampleSize": "Trades analizados"
+            "sharing": {
+                "shareX": "Compartir en X"
             },
             "disclaimer": "Los resultados del análisis son históricos y no garantizan performance futura. El backtesting tiene limitaciones inherentes. Siempre opera con capital que puedes permitirte perder."
         },
@@ -1624,8 +1697,41 @@
             "marginalEdge": "Ventaja Marginal",
             "positiveEdge": "Ventaja Positiva",
             "strongEdge": "Ventaja Fuerte",
-            "analyzed": "Puntaje · {count} trades analizados"
+            "analyzed": "Puntaje · {count} trades analizados",
+            "trust": "Basado en trades reales · Sin suposiciones"
         },
+        "verdict": {
+            "title": "Veredicto de tu Estrategia",
+            "means": "Qué significa esto",
+            "labels": {
+                "stable": "Podés tener un edge, pero aún no es estable",
+                "luck": "Tus resultados pueden depender más de la suerte que del edge",
+                "unprofitable": "Es probable que esta estrategia no sea rentable",
+                "noEdge": "No hay una ventaja estadística clara"
+            },
+            "explanations": {
+                "stable": "Tu estrategia muestra signos de una ventaja estadística, pero su inestabilidad significa que podría romperse ante la presión del mercado.",
+                "luck": "Tu rendimiento es inconsistente. Pequeños cambios en la ejecución o condiciones del mercado pueden revertir los resultados.",
+                "unprofitable": "Tu estrategia tiene dificultades para producir resultados consistentes. Es probable que el riesgo supere la recompensa.",
+                "noEdge": "No existe evidencia de una ventaja estadística. Continuar operando esta estrategia podría derivar en graves pérdidas."
+            }
+        },
+        "tension": {
+            "partOfPicture": "Solo estás viendo una parte de la realidad.",
+            "decisions": "Basado en tus resultados, actualmente estás tomando decisiones de trading sin ver datos críticos.",
+            "tooLate": "La mayoría de los traders se dan cuenta de esto demasiado tarde.",
+            "hidden": "El riesgo real — y la ventaja real — están ocultos debajo.",
+            "unlock": "Desbloquear Diagnósticos Completos →",
+            "title": "Solo ves una parte de la imagen",
+            "subtitle": "Un análisis superficial oculta la fragilidad de tu ventaja.",
+            "diagnostics": "Diagnósticos de Estrategia",
+            "diagnosticsDesc": "El análisis superficial oculta la fragilidad de tu ventaja.",
+            "blind": "Estás operando a ciegas sin ver el crecimiento estructural de tu capital.",
+            "deeper": "Profundiza en tu estrategia",
+            "deeperDesc": "Desbloquea diagnósticos completos, métricas avanzadas e insights profundos para dominar completamente tu ventaja estadística.",
+            "reveal": "Revelar lo que tu estrategia está haciendo realmente →"
+        },
+
         "sharing": {
             "label": "Comparte tus resultados",
             "shareX": "Compartir en X",
@@ -1696,7 +1802,7 @@
         },
         "alerts": {
             "title": "Alertas de Edge",
-            "proLock": "Desbloquea alertas avanzadas de riesgo y consistencia en sus operaciones."
+            "proLock": "Accede a la detección de degradación de ventaja en tiempo real con NodoQuant PRO."
         },
         "reliability": {
             "title": "Advertencia de Confiabilidad Estadística:",
@@ -1947,6 +2053,36 @@
             "sec4_content": "Utilizamos cookies para mantener tu sesión activa y mejorar tu experiencia de navegación. Puedes desactivar las cookies en la configuración de tu navegador, aunque esto puede afectar algunas funciones del sitio.",
             "sec5": "5. Tus Derechos",
             "sec5_content": "Tienes derecho a acceder, rectificar o eliminar tu información personal en cualquier momento. Puedes hacerlo desde la configuración de tu cuenta o contactándonos directamente."
+        },
+        "paywall": {
+            "title": "Tu estrategia podría no sobrevivir.",
+            "subtitle": "Este análisis completo revela si realmente tenés ventaja… o si estás operando por suerte.",
+            "featuresTitle": "Inteligencia Profunda",
+            "features": [
+                "Probabilidad real de ruina",
+                "Simulación en miles de escenarios",
+                "Validación estadística completa"
+            ],
+            "activateTitle": "Activar acceso PRO",
+            "activateSubtitle": "Enviá los <bold>15 USDT</bold> a la siguiente dirección y activamos tu acceso manualmente.",
+            "network": "USDT (TRC20)",
+            "cta": "Ver análisis completo — 15 USDT",
+            "footer": "Pago único · Acceso inmediato"
+        },
+        "publicReport": {
+            "header": {
+                "title": "Reporte Público",
+                "subtitle": "Cualquiera con este link puede ver el reporte."
+            },
+            "hook": "Este análisis revela si tenés ventaja real… <bold>o si estás operando por suerte</bold>.",
+            "ctaTitle": "Si esta fuera tu estrategia...",
+            "ctaWarning": "YA ESTARÍAS PERDIENDO DINERO.",
+            "cta": "Verificar mi estrategia ahora",
+            "urgency": "Cada operación sin ventaja estadística te cuesta dinero.",
+            "socialProof": "+3,000 estrategias analizadas",
+            "poweredBy": "Powered by NodoQuant",
+            "defaultFileName": "Estrategia Compartida",
+            "anonymousUser": "Anónimo"
         }
     }
 }

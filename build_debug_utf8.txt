@@ -1,0 +1,47 @@
+﻿
+> nodoquant@0.1.0 build
+> next build
+
+  Ôû▓ Next.js 14.2.29
+  - Environments: .env.local
+
+node.exe : 
+En línea: 1 Carácter: 1
++ & "C:\Program Files\nodejs/node.exe" 
+"C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:Str 
+   ing) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+> Build error occurred
+Error: You cannot use different slug names for 
+the same dynamic path ('id' !== 'report_id').
+    at handleSlug (C:\Users\Admin\Desktop\Proyecto
+s\NodoQuant\node_modules\next\dist\shared\lib\rout
+er\utils\sorted-routes.js:94:31)
+    at UrlNode._insert (C:\Users\Admin\Desktop\Pro
+yectos\NodoQuant\node_modules\next\dist\shared\lib
+\router\utils\sorted-routes.js:131:17)
+    at UrlNode._insert (C:\Users\Admin\Desktop\Pro
+yectos\NodoQuant\node_modules\next\dist\shared\lib
+\router\utils\sorted-routes.js:142:40)
+    at UrlNode._insert (C:\Users\Admin\Desktop\Pro
+yectos\NodoQuant\node_modules\next\dist\shared\lib
+\router\utils\sorted-routes.js:142:40)
+    at UrlNode.insert (C:\Users\Admin\Desktop\Proy
+ectos\NodoQuant\node_modules\next\dist\shared\lib\
+router\utils\sorted-routes.js:13:14)
+    at C:\Users\Admin\Desktop\Proyectos\NodoQuant\
+node_modules\next\dist\shared\lib\router\utils\sor
+ted-routes.js:165:46
+    at Array.forEach (<anonymous>)
+    at getSortedRoutes (C:\Users\Admin\Desktop\Pro
+yectos\NodoQuant\node_modules\next\dist\shared\lib
+\router\utils\sorted-routes.js:165:21)
+    at C:\Users\Admin\Desktop\Proyectos\NodoQuant\
+node_modules\next\dist\build\index.js:625:65
+    at Span.traceFn (C:\Users\Admin\Desktop\Proyec
+tos\NodoQuant\node_modules\next\dist\trace\trace.j
+s:147:20)

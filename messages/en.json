@@ -168,6 +168,48 @@
             "title": "Strategy Analyzer — NodoQuant",
             "description": "Upload your trading history and get a quantitative analysis of your strategy. Compatible with CSV and MetaTrader 5 exports. Free."
         },
+        "funnel": {
+            "painTitle": "If you trade like this, you will lose capital.",
+            "painSubtitle": "It is not an opinion. It's statistics.",
+            "painMessage": "If you trade like this, you will lose capital.\nIt is not an opinion. It's statistics.",
+            "fearMessage": "If you trade like this, it's only a matter of time before you lose money.",
+            "incompleteResult": "Incomplete result",
+            "partialAnalysisTitle": "This partial analysis doesn't show the real risk. The full analysis reveals:",
+            "benefit1": "You will see exactly when your strategy collapses",
+            "benefit2": "How much capital you can lose in the worst-case scenario",
+            "benefit3": "If you can actually survive in the long term",
+            "credibilityFooter": "Simulation based on over 10,000 Monte Carlo scenarios using your real data.",
+            "mcPlaceholder": "(calculated with over 10,000 Monte Carlo simulations)",
+            "closingLine": "You can ignore this… or keep trading without knowing how much you are risking.",
+            "unlockNow": "Unlock now — 15 USDT",
+            "unlockFull": "See exactly how much you are going to lose — 15 USDT",
+            "unlockSubtext": "One-time payment · Instant access · Based on your real trades",
+            "shortTermImprovement": "Short-term improvement detected",
+            "longTermStabilityNotProven": "Long-term stability: NOT proven",
+            "edgeInsightTip": "This partial analysis cannot confirm a real advantage. You need the full simulation of 10,000 scenarios to validate your strategy.",
+            "unvalidatedEdge": "No statistical edge",
+            "unvalidatedEdgeDesc": "You are trading without a proven advantage",
+            "basedOnTrades": "Based on your real trades · No assumptions",
+            "oneTimePayment": "One-time payment · Immediate access · No subscription",
+            "ruinProbLabel": "Risk of Ruin",
+            "expectedDdLabel": "Expected Drawdown",
+            "timeToBreakLabel": "Time to Ruin",
+            "diagnosticPositive": "Positive Diagnostic",
+            "diagnosticNegative": "Negative Diagnostic",
+            "diagnosticInfo": "Informational Diagnostic",
+            "diagnosticNeutral": "Neutral Diagnostic",
+            "diagnosticNoEdge": "No statistical edge",
+            "diagnosticStrongEdge": "Strong Edge Verified",
+            "diagnosticWeakEdge": "Weak Edge Detected",
+            "diagnosticUnstableEdge": "Unstable Edge",
+            "diagnosticInsufficientSample": "Insufficient Data",
+            "riskElevated": "Elevated risk",
+            "notSustainable": "Inconsistent strategy",
+            "notProven": "Not proven",
+            "shortTermHighWinrate": "High win rate observed, but without validated statistical advantage",
+            "shortTermLowDrawdown": "Low drawdown observed, but not validated in adverse scenarios",
+            "shortTermProfitability": "Profitability detected, but not consistent under simulation"
+        },
         "onboarding": {
             "title": "Analyze your strategy in 3 steps",
             "subtitle": "Join thousands of traders using data to improve their edge.",
@@ -366,13 +408,33 @@
                 "errorRequired": "Please fill in your name and email to continue.",
                 "errorSave": "Error saving",
                 "errorNetwork": "Network error. Try again.",
-                "noSpam": "No spam. We only contact you if you show interest in automating your strategy."
+                "noSpam": "No spam. We only contact you if you show interest in automating your strategy.",
+                "generating": "Generating professional report...",
+                "retry": "Retry",
+                "goDashboard": "Go to Dashboard",
+                "complete": "Completed",
+                "unlockCta": "UNLOCK FULL ANALYSIS",
+                "createAccountCta": "CREATE ACCOUNT TO UNLOCK",
+                "haveAccount": "Already have an account?",
+                "loginHere": "Log in here"
             }
         },
         "report": {
             "title": "Full Report",
             "subtitle": "Quantitative analysis",
             "sentTo": "Report sent to",
+            "share": {
+                "title": "NodoQuant Strategy Analysis",
+                "edgeConfidence": "Diagnosis",
+                "profitFactor": "Profit Factor",
+                "sampleSize": "Trades analyzed",
+                "copyLink": "Copy Public Link",
+                "linkCopied": "Link Copied!",
+                "linkCopiedDetail": "Link copied. Show it to other traders and compare results.",
+                "whatsapp": "Share on WhatsApp",
+                "twitter": "Share on X",
+                "compareMicrocopy": "Compare your strategy with other real traders."
+            },
             "visualizations": {
                 "title": "Performance Visualizations",
                 "tradesDistribution": "Trade Distribution (P&L)",
@@ -471,12 +533,6 @@
             },
             "sharing": {
                 "shareX": "Share on X"
-            },
-            "share": {
-                "title": "NodoQuant Strategy Analysis",
-                "edgeConfidence": "Diagnosis",
-                "profitFactor": "Profit Factor",
-                "sampleSize": "Trades analyzed"
             },
             "evolution": {
                 "title": "Strategy Evolution",
@@ -584,6 +640,7 @@
             },
             "diagnosis": {
                 "title": "Strategy Diagnosis",
+                "scoreTitle": "Strategy Score",
                 "badgeLabel": "Diagnosis",
                 "strongEdge": {
                     "label": "Your strategy has a statistical edge.",
@@ -661,6 +718,20 @@
                 "microcopy": "Based on 1,000 simulations of your trade sequence to identify real-world survival probability.",
                 "histDD": "Historical DD",
                 "mcWorstCase": "MC Worst case"
+            },
+            "pro": {
+                "label": "PRO Feature",
+                "lockedTitle": "Deep Intelligence Locked",
+                "lockedDesc": "Unlock Monte Carlo simulations, edge degradation detection, and professional risk metrics.",
+                "upgradeCta": "See Full Analysis"
+            },
+            "propFirm": {
+                "title": "Prop Firm Evaluation",
+                "subtitle": "Simulate your strategy under the most demanding funding rules."
+            },
+            "visualizations": {
+                "title": "Performance Visualizations",
+                "tradesDistribution": "Trades Distribution"
             }
         },
         "edgeConfidence": {
@@ -1930,6 +2001,36 @@
             "sec4_content": "We use cookies to keep your session active and improve your browsing experience. You can disable cookies in your browser settings, although this may affect some site functions.",
             "sec5": "5. Your Rights",
             "sec5_content": "You have the right to access, rectify, or delete your personal information at any time. You can do this from your account settings or by contacting us directly."
+        },
+        "paywall": {
+            "title": "Your strategy might not survive.",
+            "subtitle": "This full analysis reveals if you actually have an edge… or if you're trading purely on luck.",
+            "featuresTitle": "Deep Intelligence",
+            "features": [
+                "Real probability of ruin",
+                "Simulation across thousands of scenarios",
+                "Complete statistical validation"
+            ],
+            "activateTitle": "Activate PRO access",
+            "activateSubtitle": "Send <bold>15 USDT</bold> to the address below and we'll activate your access manually.",
+            "network": "USDT (TRC20)",
+            "cta": "View Full Analysis — 15 USDT",
+            "footer": "One-time payment · Immediate access"
+        },
+        "publicReport": {
+            "header": {
+                "title": "Public Report",
+                "subtitle": "Anyone with this link can view this report."
+            },
+            "hook": "This analysis reveals if you have a real edge… <bold>or if you're just getting lucky</bold>.",
+            "ctaTitle": "If this was your strategy...",
+            "ctaWarning": "YOU WOULD ALREADY BE LOSING MONEY.",
+            "cta": "Verify my strategy now",
+            "urgency": "Every trade without a statistical edge costs you money.",
+            "socialProof": "+3,000 strategies analyzed",
+            "poweredBy": "Powered by NodoQuant",
+            "defaultFileName": "Shared Strategy",
+            "anonymousUser": "Anonymous"
         }
     }
 }

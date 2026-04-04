@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServer } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { writeFile, readFile } from "fs/promises";
 import path from "path";
 
@@ -41,9 +42,9 @@ export async function POST(req: NextRequest) {
         };
 
         // Try Supabase first
-        const supabase = getSupabaseServer();
-        if (supabase) {
-            const { error } = await supabase.from("nodoquant_leads").insert(lead);
+        const supabaseAdmin = getSupabaseAdmin();
+        if (supabaseAdmin) {
+            const { error } = await supabaseAdmin.from("nodoquant_leads").insert(lead);
             if (error) {
                 console.error("[NodoQuant] Supabase insert error:", error.message);
                 return NextResponse.json(

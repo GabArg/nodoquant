@@ -1,16 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import type { FullMetrics } from "@/lib/analyzer/metrics";
 import EquityChart from "./EquityChart";
 import DrawdownChart from "./DrawdownChart";
 import TradeHistogram from "./TradeHistogram";
 import type { Trade } from "@/lib/analyzer/parser";
-import SaveStrategyAction from "./SaveStrategyAction";
 import MonteCarloChart from "./MonteCarloChart";
 import MonteCarloSummary from "./MonteCarloSummary";
 import StrategyEvolution from "./Dashboard/StrategyEvolution";
+import UnlockPro from "@/components/paywall/UnlockPro";
 
 interface Props {
     metrics: FullMetrics;
@@ -23,10 +23,37 @@ interface Props {
     isPro?: boolean;
 }
 
-function StrategyDiagnosis({ metrics }: { metrics: FullMetrics }) {
+function PrimaryCTA({ onClick }: { onClick: () => void }) {
+    const tFunnel = useTranslations("analyzer.funnel");
+    return (
+        <div className="flex flex-col items-center gap-6 w-full py-8">
+            <button
+                onClick={onClick}
+                className="group relative px-10 py-6 rounded-3xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 text-white text-[15px] font-black uppercase tracking-[0.2em] transition-all shadow-[0_20px_50px_rgba(79,70,229,0.5)] hover:shadow-[0_25px_60px_rgba(79,70,229,0.7)] active:scale-95 border border-white/20 ring-4 ring-indigo-500/10 overflow-hidden"
+            >
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-shimmer" />
+                <span className="relative z-10">{tFunnel("unlockFull")}</span>
+            </button>
+            <div className="flex flex-col items-center gap-2 text-center">
+                <p className="text-[12px] text-indigo-300 font-black uppercase tracking-[0.15em] drop-shadow-sm">
+                    {tFunnel("unlockSubtext")}
+                </p>
+                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.1em] opacity-60">
+                    {tFunnel("basedOnTrades")}
+                </p>
+            </div>
+        </div>
+    );
+}
+
+function StrategyDiagnosis({ metrics, isPro }: { metrics: FullMetrics; isPro?: boolean }) {
     const t = useTranslations("analyzer.report.diagnosis");
     const tSignals = useTranslations("analyzer.report.keySignals");
-    const verdictKey = metrics.advanced?.verdict || "unstableEdge";
+    const tFunnel = useTranslations("analyzer.funnel");
+    
+    // Global noEdge enforcement: force red/risk if verdict is noEdge
+    const isNoEdge = metrics.advanced?.verdict === "noEdge";
+    const verdictKey = isNoEdge ? "noEdge" : (metrics.advanced?.verdict || "unstableEdge");
 
     const config = {
         strongEdge: {
@@ -38,17 +65,17 @@ function StrategyDiagnosis({ metrics }: { metrics: FullMetrics }) {
         },
         weakEdge: {
             desc: "weakDesc",
-            color: "text-indigo-400",
-            bg: "bg-indigo-400/10",
-            border: "border-indigo-400/20",
-            icon: "📈"
+            color: isNoEdge ? "text-red-500" : "text-indigo-400",
+            bg: isNoEdge ? "bg-red-500/10" : "bg-indigo-400/10",
+            border: isNoEdge ? "border-red-500/20" : "border-indigo-400/20",
+            icon: isNoEdge ? "❌" : "📈"
         },
         unstableEdge: {
             desc: "unstableDesc",
-            color: "text-yellow-500",
-            bg: "bg-yellow-500/10",
-            border: "border-yellow-500/20",
-            icon: "⚠️"
+            color: isNoEdge ? "text-red-500" : "text-yellow-500",
+            bg: isNoEdge ? "bg-red-500/10" : "bg-yellow-500/10",
+            border: isNoEdge ? "border-red-500/20" : "border-yellow-500/20",
+            icon: isNoEdge ? "❌" : "⚠️"
         },
         noEdge: {
             desc: "noDesc",
@@ -68,6 +95,15 @@ function StrategyDiagnosis({ metrics }: { metrics: FullMetrics }) {
 
     const verdict = config[verdictKey as keyof typeof config] || config.unstableEdge;
     const score = metrics.advanced?.edgeConfidence ?? 0;
+    
+    // Credible reinterpretation labels
+    const getReinterpretedValue = (label: string, value: string) => {
+        if (!isNoEdge || isPro) return value;
+        if (label === tSignals("winRate") && metrics.winrate > 55) return tFunnel("shortTermHighWinrate");
+        if (label === tSignals("maxDrawdown") && metrics.maxDrawdown < 10) return tFunnel("shortTermLowDrawdown");
+        if (label === tSignals("profitFactor") && metrics.profitFactor > 1.2) return tFunnel("shortTermProfitability");
+        return value;
+    };
 
     return (
         <div className="space-y-6">
@@ -95,11 +131,11 @@ function StrategyDiagnosis({ metrics }: { metrics: FullMetrics }) {
                     </div>
 
                     <div className="flex flex-col items-center md:items-end text-center md:text-right">
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 block mb-1">
-                            {t("scoreTitle")}
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-gray-600">
+                            {tFunnel(`diagnostic${verdictKey.charAt(0).toUpperCase() + verdictKey.slice(1)}`)}
                         </span>
                         <div className="flex items-baseline gap-1">
-                            <span className="text-6xl font-black text-white italic tracking-tighter">{score.toFixed(0)}</span>
+                            <span className="text-6xl font-black text-white italic tracking-tighter">{(score || 0).toFixed(0)}</span>
                             <span className="text-xl font-bold text-gray-600">/100</span>
                         </div>
                     </div>
@@ -112,34 +148,38 @@ function StrategyDiagnosis({ metrics }: { metrics: FullMetrics }) {
                 </div>
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <SignalCard 
                     label={tSignals("expectancy")} 
-                    value={`$${metrics.expectancy.toFixed(1)}`} 
+                    value={getReinterpretedValue(tSignals("expectancy"), `$${(metrics.expectancy || 0).toFixed(1)}`)} 
                     icon="💰" 
                     tooltip={tSignals("tooltips.expectancy")}
+                    isNoEdge={isNoEdge && !isPro}
                 />
                 <SignalCard 
                     label={tSignals("profitFactor")} 
-                    value={metrics.profitFactor.toFixed(2)} 
+                    value={getReinterpretedValue(tSignals("profitFactor"), (metrics.profitFactor || 0).toFixed(2))} 
                     icon="⚖️" 
                     tooltip={tSignals("tooltips.profitFactor")}
+                    isNoEdge={isNoEdge && !isPro}
                 />
                 <SignalCard 
                     label={tSignals("winRate")} 
-                    value={`${metrics.winrate.toFixed(1)}%`} 
+                    value={getReinterpretedValue(tSignals("winRate"), `${(metrics.winrate || 0).toFixed(1)}%`)} 
                     icon="🎯" 
                     tooltip={tSignals("tooltips.winRate")}
+                    isNoEdge={isNoEdge && !isPro}
                 />
                 <SignalCard 
                     label={tSignals("maxDrawdown")} 
-                    value={`${metrics.maxDrawdown.toFixed(1)}%`} 
+                    value={getReinterpretedValue(tSignals("maxDrawdown"), `${(metrics.maxDrawdown || 0).toFixed(1)}%`)} 
                     icon="📉" 
                     tooltip={tSignals("tooltips.maxDrawdown")}
+                    isNoEdge={isNoEdge && !isPro}
                 />
                 <SignalCard 
                     label={tSignals("sampleSize")} 
-                    value={String(metrics.totalTrades)} 
+                    value={String(metrics.totalTrades || 0)} 
                     icon="📄" 
                     tooltip={tSignals("tooltips.sampleSize")}
                 />
@@ -148,7 +188,7 @@ function StrategyDiagnosis({ metrics }: { metrics: FullMetrics }) {
     );
 }
 
-function SignalCard({ label, value, icon, tooltip }: { label: string; value: string; icon: string; tooltip?: string }) {
+function SignalCard({ label, value, icon, tooltip, isNoEdge = false }: { label: string; value: string; icon: string; tooltip?: string; isNoEdge?: boolean }) {
     return (
         <div className="group relative card rounded-2xl p-4 border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all hover:border-white/10">
             <div className="flex items-center justify-between mb-2">
@@ -163,7 +203,9 @@ function SignalCard({ label, value, icon, tooltip }: { label: string; value: str
                 )}
             </div>
             <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest block mb-1">{label}</span>
-            <span className="text-lg font-black text-white italic">{value}</span>
+            <span className={`text-lg font-black italic transition-colors ${isNoEdge ? "text-red-400 block leading-tight text-xs" : "text-white"}`}>
+                {value}
+            </span>
         </div>
     );
 }
@@ -201,28 +243,28 @@ function MetricRow({ label, value, tooltip, highlight = false, locked = false }:
     );
 }
 
-function LockedSection({ title, desc, cta, children, isPro = false }: { title: string; desc: string; cta: string; children: React.ReactNode; isPro?: boolean }) {
+function LockedSection({ title, desc, children, isPro = false, onUnlockClick }: { title: string; desc: string; children: React.ReactNode; isPro?: boolean; onUnlockClick?: () => void }) {
     const t = useTranslations("analyzer.report.pro");
+    const tFunnel = useTranslations("analyzer.funnel");
     if (isPro) return <div className="animate-fade-in">{children}</div>;
 
     return (
         <div className="relative group">
-            <div className="blur-md pointer-events-none select-none opacity-40 transition-all duration-700 group-hover:opacity-60">
+            <div className="blur-sm pointer-events-none select-none opacity-60 transition-all duration-700">
                 {children}
             </div>
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-8 bg-black/20 rounded-xl border border-white/5 backdrop-blur-[2px]">
-                <div className="flex flex-col items-center gap-3 text-center max-w-[240px]">
-                    <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-xl shadow-inner">💎</div>
-                    <div>
-                        <span className="text-[9px] font-black text-indigo-400 uppercase tracking-[0.3em] mb-1 block">{t("label")}</span>
-                        <h4 className="text-sm font-black text-white mb-2 uppercase tracking-tight">{title}</h4>
-                        <p className="text-[10px] text-gray-400 font-medium leading-relaxed">{desc}</p>
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-8 bg-black/5 rounded-xl backdrop-blur-[1px] z-20">
+                <div className="flex flex-col items-center gap-3 text-center max-w-[280px]">
+                    <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-2xl shadow-inner mb-2 flex-shrink-0">💎</div>
+                    <div className="space-y-1">
+                        <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] block">{t("label")}</span>
+                        <h4 className="text-base font-black text-white uppercase tracking-tight leading-tight">{title}</h4>
+                        <p className="text-[11px] text-gray-400 font-medium leading-relaxed">{desc}</p>
                     </div>
-                    <div className="flex flex-col items-center gap-2 mt-2">
-                        <a href="/pricing" className="px-6 py-2.5 rounded-full bg-white text-black text-[10px] font-black uppercase tracking-widest hover:scale-[1.05] transition-all shadow-xl shadow-white/5 text-center">
-                            {cta}
-                        </a>
-                        <span className="text-[8px] font-black text-gray-500 uppercase tracking-[0.2em]">{t("upgradeSubtitle")}</span>
+                    
+                    {/* CTA 2: Over Monte Carlo blur */}
+                    <div className="mt-8">
+                        <PrimaryCTA onClick={onUnlockClick || (() => {})} />
                     </div>
                 </div>
             </div>
@@ -234,7 +276,43 @@ export default function FullReport({ metrics, trades, email, analysisId, onSimul
     const t = useTranslations("analyzer.report");
     const tSummary = useTranslations("analyzer.report.summaryBlock");
     const tDiagnosis = useTranslations("analyzer.report.diagnosis");
+    const tFunnel = useTranslations("analyzer.funnel");
+    const locale = useLocale();
     const [copying, setCopying] = React.useState(false);
+    const [linkCopied, setLinkCopied] = React.useState(false);
+    const [showPaywall, setShowPaywall] = React.useState(false);
+    
+    const handleUnlockClick = () => {
+        console.log("PRO_UNLOCK_CLICK");
+        setShowPaywall(true);
+    };
+    
+    const copyPublicLink = () => {
+        if (!analysisId) return;
+        console.log("SHARE_COPY_LINK");
+        const url = `${window.location.origin}/${locale}/report/${analysisId}`;
+        navigator.clipboard.writeText(url);
+        setLinkCopied(true);
+        setTimeout(() => setLinkCopied(false), 3500);
+    };
+
+    const shareWhatsApp = () => {
+        if (!analysisId) return;
+        console.log("SHARE_WHATSAPP");
+        const url = `${window.location.origin}/${locale}/report/${analysisId}`;
+        const text = `Estoy analizando mi estrategia. No sé si tengo ventaja real… ¿y vos? ${url}`;
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+        window.open(whatsappUrl, '_blank');
+    };
+
+    const shareTwitter = () => {
+        if (!analysisId) return;
+        console.log("SHARE_TWITTER");
+        const url = `${window.location.origin}/${locale}/report/${analysisId}`;
+        const text = "El mercado no perdona estrategias sin ventaja estadística. Estoy verificando la mía en NodoQuant.";
+        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+        window.open(twitterUrl, '_blank');
+    };
     
     const monteCarlo = metrics.monteCarlo;
     const verdictKey = metrics.advanced?.verdict || "unstableEdge";
@@ -251,10 +329,10 @@ NodoQuant Strategy Analysis
 
 Strategy Score: ${score} / 100
 Diagnosis: ${diagnosis}
-Expectancy: $${metrics.expectancy.toFixed(2)}
-Profit Factor: ${metrics.profitFactor.toFixed(2)}
-Max Drawdown: ${metrics.maxDrawdown.toFixed(2)}%
-Trades analyzed: ${metrics.totalTrades}
+Expectancy: $${(metrics.expectancy || 0).toFixed(2)}
+Profit Factor: ${(metrics.profitFactor || 0).toFixed(2)}
+Max Drawdown: ${(metrics.maxDrawdown || 0).toFixed(2)}%
+Trades analyzed: ${metrics.totalTrades || 0}
         `.trim();
 
         navigator.clipboard.writeText(summaryText);
@@ -264,98 +342,145 @@ Trades analyzed: ${metrics.totalTrades}
     return (
         <div className="w-full max-w-2xl mx-auto space-y-8 animate-fade-in">
             {/* Header */}
-            <div>
+            <div className="space-y-2">
                 <div className="section-label">{t("title")}</div>
-                <h2 className="text-xl font-bold text-white mb-1">{t("subtitle")}</h2>
-                <p className="text-sm" style={{ color: "#6b7280" }}>
-                    {t("sentTo")} <span className="text-indigo-400">{email}</span>
+                <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter">{t("subtitle")}</h2>
+                <p className="text-sm font-medium text-gray-500">
+                    {t("sentTo")} <span className="text-indigo-400/80 font-bold">{email}</span>
                 </p>
             </div>
 
-            {/* 1. Strategy Diagnosis & Key Signals */}
-            <StrategyDiagnosis metrics={metrics} />
-
-            {/* 3. Risk Overview */}
-            <div className="card rounded-2xl p-6 border border-white/5 bg-white/[0.01] space-y-4">
-                <div className="flex items-center justify-between">
-                    <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em]">{t("riskOverview.title")}</h4>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                    <div className="space-y-1">
-                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest block">{t("riskOverview.maxDrawdown")}</span>
-                        <span className="text-xl font-black text-white italic">{metrics.maxDrawdown.toFixed(1)}%</span>
-                    </div>
-                    <div className="space-y-1">
-                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest block">{t("riskOverview.sharpe")}</span>
-                        <span className="text-xl font-black text-white italic">{metrics.riskAnalysis.sharpeRatio.toFixed(2)}</span>
-                    </div>
-                    <div className="space-y-1">
-                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest block">{t("riskOverview.riskOfRuin")}</span>
-                        <span className="text-xl font-black text-white italic">{metrics.riskOfRuin.toFixed(1)}%</span>
-                    </div>
-                    <div className="space-y-1">
-                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest block">{t("riskOverview.skewness")}</span>
-                        <span className="text-xl font-black text-white italic">{metrics.riskAnalysis.skewness.toFixed(2)}</span>
-                    </div>
-                    <div className="space-y-1">
-                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest block">{t("riskOverview.recoveryFactor")}</span>
-                        <span className="text-xl font-black text-white italic">{metrics.riskAnalysis.recoveryFactor.toFixed(2)}</span>
-                    </div>
-                </div>
-            </div>
-
-            {/* 4. Visualizations */}
-            <div className="card rounded-xl p-5 space-y-6">
-                <p className="text-xs font-semibold text-indigo-400 uppercase tracking-widest">
-                    {t("visualizations")}
-                </p>
-                <EquityChart data={metrics.equityCurve} />
-                <DrawdownChart data={metrics.drawdownCurve} />
-                <TradeHistogram
-                    histogram={metrics.tradeHistogram}
-                    minProfit={metrics.minProfit}
-                    maxProfit={metrics.maxProfit}
-                />
-            </div>
-
-            {/* 5. Edge Stability (Evolution + Health) */}
-            <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                    <div className="h-px flex-1 bg-white/5"></div>
-                    <h4 className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em]">{t("stability.title")}</h4>
-                    <div className="h-px flex-1 bg-white/5"></div>
-                </div>
-                <p className="text-[10px] text-gray-500 text-center uppercase tracking-tight font-medium">{t("stability.subtitle")}</p>
-                
-                <StrategyEvolution evolution={metrics.evolution} />
-
-                {/* Edge Health Status */}
-                <div className="card rounded-2xl p-6 border border-white/5 bg-white/[0.01]">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">{t("health.title")}</h4>
-                            <div className="flex items-center gap-3">
-                                {metrics.stabilityScore >= 70 ? (
-                                    <>
-                                        <span className="text-xl">✅</span>
-                                        <span className="text-sm font-black text-green-400 uppercase tracking-tight">{t("health.stable")}</span>
-                                    </>
-                                ) : metrics.stabilityScore >= 40 ? (
-                                    <>
-                                        <span className="text-xl">⚠️</span>
-                                        <span className="text-sm font-black text-yellow-500 uppercase tracking-tight">{t("health.moderate")}</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <span className="text-xl">❌</span>
-                                        <span className="text-sm font-black text-red-500 uppercase tracking-tight">{t("health.drift")}</span>
-                                    </>
-                                )}
+            {/* PAIN BLOCK (RED WARNING) - Top Priority */}
+            {!isPro && (
+                <div className="bg-red-500/10 border-2 border-red-500/30 rounded-3xl p-8 relative overflow-hidden animate-pulse-subtle">
+                    <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent"></div>
+                    <div className="relative z-10 space-y-6">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-2xl bg-red-500/20 flex items-center justify-center text-3xl shadow-inner">⚠️</div>
+                            <h3 className="text-2xl font-black text-white italic tracking-tight uppercase leading-tight">
+                                {tFunnel("painTitle")}
+                                <br />
+                                <span className="text-red-400">{tFunnel("painSubtitle")}</span>
+                            </h3>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 gap-4 pt-4">
+                            <div className="flex items-start gap-3 p-4 rounded-2xl bg-red-500/5 border border-red-500/10">
+                                <span className="text-indigo-400 font-black mt-0.5">▶</span>
+                                <p className="text-sm font-bold text-gray-300 leading-snug">{tFunnel("benefit1")}</p>
+                            </div>
+                            <div className="flex items-start gap-3 p-4 rounded-2xl bg-red-500/5 border border-red-500/10">
+                                <span className="text-indigo-400 font-black mt-0.5">▶</span>
+                                <p className="text-sm font-bold text-gray-300 leading-snug">{tFunnel("benefit2")}</p>
                             </div>
                         </div>
-                        <div className="text-right">
-                            <span className="text-[10px] font-bold text-gray-600 block mb-1">{t("health.score")}</span>
-                            <span className="text-2xl font-black text-white italic">{Math.round(metrics.stabilityScore)}%</span>
+
+                        {/* CTA 1: After Red Warning Block */}
+                        <PrimaryCTA onClick={handleUnlockClick} />
+                        
+                        <p className="text-[10px] text-red-300/40 font-bold uppercase tracking-widest text-center pt-4 border-t border-red-500/10">
+                            {tFunnel("credibilityFooter")}
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            {/* 1. Strategy Diagnosis & Key Signals */}
+            <StrategyDiagnosis metrics={metrics} isPro={isPro} />
+
+            {/* 3. Risk Overview (Blurred for Free Users) */}
+            <div className="relative group">
+                <div className={!isPro ? "blur-sm pointer-events-none opacity-60" : ""}>
+                    <div className="card rounded-3xl p-8 border border-white/5 bg-white/[0.01] space-y-6">
+                        <div className="flex items-center justify-between">
+                            <h4 className="text-[11px] font-black text-indigo-400 uppercase tracking-[0.3em]">{t("riskOverview.title")}</h4>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+                            <div className="space-y-1">
+                                <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block">{t("riskOverview.maxDrawdown")}</span>
+                                <span className="text-2xl font-black text-white italic">{(metrics.maxDrawdown || 0).toFixed(1)}%</span>
+                            </div>
+                            <div className="space-y-1">
+                                <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block">{t("riskOverview.sharpe")}</span>
+                                <span className="text-2xl font-black text-white italic">{(metrics.riskAnalysis?.sharpeRatio || 0).toFixed(2)}</span>
+                            </div>
+                            <div className="space-y-1">
+                                <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block">{t("riskOverview.riskOfRuin")}</span>
+                                <span className="text-2xl font-black text-white italic">{(metrics.riskOfRuin || 0).toFixed(1)}%</span>
+                            </div>
+                            <div className="space-y-1">
+                                <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block">{t("riskOverview.skewness")}</span>
+                                <span className="text-2xl font-black text-white italic">{(metrics.riskAnalysis?.skewness || 0).toFixed(2)}</span>
+                            </div>
+                            <div className="space-y-1">
+                                <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block">{t("riskOverview.recoveryFactor")}</span>
+                                <span className="text-2xl font-black text-white italic">{(metrics.riskAnalysis?.recoveryFactor || 0).toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* 4. Visualizations (Blurred for Free Users) */}
+            <div className="relative group">
+                <div className={!isPro ? "blur-sm pointer-events-none opacity-60" : "animate-fade-in"}>
+                    <div className="card rounded-3xl p-8 space-y-8 border border-white/5 bg-white/[0.01]">
+                        <p className="text-[11px] font-black text-indigo-400 uppercase tracking-[0.3em]">
+                            {t("visualizations.title")}
+                        </p>
+                        {metrics.equityCurve && <EquityChart data={metrics.equityCurve} />}
+                        {metrics.drawdownCurve && <DrawdownChart data={metrics.drawdownCurve} />}
+                        {metrics.tradeHistogram && (
+                            <TradeHistogram
+                                histogram={metrics.tradeHistogram}
+                                minProfit={metrics.minProfit || 0}
+                                maxProfit={metrics.maxProfit || 0}
+                            />
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* 5. Edge Stability (Evolution + Health) (Blurred for Free Users) */}
+            <div className="relative group">
+                <div className={!isPro ? "blur-sm pointer-events-none opacity-60" : "animate-fade-in"}>
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-3">
+                            <div className="h-px flex-1 bg-white/5"></div>
+                            <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">{t("stability.title")}</h4>
+                            <div className="h-px flex-1 bg-white/5"></div>
+                        </div>
+                        
+                        <StrategyEvolution evolution={metrics.evolution || {}} />
+
+                        <div className="card rounded-3xl p-8 border border-white/5 bg-white/[0.01]">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h4 className="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-1">{t("health.title")}</h4>
+                                    <div className="flex items-center gap-3">
+                                        {Number(metrics.stabilityScore) >= 70 ? (
+                                            <>
+                                                <span className="text-xl">✅</span>
+                                                <span className="text-sm font-black text-green-400 uppercase tracking-snug">{t("health.stable")}</span>
+                                            </>
+                                        ) : Number(metrics.stabilityScore) >= 40 ? (
+                                            <>
+                                                <span className="text-xl">⚠️</span>
+                                                <span className="text-sm font-black text-yellow-500 uppercase tracking-snug">{t("health.moderate")}</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span className="text-xl">❌</span>
+                                                <span className="text-sm font-black text-red-500 uppercase tracking-snug">{t("health.drift")}</span>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <span className="text-[10px] font-black text-gray-600 block mb-1 uppercase tracking-widest">{t("health.score")}</span>
+                                    <span className="text-3xl font-black text-white italic tracking-tighter">{Math.round(metrics.stabilityScore || 0)}%</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -375,182 +500,131 @@ Trades analyzed: ${metrics.totalTrades}
                         )}
                     </div>
                 </div>
-                <LockedSection title={t("monteCarlo.title")} desc={t("monteCarlo.desc")} cta={t("pro.upgradeCta")} isPro={isPro}>
+                
+                {/* Fear Copy & Partial View for free users */}
+                {!isPro && (
+                    <div className="p-5 pb-0">
+                        <p className="text-xs font-bold text-red-400 mb-4 text-center uppercase tracking-widest italic drop-shadow-[0_0_10px_rgba(248,113,113,0.3)]">
+                            {tFunnel("fearMessage")}
+                        </p>
+                        <div className="bg-white/[0.02] border border-red-500/10 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-4 mb-2 pointer-events-none">
+                            <div className="text-center space-y-1">
+                                <span className="text-[9px] uppercase text-gray-500 font-black tracking-widest">{tFunnel("ruinProbLabel")}</span>
+                                <div className="text-red-500 font-black text-xl blur-[1px]">??? {tFunnel("mcPlaceholder")}</div>
+                            </div>
+                            <div className="text-center space-y-1">
+                                <span className="text-[9px] uppercase text-gray-500 font-black tracking-widest">{tFunnel("expectedDdLabel")}</span>
+                                <div className="text-red-500 font-black text-xl blur-[1px]">???%</div>
+                            </div>
+                            <div className="text-center space-y-1">
+                                <span className="text-[9px] uppercase text-gray-500 font-black tracking-widest">{tFunnel("timeToBreakLabel")}</span>
+                                <div className="text-red-500 font-black text-xl blur-[1px]">??? trades</div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                <LockedSection title={t("monteCarlo.title")} desc={t("monteCarlo.desc")} isPro={isPro} onUnlockClick={handleUnlockClick}>
                     <div className="p-5 space-y-6">
                         <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.05]">
-                            <MonteCarloChart
-                                simulations={monteCarlo.simulations}
-                                averageCaseReturn={monteCarlo.averageCase}
-                            />
+                            {monteCarlo && (
+                                <MonteCarloChart
+                                    simulations={monteCarlo.simulations || []}
+                                    averageCaseReturn={monteCarlo.averageCase || 0}
+                                />
+                            )}
                         </div>
                         
-                        <MonteCarloSummary
-                            worstCase={monteCarlo.worstCase}
-                            averageCase={monteCarlo.averageCase}
-                            bestCase={monteCarlo.bestCase}
-                            riskOfRuin={monteCarlo.riskOfRuin}
-                        />
-                    </div>
-                </LockedSection>
-            </div>
-
-            {/* 7. Prop Firm Simulator (PRO Locked) */}
-            <div className="card rounded-xl p-0 overflow-hidden relative">
-                <div className="p-5 border-b border-white/[0.05]">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-xs font-semibold text-indigo-400 uppercase tracking-widest">
-                                {t("propFirm.title")}
-                            </p>
-                            <p className="text-[10px] text-gray-500 font-medium mt-1">{t("propFirm.subtitle")}</p>
-                        </div>
-                        {!isPro && (
-                            <span className="text-[10px] font-black px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 uppercase tracking-widest">
-                                PRO
-                            </span>
+                        {monteCarlo && (
+                            <MonteCarloSummary
+                                worstCase={monteCarlo.worstCase || 0}
+                                averageCase={monteCarlo.averageCase || 0}
+                                bestCase={monteCarlo.bestCase || 0}
+                                riskOfRuin={monteCarlo.riskOfRuin || 0}
+                            />
                         )}
                     </div>
-                </div>
-                <LockedSection title={t("propFirm.title")} desc={t("propFirm.subtitle")} cta={t("pro.upgradeCta")} isPro={isPro}>
-                    <div className="p-8 text-center space-y-4">
-                        <div className="w-16 h-16 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto text-3xl">🏛️</div>
-                        <h4 className="text-lg font-black text-white italic uppercase tracking-tight">{t("propFirm.title")}</h4>
-                        <p className="text-xs text-gray-400 max-w-sm mx-auto leading-relaxed">
-                            Simulate your strategy under strict prop firm rules: maximum drawdown, daily limits, and profit targets.
-                        </p>
-                        <button onClick={onSimulate} className="btn-primary mx-auto animate-pulse">
-                            Run Challenge Simulation
-                        </button>
-                    </div>
                 </LockedSection>
             </div>
 
-            {/* ── Report Actions ── */}
-            <div className="pt-8 border-t" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
-                <div className="section-label mb-4">{t("actions.title")}</div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <SaveStrategyAction analysisId={analysisId ?? null} />
-                    
-                    <button className="btn-primary w-full justify-center opacity-50 cursor-not-allowed" disabled
-                        style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", color: "#4b5563" }}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M4 12V4a2 2 0 0 1 2-2h10l4 4v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4" />
-                            <polyline points="14 2 14 6 20 6" />
-                            <path d="M3 15h12" />
-                            <path d="M12 11l3 4-3 4" />
-                        </svg>
-                        {t("actions.downloadCert")}
-                    </button>
-
-                    <button onClick={onSimulate} className="btn-primary w-full justify-center"
-                        style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", color: "#9ca3af" }}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-                        </svg>
-                        {t("actions.propFirmSim")}
-                    </button>
-
-                    <button 
-                        onClick={onAddToComparison}
-                        disabled={isInComparison || !onAddToComparison}
-                        className={`btn-primary w-full justify-center transition-all ${
-                            isInComparison 
-                            ? "opacity-50 cursor-not-allowed bg-emerald-500/10 border-emerald-500/20 text-emerald-400" 
-                            : "bg-white/[0.02] border-white/[0.06] text-[#9ca3af] hover:bg-white/[0.05]"
-                        }`}
-                    >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
-                        </svg>
-                        {isInComparison ? "Agregado a Comparativa" : t("actions.compare")}
-                    </button>
-
-                    <button className="btn-primary w-full justify-center"
-                        style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", color: "#9ca3af" }}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <circle cx="12" cy="12" r="10" />
-                            <line x1="2" y1="12" x2="22" y2="12" />
-                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                        </svg>
-                        {t("actions.publish")}
-                    </button>
-                </div>
-            </div>
-
-            {/* ── Unlock PRO Features ── */}
-            <div className="card rounded-2xl p-8 border border-indigo-500/20 bg-indigo-500/[0.02] flex flex-col items-center text-center space-y-6">
-                <div className="w-16 h-16 rounded-full bg-indigo-500/10 flex items-center justify-center text-3xl shadow-lg border border-indigo-500/20 animate-pulse">💎</div>
-                <div>
-                    <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2">{t("proBenefits.title")}</h3>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-3 pt-4">
-                        <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">
-                            <span className="text-indigo-400">✓</span> {t("proBenefits.monteCarlo")}
-                        </div>
-                        <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">
-                            <span className="text-indigo-400">✓</span> {t("proBenefits.propFirm")}
-                        </div>
-                        <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">
-                            <span className="text-indigo-400">✓</span> {t("proBenefits.comparison")}
-                        </div>
-                        <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">
-                            <span className="text-indigo-400">✓</span> {t("proBenefits.storage")}
-                        </div>
+            {/* CTA 3: Before Share Block */}
+            {!isPro && (
+                <div className="py-12 border-t border-white/5 space-y-8">
+                    <div className="text-center">
+                        <p className="text-2xl font-black text-white italic uppercase tracking-tighter leading-snug">
+                            {tFunnel("closingLine")}
+                        </p>
                     </div>
+                    <PrimaryCTA onClick={handleUnlockClick} />
                 </div>
-                {!isPro && (
-                    <a href="/pricing" className="px-10 py-4 rounded-full bg-white text-black text-xs font-black uppercase tracking-[0.2em] hover:scale-[1.05] transition-all shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                        {t("pro.upgradeCta")}
-                    </a>
-                )}
-            </div>
+            )}
 
-            {/* ── Shareable Card ── */}
-            <div className="card rounded-2xl p-6 border border-white/5 bg-gradient-to-b from-white/[0.02] to-transparent space-y-4">
+            {/* ── Shareable Card (Absolute Bottom) ── */}
+            <div className="card rounded-3xl p-8 border border-white/5 bg-gradient-to-b from-white/[0.02] to-transparent space-y-6">
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded bg-indigo-500 flex items-center justify-center text-[10px] font-black">N</div>
-                        <span className="text-[10px] font-black text-white uppercase tracking-widest">{t("share.title")}</span>
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-indigo-500 flex items-center justify-center text-xs font-black shadow-lg">N</div>
+                        <span className="text-[11px] font-black text-white uppercase tracking-[0.2em]">{t("share.title")}</span>
                     </div>
-                    <span className="text-[9px] font-bold text-gray-600 uppercase tracking-widest">Share analysis</span>
                 </div>
                 
-                <div className="bg-black/40 rounded-xl p-4 grid grid-cols-3 gap-4 border border-white/5">
-                    <div className="text-center">
-                        <span className="text-[8px] font-black text-gray-500 uppercase block mb-1">{t("diagnosis.scoreTitle")}</span>
-                        <span className="text-sm font-black text-indigo-400 italic">{(metrics.advanced?.edgeConfidence ?? 0).toFixed(0)}</span>
+                <div className="bg-black/40 rounded-2xl p-6 grid grid-cols-3 gap-6 border border-white/5 shadow-inner">
+                    <div className="text-center space-y-1">
+                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest block">{t("diagnosis.scoreTitle")}</span>
+                        <span className="text-xl font-black text-indigo-400 italic">{(metrics.advanced?.edgeConfidence ?? 0).toFixed(0)}</span>
                     </div>
-                    <div className="text-center">
-                        <span className="text-[8px] font-black text-gray-500 uppercase block mb-1">{t("keySignals.profitFactor")}</span>
-                        <span className="text-sm font-black text-white italic">{metrics.profitFactor.toFixed(2)}</span>
+                    <div className="text-center space-y-1">
+                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest block">{t("keySignals.profitFactor")}</span>
+                        <span className="text-xl font-black text-white italic">{(metrics.profitFactor || 0).toFixed(2)}</span>
                     </div>
-                    <div className="text-center">
-                        <span className="text-[8px] font-black text-gray-500 uppercase block mb-1">{t("keySignals.sampleSize")}</span>
-                        <span className="text-sm font-black text-white italic">{metrics.totalTrades}</span>
+                    <div className="text-center space-y-1">
+                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest block">{t("keySignals.sampleSize")}</span>
+                        <span className="text-xl font-black text-white italic">{metrics.totalTrades || 0}</span>
                     </div>
                 </div>
 
-                <div className="flex gap-2">
-                    <button 
-                        onClick={copyStrategySummary}
-                        className={`flex-1 py-3 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${
-                            copying 
-                            ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400" 
-                            : "bg-white/5 border-white/10 text-white hover:bg-white/10"
-                        }`}
-                    >
-                        {copying ? t("actions.copySuccess") : t("actions.copySummary")}
-                    </button>
-                    <button className="flex-1 py-3 rounded-xl bg-indigo-500 text-[10px] font-black text-white uppercase tracking-widest hover:bg-indigo-600 transition-shadow shadow-[0_0_20px_rgba(99,102,241,0.2)]">
-                        {t("sharing.shareX")}
-                    </button>
+                <div className="flex flex-col gap-4">
+                    {analysisId && (
+                        <div className="space-y-4">
+                            <button 
+                                onClick={copyPublicLink}
+                                className={`w-full py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-xl ${
+                                    linkCopied
+                                    ? "bg-emerald-500 text-white shadow-emerald-500/20"
+                                    : "bg-indigo-600 text-white hover:bg-indigo-500 shadow-indigo-600/20"
+                                }`}
+                            >
+                                {linkCopied ? t("share.linkCopied") : t("share.copyLink")}
+                            </button>
+                            
+                            <div className="flex gap-4">
+                                <button 
+                                    onClick={shareWhatsApp} 
+                                    className="flex-1 py-4 rounded-2xl bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 border border-[#25D366]/20 text-[10px] font-black uppercase tracking-widest transition-all"
+                                >
+                                    {t("share.whatsapp")}
+                                </button>
+                                <button 
+                                    onClick={shareTwitter} 
+                                    className="flex-1 py-4 rounded-2xl bg-black border border-white/20 text-white hover:bg-white/10 text-[10px] font-black uppercase tracking-widest transition-all"
+                                >
+                                    {t("share.twitter")}
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
             {/* Disclaimer */}
-            <p className="text-xs text-center leading-relaxed" style={{ color: "#374151" }}>
+            <p className="text-[10px] text-center leading-relaxed font-bold opacity-20 select-none max-w-sm mx-auto uppercase tracking-widest" style={{ color: "#4b5563" }}>
                 {t("disclaimer")}
             </p>
+
+            {/* Simulated Paywall Modal */}
+            {showPaywall && !isPro && (
+                <UnlockPro onClose={() => setShowPaywall(false)} />
+            )}
         </div>
     );
 }

@@ -10,6 +10,7 @@ interface InsightProps {
     totalTrades: number;
     trades?: Trade[];
     onViewFullReport?: () => void;
+    isNoEdge?: boolean;
 }
 
 // ── Edge Location Analysis ────────────────────────────────────────────────────
@@ -169,26 +170,24 @@ function InsightCard({ icon, title, level, headline, tip }: CardProps) {
     );
 }
 
-export default function StrategyInsight({ profitFactor, winrate, maxDrawdown, totalTrades, trades = [] }: InsightProps) {
+export default function StrategyInsight({ profitFactor, winrate, maxDrawdown, totalTrades, trades = [], isNoEdge }: InsightProps) {
     const t = useTranslations("analyzer.insights");
+    const tFunnel = useTranslations("analyzer.funnel");
 
     // Card 1: Edge Quality
-    const edgeLevel: CardProps["level"] = profitFactor >= 1.5 && winrate >= 50 ? "positive"
-        : profitFactor >= 1.0 ? "neutral" : "negative";
+    const edgeLevel: CardProps["level"] = isNoEdge ? "negative" : (profitFactor >= 1.5 && winrate >= 50 ? "positive" : (profitFactor >= 1.0 ? "neutral" : "negative"));
     const edgeCard: CardProps = {
         icon: "📊",
         title: t("edgeQuality.title"),
         level: edgeLevel,
-        headline: profitFactor >= 1.5 && winrate >= 50
-            ? t("edgeQuality.solid")
-            : profitFactor >= 1.0
-                ? t("edgeQuality.marginal")
-                : t("edgeQuality.none"),
-        tip: profitFactor >= 1.5
-            ? t("edgeQuality.tipSolid")
-            : profitFactor >= 1.0
-                ? t("edgeQuality.tipMarginal")
-                : t("edgeQuality.tipNone"),
+        headline: isNoEdge 
+            ? tFunnel("longTermStabilityNotProven")
+            : (profitFactor >= 1.5 && winrate >= 50
+                ? tFunnel("shortTermImprovement")
+                : profitFactor >= 1.0
+                    ? tFunnel("shortTermImprovement")
+                    : tFunnel("longTermStabilityNotProven")),
+        tip: isNoEdge ? tFunnel("edgeInsightTip") : tFunnel("edgeInsightTip"),
     };
 
     // Card 2: Risk Profile
@@ -197,17 +196,21 @@ export default function StrategyInsight({ profitFactor, winrate, maxDrawdown, to
     const riskCard: CardProps = {
         icon: "🛡️",
         title: t("riskProfile.title"),
-        level: riskLevel,
-        headline: ddAbs <= 15
-            ? t("riskProfile.controlled")
-            : ddAbs <= 30
-                ? t("riskProfile.moderate")
-                : t("riskProfile.high"),
-        tip: ddAbs <= 15
-            ? t("riskProfile.tipControlled")
-            : ddAbs <= 30
-                ? t("riskProfile.tipModerate")
-                : t("riskProfile.tipHigh"),
+        level: isNoEdge ? "negative" : riskLevel,
+        headline: isNoEdge 
+            ? t("riskProfile.high")
+            : (ddAbs <= 15
+                ? t("riskProfile.controlled")
+                : ddAbs <= 30
+                    ? t("riskProfile.moderate")
+                    : t("riskProfile.high")),
+        tip: isNoEdge
+            ? t("riskProfile.tipHigh")
+            : (ddAbs <= 15
+                ? t("riskProfile.tipControlled")
+                : ddAbs <= 30
+                    ? t("riskProfile.tipModerate")
+                    : t("riskProfile.tipHigh")),
     };
 
     // Card 3: Sample Reliability

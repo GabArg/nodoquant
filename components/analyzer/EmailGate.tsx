@@ -20,6 +20,7 @@ interface Props {
     datasetName?: string;
     isAuthenticated: boolean;
     onUnlocked: (email: string, id: string) => void;
+    triggerUnlock?: number;
 }
 
 export default function EmailGate({
@@ -32,6 +33,7 @@ export default function EmailGate({
     datasetName,
     isAuthenticated,
     onUnlocked,
+    triggerUnlock = 0,
 }: Props) {
     const t = useTranslations("analyzer.gate");
     const locale = useLocale();
@@ -46,12 +48,21 @@ export default function EmailGate({
         }
     }, [isAuthenticated]);
 
+    // Lifted trigger from parent (Top Button)
+    useEffect(() => {
+        if (triggerUnlock > 0 && !submitting) {
+            handleUnlock();
+        }
+    }, [triggerUnlock]);
+
     async function handleUnlock() {
         setError(null);
         setSubmitting(true);
+        const endpoint = isAuthenticated ? "/api/analyzer/save" : "/api/analyzer/anonymous";
+        console.log("[Unlock] Triggered", { isAuthenticated, endpoint });
 
         try {
-            const res = await fetch("/api/analyzer/save", {
+            const res = await fetch(endpoint, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -115,66 +126,76 @@ export default function EmailGate({
             </div>
 
             {/* Auth Actions */}
-            {isAuthenticated ? (
+            {submitting ? (
                 <div className="w-full text-center py-8">
-                    {submitting ? (
-                        <>
-                            <div className="w-8 h-8 mx-auto border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-4" />
-                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest animate-pulse">
-                                Generando reporte profesional...
-                            </p>
-                        </>
-                    ) : error ? (
-                        <div className="space-y-4">
-                            <div className="w-12 h-12 mx-auto rounded-full bg-red-500/10 flex items-center justify-center mb-4">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-red-400">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <line x1="12" y1="8" x2="12" y2="12"/>
-                                    <line x1="12" y1="16" x2="12.01" y2="16"/>
-                                </svg>
-                            </div>
-                            <p className="text-sm font-semibold text-red-400">{error}</p>
-                            <div className="pt-4 flex justify-center gap-4">
-                                <button 
-                                    onClick={() => handleUnlock()} 
-                                    className="px-6 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-bold transition-colors"
-                                >
-                                    Reintentar
-                                </button>
-                                <button 
-                                    onClick={() => router.push(`/${locale}/dashboard`)} 
-                                    className="px-6 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-colors shadow-lg shadow-indigo-600/20"
-                                >
-                                    Ir al Dashboard
-                                </button>
-                            </div>
-                        </div>
-                    ) : (
-                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
-                            Completado
-                        </p>
-                    )}
+                    <div className="w-8 h-8 mx-auto border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-4" />
+                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest animate-pulse">
+                        {t("form.generating")}
+                    </p>
+                </div>
+            ) : error ? (
+                <div className="w-full text-center py-8 space-y-4">
+                    <div className="w-12 h-12 mx-auto rounded-full bg-red-500/10 flex items-center justify-center mb-4">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-red-400">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="12"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                    </div>
+                    <p className="text-sm font-semibold text-red-400">{error}</p>
+                    <div className="pt-4 flex justify-center gap-4">
+                        <button 
+                            onClick={() => handleUnlock()} 
+                            className="px-6 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-bold transition-colors"
+                        >
+                            {t("form.retry")}
+                        </button>
+                        <button 
+                            onClick={() => router.push(`/${locale}/dashboard`)} 
+                            className="px-6 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-colors shadow-lg shadow-indigo-600/20"
+                        >
+                            {t("form.goDashboard")}
+                        </button>
+                    </div>
+                </div>
+            ) : isAuthenticated ? (
+                <div className="w-full text-center py-8">
+                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                        {t("form.complete")}
+                    </p>
                 </div>
             ) : (
                 <div className="space-y-4">
                     <button
-                        onClick={() => router.push(`/${locale}/signup?redirect=/${locale}/analyzer`)}
-                        className="btn-primary w-full justify-center text-[12px] py-4 shadow-[0_10px_30px_-10px_rgba(99,102,241,0.5)]"
+                        type="button"
+                        onClick={() => handleUnlock()}
+                        className="btn-primary w-full justify-center text-[12px] py-4 bg-indigo-600 hover:bg-indigo-500 shadow-[0_10px_30px_-10px_rgba(99,102,241,0.5)]"
                     >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="mr-2">
                             <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                         </svg>
-                        CREAR CUENTA PARA DESBLOQUEAR
+                        Desbloquear análisis completo
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => router.push(`/${locale}/signup?redirect=/${locale}/analyzer`)}
+                        className="btn-secondary w-full justify-center text-[12px] py-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 shadow-sm"
+                    >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="mr-2">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                        </svg>
+                        {t("form.createAccountCta")}
                     </button>
 
                     <p className="text-xs text-center text-gray-400 font-medium">
-                        ¿Ya tienes una cuenta?{" "}
+                        {t("form.haveAccount")}{" "}
                         <button onClick={() => router.push(`/${locale}/login?redirect=/${locale}/analyzer`)} className="text-indigo-400 hover:text-indigo-300 transition-colors">
-                            Inicia sesión aquí
+                            {t("form.loginHere")}
                         </button>
                     </p>
                     
-                    {error && <p className="text-xs text-red-400 text-center">{error}</p>}
+                    {/* Error rendering moved up to the root ternary, removed from here */}
                 </div>
             )}
         </div>
