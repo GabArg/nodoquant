@@ -5,6 +5,7 @@ import type { BasicMetrics, FullMetrics } from "@/lib/analyzer/metrics";
 import type { Trade } from "@/lib/analyzer/parser";
 import { calcEdgeScore } from "@/lib/edgeScore";
 import { useTranslations } from "next-intl";
+import { trackEvent } from "@/lib/trackEvent";
 
 interface Props {
     metrics: BasicMetrics;
@@ -152,6 +153,11 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
                     <div className="flex flex-col items-center gap-4 w-full pt-4">
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 opacity-40">{tFunnel("incompleteResult")}</span>
                         <button onClick={() => {
+                                    trackEvent("CTA_CLICK_TOP", {
+                                        source: "BASIC_RESULTS_TEASER",
+                                        score: rawScore,
+                                        verdict: diagState
+                                    });
                                     if (onViewFullReport) onViewFullReport();
                                 }} 
                                 className="px-12 py-5 rounded-3xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-[13px] font-black uppercase tracking-[0.2em] transition-all shadow-[0_20px_50px_rgba(79,70,229,0.4)] hover:shadow-[0_25px_60px_rgba(79,70,229,0.5)] active:scale-95 border border-white/10 ring-4 ring-indigo-500/10">
@@ -280,7 +286,11 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
                                 <div className="flex flex-col items-center gap-4 w-full">
                                     <div className="flex flex-wrap justify-center gap-4">
                                         <button onClick={() => {
-                                                    console.log("[TOP BUTTON CLICKED]");
+                                                    trackEvent("CTA_CLICK_TOP", {
+                                                        source: "BASIC_RESULTS_FOOTER",
+                                                        score: rawScore,
+                                                        verdict: diagState
+                                                    });
                                                     if (onViewFullReport) onViewFullReport();
                                                 }} 
                                                 className="px-8 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-black uppercase tracking-widest transition-all shadow-xl shadow-indigo-600/30 active:scale-95">

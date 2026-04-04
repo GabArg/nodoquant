@@ -2001,36 +2001,65 @@
             "sec4_content": "We use cookies to keep your session active and improve your browsing experience. You can disable cookies in your browser settings, although this may affect some site functions.",
             "sec5": "5. Your Rights",
             "sec5_content": "You have the right to access, rectify, or delete your personal information at any time. You can do this from your account settings or by contacting us directly."
-        },
-        "paywall": {
-            "title": "Your strategy might not survive.",
-            "subtitle": "This full analysis reveals if you actually have an edge… or if you're trading purely on luck.",
-            "featuresTitle": "Deep Intelligence",
-            "features": [
-                "Real probability of ruin",
-                "Simulation across thousands of scenarios",
-                "Complete statistical validation"
-            ],
-            "activateTitle": "Activate PRO access",
-            "activateSubtitle": "Send <bold>15 USDT</bold> to the address below and we'll activate your access manually.",
-            "network": "USDT (TRC20)",
-            "cta": "View Full Analysis — 15 USDT",
-            "footer": "One-time payment · Immediate access"
-        },
-        "publicReport": {
-            "header": {
-                "title": "Public Report",
-                "subtitle": "Anyone with this link can view this report."
-            },
-            "hook": "This analysis reveals if you have a real edge… <bold>or if you're just getting lucky</bold>.",
-            "ctaTitle": "If this was your strategy...",
-            "ctaWarning": "YOU WOULD ALREADY BE LOSING MONEY.",
-            "cta": "Verify my strategy now",
-            "urgency": "Every trade without a statistical edge costs you money.",
-            "socialProof": "+3,000 strategies analyzed",
-            "poweredBy": "Powered by NodoQuant",
-            "defaultFileName": "Shared Strategy",
-            "anonymousUser": "Anonymous"
         }
+    },
+    "paywall": {
+        "title": "Your strategy might not survive.",
+        "subtitle": "This full analysis reveals if you actually have an edge… or if you're trading purely on luck.",
+        "featuresTitle": "Deep Intelligence",
+        "features": [
+            "Real probability of ruin",
+            "Simulation across thousands of scenarios",
+            "Complete statistical validation"
+        ],
+        "activateTitle": "Activate PRO access",
+        "activateSubtitle": "Send <bold>15 USDT</bold> to the address below and we'll activate your access manually.",
+        "network": "USDT (TRC20)",
+        "cta": "View Full Analysis — 15 USDT",
+        "footer": "One-time payment · Immediate access"
+    },
+    "manualPayment": {
+        "decision": {
+            "title": "You are about to see what most traders ignore.",
+            "points": [
+                "When your strategy collapses",
+                "How much capital you can really lose",
+                "If what you see is an edge… or just luck"
+            ],
+            "hook": "This analysis is based on your own trades.",
+            "footer": "One-time payment. Immediate access.",
+            "price": "5 USDT",
+            "cta": "Continue to payment"
+        },
+        "payment": {
+            "title": "Payment Instructions",
+            "amount": "Amount: 5 USDT",
+            "network": "Network: TRC20 (USDT)",
+            "address": "TXXXXXXX_REPLACE_THIS",
+            "instruction": "Send exactly 5 USDT to this address.",
+            "confirmation": "Once sent, confirm payment to unlock your analysis.",
+            "cta": "I have already paid",
+            "urgency1": "Immediate access after confirmation.",
+            "urgency2": "This analysis could change how you are trading today."
+        },
+        "verifying": {
+            "title": "We are verifying your payment.",
+            "subtitle": "This may take a few minutes."
+        }
+    },
+    "publicReport": {
+        "header": {
+            "title": "Public Report",
+            "subtitle": "Anyone with this link can view this report."
+        },
+        "hook": "This analysis reveals if you have a real edge… <bold>or if you're just getting lucky</bold>.",
+        "ctaTitle": "If this was your strategy...",
+        "ctaWarning": "YOU WOULD ALREADY BE LOSING MONEY.",
+        "cta": "Verify my strategy now",
+        "urgency": "Every trade without a statistical edge costs you money.",
+        "socialProof": "+3,000 strategies analyzed",
+        "poweredBy": "Powered by NodoQuant",
+        "defaultFileName": "Shared Strategy",
+        "anonymousUser": "Anonymous"
     }
 }

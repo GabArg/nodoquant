@@ -6,6 +6,8 @@ import FullReport from "@/components/analyzer/FullReport";
 import type { BasicMetrics, FullMetrics } from "@/lib/analyzer/metrics";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { trackEvent } from "@/lib/trackEvent";
+import ManualPaymentModal from "@/components/analyzer/ManualPaymentModal";
 
 interface PublicReportProps {
     id: string;
@@ -20,12 +22,26 @@ interface PublicReportProps {
 }
 
 export default function PublicReportView({ report }: { report: PublicReportProps }) {
+    console.log("PublicReportView RENDER", report.id);
     const t = useTranslations("publicReport");
     const [isProAccess, setIsProAccess] = useState(false);
+    const [showPaywall, setShowPaywall] = useState(false);
 
     useEffect(() => {
         setIsProAccess(localStorage.getItem("nodoquant_pro_access") === "true");
-    }, []);
+        
+        // Debug test event
+        trackEvent("DEBUG_TEST_EVENT");
+
+        // Track report view once
+        const analyticsData = {
+            report_id: report.id,
+            score: report.metrics_json?.advanced?.edgeConfidence || (report.metrics_json as any).score,
+            verdict: report.metrics_json?.advanced?.verdict || (report.metrics_json as any).verdict
+        };
+        console.log("REPORT_VIEW Tracking Data:", analyticsData);
+        trackEvent("REPORT_VIEW", analyticsData);
+    }, [report.id, report.metrics_json]);
 
     // Extract basic metrics from the root column or deep json if possible
     const basicMetrics: BasicMetrics = {
@@ -60,6 +76,14 @@ export default function PublicReportView({ report }: { report: PublicReportProps
                     format="ANALYSIS"
                     fileName={report.file_name || t("defaultFileName")}
                     trades={[]}
+                    onViewFullReport={async () => {
+                        await trackEvent("CTA_CLICK_BASIC_RESULTS", {
+                            report_id: report.id,
+                            score: report.metrics_json?.advanced?.edgeConfidence || (report.metrics_json as any).score,
+                            verdict: report.metrics_json?.advanced?.verdict || (report.metrics_json as any).verdict
+                        });
+                        setShowPaywall(true);
+                    }}
                 />
 
                 {/* 2.5 Emotional Hook Banner */}
@@ -116,6 +140,21 @@ export default function PublicReportView({ report }: { report: PublicReportProps
                         </div>
                     </div>
                 </div>
+                
+                {showPaywall && !isProAccess && (
+                    <ManualPaymentModal 
+                        onClose={() => setShowPaywall(false)} 
+                        onSuccess={() => {
+                            setIsProAccess(true);
+                            console.log("REACTIVE_UNLOCK_SUCCESS_PUBLIC");
+                        }}
+                        metadata={{
+                            report_id: report.id,
+                            score: report.metrics_json?.advanced?.edgeConfidence || (report.metrics_json as any).score,
+                            verdict: report.metrics_json?.advanced?.verdict || (report.metrics_json as any).verdict
+                        }}
+                    />
+                )}
 
             </div>
         </div>

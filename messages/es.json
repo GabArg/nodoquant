@@ -2054,20 +2054,34 @@
             "sec5": "5. Tus Derechos",
             "sec5_content": "Tienes derecho a acceder, rectificar o eliminar tu información personal en cualquier momento. Puedes hacerlo desde la configuración de tu cuenta o contactándonos directamente."
         },
-        "paywall": {
-            "title": "Tu estrategia podría no sobrevivir.",
-            "subtitle": "Este análisis completo revela si realmente tenés ventaja… o si estás operando por suerte.",
-            "featuresTitle": "Inteligencia Profunda",
-            "features": [
-                "Probabilidad real de ruina",
-                "Simulación en miles de escenarios",
-                "Validación estadística completa"
-            ],
-            "activateTitle": "Activar acceso PRO",
-            "activateSubtitle": "Enviá los <bold>15 USDT</bold> a la siguiente dirección y activamos tu acceso manualmente.",
-            "network": "USDT (TRC20)",
-            "cta": "Ver análisis completo — 15 USDT",
-            "footer": "Pago único · Acceso inmediato"
+        "manualPayment": {
+            "decision": {
+                "title": "Estás a punto de ver lo que la mayoría de traders ignora.",
+                "points": [
+                    "Cuándo tu estrategia colapsa",
+                    "Cuánto capital podés perder realmente",
+                    "Si lo que estás viendo es ventaja… o suerte"
+                ],
+                "hook": "Este análisis está basado en tus propios trades.",
+                "footer": "Pago único. Acceso inmediato.",
+                "price": "5 USDT",
+                "cta": "Continuar al pago"
+            },
+            "payment": {
+                "title": "Instrucciones de Pago",
+                "amount": "Monto: 5 USDT",
+                "network": "Red: TRC20 (USDT)",
+                "address": "TXXXXXXX_REPLACE_THIS",
+                "instruction": "Enviá exactamente 5 USDT a esta dirección.",
+                "confirmation": "Una vez enviado, confirmá el pago para desbloquear tu análisis.",
+                "cta": "Ya pagué",
+                "urgency1": "Acceso inmediato después de confirmar.",
+                "urgency2": "Este análisis puede cambiar cómo estás operando hoy."
+            },
+            "verifying": {
+                "title": "Estamos verificando tu pago.",
+                "subtitle": "Esto puede tardar unos minutos."
+            }
         },
         "publicReport": {
             "header": {

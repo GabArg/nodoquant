@@ -10,7 +10,8 @@ import type { Trade } from "@/lib/analyzer/parser";
 import MonteCarloChart from "./MonteCarloChart";
 import MonteCarloSummary from "./MonteCarloSummary";
 import StrategyEvolution from "./Dashboard/StrategyEvolution";
-import UnlockPro from "@/components/paywall/UnlockPro";
+import ManualPaymentModal from "./ManualPaymentModal";
+import { trackEvent } from "@/lib/trackEvent";
 
 interface Props {
     metrics: FullMetrics;
@@ -264,7 +265,7 @@ function LockedSection({ title, desc, children, isPro = false, onUnlockClick }: 
                     
                     {/* CTA 2: Over Monte Carlo blur */}
                     <div className="mt-8">
-                        <PrimaryCTA onClick={onUnlockClick || (() => {})} />
+                        <PrimaryCTA onClick={() => onUnlockClick?.()} />
                     </div>
                 </div>
             </div>
@@ -281,9 +282,24 @@ export default function FullReport({ metrics, trades, email, analysisId, onSimul
     const [copying, setCopying] = React.useState(false);
     const [linkCopied, setLinkCopied] = React.useState(false);
     const [showPaywall, setShowPaywall] = React.useState(false);
+    const [isProInternal, setIsProInternal] = React.useState(isPro || false);
+
+    React.useEffect(() => {
+        setIsProInternal(isPro || false);
+    }, [isPro]);
     
-    const handleUnlockClick = () => {
-        console.log("PRO_UNLOCK_CLICK");
+    const handleUnlockClick = (source: "TOP" | "MID" | "BOTTOM") => {
+        console.log(`[FullReport] handleUnlockClick triggered from: ${source}`);
+        try {
+            trackEvent(`CTA_CLICK_${source}`, {
+                report_id: analysisId,
+                score: metrics.advanced?.edgeConfidence,
+                verdict: metrics.advanced?.verdict
+            });
+            console.log(`[FullReport] trackEvent called for: ${source}`);
+        } catch (err) {
+            console.error(`[FullReport] trackEvent FAILED for: ${source}`, err);
+        }
         setShowPaywall(true);
     };
     
@@ -351,7 +367,7 @@ Trades analyzed: ${metrics.totalTrades || 0}
             </div>
 
             {/* PAIN BLOCK (RED WARNING) - Top Priority */}
-            {!isPro && (
+            {!isProInternal && (
                 <div className="bg-red-500/10 border-2 border-red-500/30 rounded-3xl p-8 relative overflow-hidden animate-pulse-subtle">
                     <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent"></div>
                     <div className="relative z-10 space-y-6">
@@ -376,7 +392,7 @@ Trades analyzed: ${metrics.totalTrades || 0}
                         </div>
 
                         {/* CTA 1: After Red Warning Block */}
-                        <PrimaryCTA onClick={handleUnlockClick} />
+                        <PrimaryCTA onClick={() => handleUnlockClick("TOP")} />
                         
                         <p className="text-[10px] text-red-300/40 font-bold uppercase tracking-widest text-center pt-4 border-t border-red-500/10">
                             {tFunnel("credibilityFooter")}
@@ -386,11 +402,11 @@ Trades analyzed: ${metrics.totalTrades || 0}
             )}
 
             {/* 1. Strategy Diagnosis & Key Signals */}
-            <StrategyDiagnosis metrics={metrics} isPro={isPro} />
+            <StrategyDiagnosis metrics={metrics} isPro={isProInternal} />
 
             {/* 3. Risk Overview (Blurred for Free Users) */}
             <div className="relative group">
-                <div className={!isPro ? "blur-sm pointer-events-none opacity-60" : ""}>
+                <div className={!isProInternal ? "blur-sm pointer-events-none opacity-60" : ""}>
                     <div className="card rounded-3xl p-8 border border-white/5 bg-white/[0.01] space-y-6">
                         <div className="flex items-center justify-between">
                             <h4 className="text-[11px] font-black text-indigo-400 uppercase tracking-[0.3em]">{t("riskOverview.title")}</h4>
@@ -423,7 +439,7 @@ Trades analyzed: ${metrics.totalTrades || 0}
 
             {/* 4. Visualizations (Blurred for Free Users) */}
             <div className="relative group">
-                <div className={!isPro ? "blur-sm pointer-events-none opacity-60" : "animate-fade-in"}>
+                <div className={!isProInternal ? "blur-sm pointer-events-none opacity-60" : "animate-fade-in"}>
                     <div className="card rounded-3xl p-8 space-y-8 border border-white/5 bg-white/[0.01]">
                         <p className="text-[11px] font-black text-indigo-400 uppercase tracking-[0.3em]">
                             {t("visualizations.title")}
@@ -443,7 +459,7 @@ Trades analyzed: ${metrics.totalTrades || 0}
 
             {/* 5. Edge Stability (Evolution + Health) (Blurred for Free Users) */}
             <div className="relative group">
-                <div className={!isPro ? "blur-sm pointer-events-none opacity-60" : "animate-fade-in"}>
+                <div className={!isProInternal ? "blur-sm pointer-events-none opacity-60" : "animate-fade-in"}>
                     <div className="space-y-6">
                         <div className="flex items-center gap-3">
                             <div className="h-px flex-1 bg-white/5"></div>
@@ -493,7 +509,7 @@ Trades analyzed: ${metrics.totalTrades || 0}
                         <p className="text-xs font-semibold text-indigo-400 uppercase tracking-widest">
                             {t("monteCarlo.title")}
                         </p>
-                        {!isPro && (
+                        {!isProInternal && (
                             <span className="text-[10px] font-black px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 uppercase tracking-widest">
                                 PRO
                             </span>
@@ -502,7 +518,7 @@ Trades analyzed: ${metrics.totalTrades || 0}
                 </div>
                 
                 {/* Fear Copy & Partial View for free users */}
-                {!isPro && (
+                {!isProInternal && (
                     <div className="p-5 pb-0">
                         <p className="text-xs font-bold text-red-400 mb-4 text-center uppercase tracking-widest italic drop-shadow-[0_0_10px_rgba(248,113,113,0.3)]">
                             {tFunnel("fearMessage")}
@@ -524,7 +540,7 @@ Trades analyzed: ${metrics.totalTrades || 0}
                     </div>
                 )}
 
-                <LockedSection title={t("monteCarlo.title")} desc={t("monteCarlo.desc")} isPro={isPro} onUnlockClick={handleUnlockClick}>
+                <LockedSection title={t("monteCarlo.title")} desc={t("monteCarlo.desc")} isPro={isProInternal} onUnlockClick={() => handleUnlockClick("MID")}>
                     <div className="p-5 space-y-6">
                         <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.05]">
                             {monteCarlo && (
@@ -548,14 +564,14 @@ Trades analyzed: ${metrics.totalTrades || 0}
             </div>
 
             {/* CTA 3: Before Share Block */}
-            {!isPro && (
+            {!isProInternal && (
                 <div className="py-12 border-t border-white/5 space-y-8">
                     <div className="text-center">
                         <p className="text-2xl font-black text-white italic uppercase tracking-tighter leading-snug">
                             {tFunnel("closingLine")}
                         </p>
                     </div>
-                    <PrimaryCTA onClick={handleUnlockClick} />
+                    <PrimaryCTA onClick={() => handleUnlockClick("BOTTOM")} />
                 </div>
             )}
 
@@ -621,9 +637,21 @@ Trades analyzed: ${metrics.totalTrades || 0}
                 {t("disclaimer")}
             </p>
 
-            {/* Simulated Paywall Modal */}
-            {showPaywall && !isPro && (
-                <UnlockPro onClose={() => setShowPaywall(false)} />
+            {/* Manual Payment Modal */}
+            {showPaywall && !isProInternal && (
+                <ManualPaymentModal 
+                    onClose={() => setShowPaywall(false)} 
+                    onSuccess={() => {
+                        setIsProInternal(true);
+                        // Optional: also track a success event specifically for the reactive unlock
+                        console.log("REACTIVE_UNLOCK_SUCCESS");
+                    }}
+                    metadata={{
+                        report_id: analysisId,
+                        score: metrics.advanced?.edgeConfidence,
+                        verdict: metrics.advanced?.verdict
+                    }}
+                />
             )}
         </div>
     );
