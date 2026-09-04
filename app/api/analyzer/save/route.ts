@@ -30,15 +30,12 @@ export interface SaveAnalysisBody {
     profit_factor: number;
     max_drawdown: number;
     metrics_json: object;
-    user_email?: string;
     file_name?: string;
     date_range_start?: string;
     date_range_end?: string;
     sum_profit?: number;
     project_id?: string;
     strategy_id?: string;
-    user_id?: string;
-    isTest?: boolean;
 }
 
 export async function POST(req: NextRequest) {
