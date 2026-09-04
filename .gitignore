@@ -65,3 +65,15 @@ tmp/
 .env*.local
 .env.sample
 !.env.local.example
+
+# NodoQuant local development artifacts
+analysis-dev.json
+leads-dev.json
+vitest-results*.json
+test_results*.txt
+test_output*.txt
+tests_output*.txt
+build_*.txt
+dev_log.txt
+script_out.txt
+migrations_list.txt
