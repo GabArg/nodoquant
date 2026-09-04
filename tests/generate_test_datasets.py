@@ -3,6 +3,8 @@ import csv
 import random
 from datetime import datetime, timedelta
 
+BASE_DIR = os.path.join(os.path.dirname(__file__), 'datasets')
+
 def generate_dataset(filename, rules):
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     with open(filename, 'w', newline='') as f:
@@ -43,19 +45,19 @@ def generate_dataset(filename, rules):
 # 80 trades normal
 # 20 trades consecutive loss streak (simulating high DD)
 # 100 trades normal
-generate_dataset('c:/Users/Admin/Desktop/Proyectos/NodoQuant/tests/datasets/dataset_a_high_dd.csv', [
+generate_dataset(os.path.join(BASE_DIR, 'dataset_a_high_dd.csv'), [
     {'count': 80, 'winrate': 0.55, 'rr': 1.4},
     {'count': 20, 'winrate': 0.0, 'rr': 1.4, 'streak': True}, # big drawdown
     {'count': 100, 'winrate': 0.58, 'rr': 1.4} # slightly better to recover 55% average
 ])
 
 # Dataset B: Overfitted (80 trades, 65% WR, 1.2 RR)
-generate_dataset('c:/Users/Admin/Desktop/Proyectos/NodoQuant/tests/datasets/dataset_b_overfitted.csv', [
+generate_dataset(os.path.join(BASE_DIR, 'dataset_b_overfitted.csv'), [
     {'count': 80, 'winrate': 0.65, 'rr': 1.2}
 ])
 
 # Dataset C: Edge Decay (150 trades, first 75 profitable, last 75 losing)
-generate_dataset('c:/Users/Admin/Desktop/Proyectos/NodoQuant/tests/datasets/dataset_c_decay.csv', [
+generate_dataset(os.path.join(BASE_DIR, 'dataset_c_decay.csv'), [
     {'count': 75, 'winrate': 0.60, 'rr': 1.5},
     {'count': 75, 'winrate': 0.35, 'rr': 0.8}
 ])

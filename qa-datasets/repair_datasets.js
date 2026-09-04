@@ -5,7 +5,7 @@ const dirs = ['risk', 'stability'];
 const baseDate = new Date('2024-01-01T12:00:00Z');
 
 dirs.forEach(dir => {
-    const dirPath = path.join(__dirname, 'qa-datasets', dir);
+    const dirPath = path.join(__dirname, dir);
     if (!fs.existsSync(dirPath)) return;
 
     const files = fs.readdirSync(dirPath).filter(f => f.endsWith('.csv'));
