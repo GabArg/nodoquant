@@ -39,7 +39,6 @@ export interface SaveAnalysisBody {
     strategy_id?: string;
     user_id?: string;
     isTest?: boolean;
-    isAnonymous?: boolean;
 }
 
 export async function POST(req: NextRequest) {
@@ -308,8 +307,6 @@ export async function POST(req: NextRequest) {
 
             const skipReason = !enableEmails
                 ? "env_disabled"
-                : !!body.isAnonymous
-                ? "anonymous_user"
                 : !effectiveEmail
                 ? "missing_email"
                 : !isValidEmail
