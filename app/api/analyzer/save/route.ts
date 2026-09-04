@@ -309,7 +309,13 @@ export async function POST(req: NextRequest) {
                 Date.now() - sendStartedAt > 15 * 60 * 1000;
 
             if (isStaleSending) {
-                const { error: reconcileError } = await supabase
+                const staleSendStartedAt =
+                    analysisForEmail.email_send_started_at;
+
+                const {
+                    data: reconciled,
+                    error: reconcileError,
+                } = await supabase
                     .from("trade_analysis")
                     .update({
                         email_send_status: "sent_unconfirmed",
@@ -317,7 +323,10 @@ export async function POST(req: NextRequest) {
                             "Email send outcome could not be confirmed after a stale sending state. Automatic resend suppressed to avoid duplicates.",
                     })
                     .eq("id", reportId)
-                    .eq("email_send_status", "sending");
+                    .eq("email_send_status", "sending")
+                    .eq("email_send_started_at", staleSendStartedAt)
+                    .select("id, email_send_status")
+                    .maybeSingle();
 
                 if (reconcileError) {
                     console.error(
@@ -327,7 +336,7 @@ export async function POST(req: NextRequest) {
                             error: reconcileError.message,
                         }
                     );
-                } else {
+                } else if (reconciled) {
                     console.warn(
                         "[Email Workflow] Stale sending state marked as sent_unconfirmed",
                         {
@@ -339,6 +348,13 @@ export async function POST(req: NextRequest) {
                         ...analysisForEmail,
                         email_send_status: "sent_unconfirmed",
                     };
+                } else {
+                    console.log(
+                        "[Email Workflow] Stale sending reconciliation skipped because state changed concurrently",
+                        {
+                            report_id: reportId,
+                        }
+                    );
                 }
             }
         }
@@ -377,6 +393,7 @@ export async function POST(req: NextRequest) {
                         email_send_status: "sending",
                         email_send_attempts: nextAttempt,
                         email_send_started_at: new Date().toISOString(),
+                        email_last_error: null,
                     })
                     .eq("id", reportId)
                     .in("email_send_status", ["pending", "failed"])
