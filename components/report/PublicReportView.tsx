@@ -29,7 +29,7 @@ export default function PublicReportView({ report }: { report: PublicReportProps
 
     useEffect(() => {
         setIsProAccess(localStorage.getItem("nodoquant_pro_access") === "true");
-        
+
         // Debug test event
         trackEvent("DEBUG_TEST_EVENT");
 
@@ -57,7 +57,7 @@ export default function PublicReportView({ report }: { report: PublicReportProps
     return (
         <div className="w-full min-h-screen bg-[#050505] text-white pt-24 pb-32">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-16">
-                
+
                 {/* 1. Unlisted Header Banner */}
                 <div className="flex flex-col sm:flex-row items-center justify-between p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-sm">
                     <div className="flex items-center gap-3">
@@ -101,7 +101,6 @@ export default function PublicReportView({ report }: { report: PublicReportProps
                     <FullReport
                         metrics={report.metrics_json}
                         trades={[]} // Omitted for public view to reduce payload
-                        email={t("anonymousUser")}
                         analysisId={report.id}
                         isPro={isProAccess} // Simulated mock paywall logic
                         isInComparison={false}
@@ -115,12 +114,12 @@ export default function PublicReportView({ report }: { report: PublicReportProps
                             <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7" />
                         </svg>
                     </div>
-                    
+
                     <h2 className="text-2xl sm:text-4xl font-black italic tracking-tight text-white mb-2 leading-none uppercase">
                         {t("ctaTitle")} <br className="hidden sm:block" />
                         <span className="text-red-400">{t("ctaWarning")}</span>
                     </h2>
-                    
+
                     <p className="text-sm text-gray-400 max-w-lg mx-auto leading-relaxed font-medium">
                         {t("urgency")}
                     </p>
@@ -129,7 +128,7 @@ export default function PublicReportView({ report }: { report: PublicReportProps
                         <Link href="/analyzer" onClick={() => console.log("CTA_CLICK_ANALYZER")} className="px-10 py-5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-black uppercase tracking-[0.2em] shadow-[0_10px_40px_-10px_rgba(99,102,241,0.6)] hover:scale-105 transition-all active:scale-95">
                             {t("cta")}
                         </Link>
-                        
+
                         <div className="flex flex-col items-center mt-6">
                             <span className="opacity-40 text-xs font-semibold text-gray-300 tracking-wider">
                                 {t("socialProof")}
@@ -140,7 +139,7 @@ export default function PublicReportView({ report }: { report: PublicReportProps
                         </div>
                     </div>
                 </div>
-                
+
                 {showPaywall && !isProAccess && (
                     <ManualPaymentModal 
                         onClose={() => setShowPaywall(false)} 

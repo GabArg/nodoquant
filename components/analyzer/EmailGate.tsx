@@ -18,7 +18,7 @@ interface Props {
     dateRangeEnd?: string;
     strategyId?: string;
     isAuthenticated: boolean;
-    onUnlocked: (email: string, id: string) => void;
+    onUnlocked: (id: string) => void;
     triggerUnlock?: number;
 }
 
@@ -105,7 +105,7 @@ export default function EmailGate({
                 throw new Error(errorMsg);
             }
 
-            onUnlocked("", data.id);
+            onUnlocked(data.id);
         } catch (err: unknown) {
             setError(
                 err instanceof Error

@@ -51,7 +51,6 @@ export default function AnalyzerWizard() {
     const [fullMetrics, setFullMetrics] = useState<FullMetrics | null>(null);
     const [parseError, setParseError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const [unlockedEmail, setUnlockedEmail] = useState("");
     const [isPro, setIsPro] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [triggerUnlock, setTriggerUnlock] = useState(0);
@@ -91,7 +90,6 @@ export default function AnalyzerWizard() {
                 if (hydrated.parseResult) setParseResult(hydrated.parseResult);
                 if (hydrated.basicMetrics) setBasicMetrics(hydrated.basicMetrics);
                 if (hydrated.fullMetrics) setFullMetrics(hydrated.fullMetrics);
-                if (hydrated.unlockedEmail) setUnlockedEmail(hydrated.unlockedEmail);
                 if (hydrated.analysisId) setAnalysisId(hydrated.analysisId);
                 if (hydrated.pendingNormalized) setPendingNormalized(hydrated.pendingNormalized);
 
@@ -114,7 +112,6 @@ export default function AnalyzerWizard() {
             parseResult,
             basicMetrics,
             fullMetrics,
-            unlockedEmail,
             analysisId,
             pendingNormalized
         };
@@ -122,7 +119,7 @@ export default function AnalyzerWizard() {
             sessionStorage.setItem("nodoquant_analyzer_state", JSON.stringify(stateToSave));
         }, 500);
         return () => clearTimeout(timer);
-    }, [step, importSource, fileState, parseResult, basicMetrics, fullMetrics, unlockedEmail, analysisId, pendingNormalized, isHydrated]);
+    }, [step, importSource, fileState, parseResult, basicMetrics, fullMetrics, analysisId, pendingNormalized, isHydrated]);
 
     useEffect(() => {
         if (!isHydrated) return;
@@ -234,9 +231,8 @@ export default function AnalyzerWizard() {
         setStep("upload");
     }, []);
 
-    async function handleEmailUnlocked(email: string, id: string) {
+    async function handleEmailUnlocked(id: string) {
         if (!parseResult) return;
-        setUnlockedEmail(email);
         setAnalysisId(id);
         try {
             const { data: { user } } = await (await import("@/lib/auth/client")).createClient().auth.getUser();
@@ -263,7 +259,6 @@ export default function AnalyzerWizard() {
         setParseError(null);
         setLoading(false);
         setLoadingStage("parsing");
-        setUnlockedEmail("");
         setTriggerUnlock(0);
         setAnalysisId(null);
         setPendingNormalized(null);
@@ -407,7 +402,7 @@ export default function AnalyzerWizard() {
 
                 {step === "full" && fullMetrics && parseResult && (
                     <div className="space-y-10 animate-fade-in">
-                        <FullReport metrics={fullMetrics} trades={parseResult.trades} email={unlockedEmail} analysisId={analysisId} isPro={isPro} />
+                        <FullReport metrics={fullMetrics} trades={parseResult.trades} analysisId={analysisId} isPro={isPro} />
                     </div>
                 )}
             </div>

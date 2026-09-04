@@ -16,7 +16,6 @@ import { trackEvent } from "@/lib/trackEvent";
 interface Props {
     metrics: FullMetrics;
     trades: Trade[];
-    email: string;
     analysisId?: string | null;
     onSimulate?: () => void;
     onAddToComparison?: () => void;
@@ -273,7 +272,7 @@ function LockedSection({ title, desc, children, isPro = false, onUnlockClick }: 
     );
 }
 
-export default function FullReport({ metrics, trades, email, analysisId, onSimulate, onAddToComparison, isInComparison, isPro }: Props) {
+export default function FullReport({ metrics, trades, analysisId, onSimulate, onAddToComparison, isInComparison, isPro }: Props) {
     const t = useTranslations("analyzer.report");
     const tSummary = useTranslations("analyzer.report.summaryBlock");
     const tDiagnosis = useTranslations("analyzer.report.diagnosis");
@@ -361,9 +360,6 @@ Trades analyzed: ${metrics.totalTrades || 0}
             <div className="space-y-2">
                 <div className="section-label">{t("title")}</div>
                 <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter">{t("subtitle")}</h2>
-                <p className="text-sm font-medium text-gray-500">
-                    {t("sentTo")} <span className="text-indigo-400/80 font-bold">{email}</span>
-                </p>
             </div>
 
             {/* PAIN BLOCK (RED WARNING) - Top Priority */}
