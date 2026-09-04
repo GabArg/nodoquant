@@ -164,6 +164,7 @@ export async function POST(req: NextRequest) {
             analysis_fingerprint: analysisFingerprint,
             email_send_status: "pending",
             email_send_attempts: 0,
+            email_send_started_at: null,
         };
 
         const supabase = getSupabaseServer();
@@ -176,7 +177,7 @@ export async function POST(req: NextRequest) {
         const { data: existingAnalysis, error: existingError } =
             await supabase
                 .from("trade_analysis")
-                .select("id, email_send_status, email_send_attempts")
+                .select("id, email_send_status, email_send_attempts, email_send_started_at")
                 .eq("user_id", user_id)
                 .eq("analysis_fingerprint", analysisFingerprint)
                 .maybeSingle();
@@ -222,7 +223,7 @@ export async function POST(req: NextRequest) {
             const { data, error } = await supabase
                 .from("trade_analysis")
                 .insert(record)
-                .select("id, email_send_status, email_send_attempts")
+                .select("id, email_send_status, email_send_attempts, email_send_started_at")
                 .single();
 
             if (error) {
@@ -236,7 +237,7 @@ export async function POST(req: NextRequest) {
                     } = await supabase
                         .from("trade_analysis")
                         .select(
-                            "id, email_send_status, email_send_attempts"
+                            "id, email_send_status, email_send_attempts, email_send_started_at"
                         )
                         .eq("user_id", user_id)
                         .eq(
@@ -296,7 +297,56 @@ export async function POST(req: NextRequest) {
             fingerprint: analysisFingerprint,
         });
 
-        // 5. Email trigger system
+        // 5. Reconcile stale "sending" state without risking duplicate emails
+        if (
+            reportId &&
+            analysisForEmail?.email_send_status === "sending" &&
+            analysisForEmail.email_send_started_at
+        ) {
+            const sendStartedAt = new Date(
+                analysisForEmail.email_send_started_at
+            ).getTime();
+
+            const isStaleSending =
+                Number.isFinite(sendStartedAt) &&
+                Date.now() - sendStartedAt > 15 * 60 * 1000;
+
+            if (isStaleSending) {
+                const { error: reconcileError } = await supabase
+                    .from("trade_analysis")
+                    .update({
+                        email_send_status: "sent_unconfirmed",
+                        email_last_error:
+                            "Email send outcome could not be confirmed after a stale sending state. Automatic resend suppressed to avoid duplicates.",
+                    })
+                    .eq("id", reportId)
+                    .eq("email_send_status", "sending");
+
+                if (reconcileError) {
+                    console.error(
+                        "[Email Workflow] Failed to reconcile stale sending state",
+                        {
+                            report_id: reportId,
+                            error: reconcileError.message,
+                        }
+                    );
+                } else {
+                    console.warn(
+                        "[Email Workflow] Stale sending state marked as sent_unconfirmed",
+                        {
+                            report_id: reportId,
+                        }
+                    );
+
+                    analysisForEmail = {
+                        ...analysisForEmail,
+                        email_send_status: "sent_unconfirmed",
+                    };
+                }
+            }
+        }
+
+        // 6. Email trigger system
         if (reportId) {
             const enableEmails = process.env.ENABLE_EMAILS === "true";
             const effectiveEmail = sessionEmail;
@@ -329,6 +379,7 @@ export async function POST(req: NextRequest) {
                     .update({
                         email_send_status: "sending",
                         email_send_attempts: nextAttempt,
+                        email_send_started_at: new Date().toISOString(),
                     })
                     .eq("id", reportId)
                     .in("email_send_status", ["pending", "failed"])
