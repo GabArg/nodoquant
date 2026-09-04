@@ -14,24 +14,26 @@ export async function sendStrategyReadyEmail({
     name,
     reportUrl,
 }: SendStrategyReadyEmailProps): Promise<void> {
-    try {
-        const html = strategyReadyEmail({ name, reportUrl });
+    const html = strategyReadyEmail({
+        name,
+        reportUrl,
+    });
 
-        const { data, error } = await resend.emails.send({
-            from: "NodoQuant <hola@nodoquant.com>",
-            to,
-            subject: "Your strategy has a verdict ⚠️",
-            html,
-        });
+    const { data, error } = await resend.emails.send({
+        from: "NodoQuant <hola@nodoquant.com>",
+        to,
+        subject: "Your strategy has a verdict ⚠️",
+        html,
+    });
 
-        if (error) {
-            console.error("EMAIL ERROR:", error);
-        } else {
-            console.log("EMAIL SENT:", data?.id);
-            console.log("EMAIL TO:", to);
-        }
-    } catch (err) {
-        // Never throw — email is non-critical; does not break the save flow
-        console.error("EMAIL ERROR:", err);
+    if (error) {
+        console.error("EMAIL ERROR:", error);
+
+        throw new Error(
+            error.message || "Failed to send strategy-ready email"
+        );
     }
+
+    console.log("EMAIL SENT:", data?.id);
+    console.log("EMAIL TO:", to);
 }
