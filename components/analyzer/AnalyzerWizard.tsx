@@ -17,7 +17,7 @@ import ImportSourceSelector from "@/components/import/ImportSourceSelector";
 import BinanceImportPanel from "@/components/import/BinanceImportPanel";
 import MT4ImportPanel from "@/components/import/MT4ImportPanel";
 import MT5ImportPanel from "@/components/import/MT5ImportPanel";
-import { parseTrades, type ParseResult } from "@/lib/analyzer/parser";
+import type { ParseResult } from "@/lib/analyzer/parser";
 import {
     calcBasicMetrics,
     calcFullMetrics,
@@ -32,6 +32,48 @@ import { trackEvent } from "@/lib/analytics";
 
 
 type Step = "source" | "upload" | "importing" | "confirm" | "basic" | "gate" | "full";
+
+interface AnalyzerSessionState {
+    step: Step;
+    importSource: ImportSource | null;
+    fileState: { content: string; name: string } | null;
+    parseResult: ParseResult | null;
+    basicMetrics: BasicMetrics | null;
+    fullMetrics: FullMetrics | null;
+    analysisId: string | null;
+    pendingNormalized: {
+        trades: NormalizedTrade[];
+        source: ImportSource;
+    } | null;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function hydrateState(value: unknown): unknown {
+    if (
+        typeof value === "string" &&
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)
+    ) {
+        return new Date(value);
+    }
+
+    if (Array.isArray(value)) {
+        return value.map((item) => hydrateState(item));
+    }
+
+    if (isRecord(value)) {
+        return Object.fromEntries(
+            Object.entries(value).map(([key, nestedValue]) => [
+                key,
+                hydrateState(nestedValue),
+            ])
+        );
+    }
+
+    return value;
+}
 
 function getUIStepIndex(s: Step) {
     if (s === "source" || s === "upload") return 0;
@@ -81,30 +123,25 @@ export default function AnalyzerWizard() {
         const saved = sessionStorage.getItem("nodoquant_analyzer_state");
         if (saved) {
             try {
-                const parsed = JSON.parse(saved);
-                const hydrateState = (obj: any): any => {
-                    if (!obj || typeof obj !== 'object') return obj;
-                    const newObj = Array.isArray(obj) ? [...obj] : { ...obj };
-                    for (const key in newObj) {
-                        const val = newObj[key];
-                        if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(val)) {
-                            newObj[key] = new Date(val);
-                        } else if (typeof val === 'object' && val !== null) {
-                            newObj[key] = hydrateState(val);
-                        }
-                    }
-                    return newObj;
-                };
-
+                const parsed: unknown = JSON.parse(saved);
                 const hydrated = hydrateState(parsed);
-                if (hydrated.step) setStep(hydrated.step);
-                if (hydrated.importSource) setImportSource(hydrated.importSource);
-                if (hydrated.fileState) setFileState(hydrated.fileState);
-                if (hydrated.parseResult) setParseResult(hydrated.parseResult);
-                if (hydrated.basicMetrics) setBasicMetrics(hydrated.basicMetrics);
-                if (hydrated.fullMetrics) setFullMetrics(hydrated.fullMetrics);
-                if (hydrated.analysisId) setAnalysisId(hydrated.analysisId);
-                if (hydrated.pendingNormalized) setPendingNormalized(hydrated.pendingNormalized);
+
+                if (!isRecord(hydrated)) {
+                    throw new Error("Invalid analyzer session state");
+                }
+
+                const restored = hydrated as Partial<AnalyzerSessionState>;
+
+                if (restored.step) setStep(restored.step);
+                if (restored.importSource) setImportSource(restored.importSource);
+                if (restored.fileState) setFileState(restored.fileState);
+                if (restored.parseResult) setParseResult(restored.parseResult);
+                if (restored.basicMetrics) setBasicMetrics(restored.basicMetrics);
+                if (restored.fullMetrics) setFullMetrics(restored.fullMetrics);
+                if (restored.analysisId) setAnalysisId(restored.analysisId);
+                if (restored.pendingNormalized) {
+                    setPendingNormalized(restored.pendingNormalized);
+                }
 
                 setTimeout(() => setIsHydrated(true), 100);
             } catch (e) {
@@ -222,7 +259,11 @@ export default function AnalyzerWizard() {
             const fakeResult = buildParseResult(trades, source);
             const basic = calcBasicMetrics(uniqueTrades);
             const full = calcFullMetrics(uniqueTrades);
-            setParseResult({ ...fakeResult, trades: uniqueTrades } as any);
+            const normalizedResult: ParseResult = {
+                ...fakeResult,
+                trades: uniqueTrades,
+            };
+            setParseResult(normalizedResult);
             setBasicMetrics(basic);
             setFullMetrics(full);
             setStep("basic");
