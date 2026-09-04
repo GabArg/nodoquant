@@ -1,6 +1,12 @@
 import { describe, it, expect } from "vitest";
 import { loadDataset, listDatasets } from "./datasetLoader";
-import { calcFullMetrics } from "../../lib/analyzer/metrics";
+import {
+    calcAdvancedRobustness,
+    calcBasicMetrics,
+    calcFullMetrics,
+    type MonteCarloResult,
+} from "../../lib/analyzer/metrics";
+import type { Trade } from "../../lib/analyzer/parser";
 import {
     validateMetricsSanity,
     validateMetricConsistency,
@@ -48,6 +54,77 @@ describe("Strategy Analyzer Automated Test Suite", () => {
                     `Time: ${(endTime - startTime).toFixed(2)}ms`
                 );
             });
+        });
+    });
+
+    // ── Regression Guards ────────────────────────────────────────────────────
+    describe("Regression Guards", () => {
+        it("should classify a positive 30-trade sample as weakEdge at the exact minimum boundary", () => {
+            const trades = loadDataset(
+                "qa-datasets/baseline/strongedge.csv"
+            );
+
+            expect(trades.length).toBe(30);
+
+            const metrics = calcFullMetrics(trades);
+
+            expect(metrics.advanced?.verdict).toBe("weakEdge");
+            expect(metrics.advanced?.edgeConfidence).toBeGreaterThanOrEqual(55);
+            expect(metrics.profitFactor).toBeGreaterThanOrEqual(1.1);
+        });
+
+        it("should calculate martingale avgWin from positive trades only", () => {
+            const baseDate = new Date("2026-01-01T00:00:00Z");
+
+            const winningTrades: Trade[] = Array.from(
+                { length: 29 },
+                (_, index) => ({
+                    datetime: new Date(baseDate.getTime() + index * 60_000),
+                    profit: 10,
+                })
+            );
+
+            const trades: Trade[] = [
+                ...winningTrades,
+                {
+                    datetime: new Date(
+                        baseDate.getTime() + 29 * 60_000
+                    ),
+                    profit: -100,
+                },
+            ];
+
+            const basic = calcBasicMetrics(trades);
+
+            const deterministicMonteCarlo: MonteCarloResult = {
+                iterations: 1,
+                worstCase: 0,
+                averageCase: 0,
+                bestCase: 0,
+                riskOfRuin: 0,
+                drawdownAt5Pct: 0,
+                simulations: [],
+                percentilePaths: {
+                    p5: [],
+                    p25: [],
+                    p50: [],
+                    p75: [],
+                    p95: [],
+                },
+                horizon: 30,
+            };
+
+            const advanced = calcAdvancedRobustness(
+                trades,
+                basic,
+                deterministicMonteCarlo
+            );
+
+            // True avgWin is 10, so maxLoss 100 is below the
+            // martingale penalty threshold of 10 * 15 = 150.
+            // The expected confidence includes only the 30-trade
+            // sample-size penalty, not the martingale penalty.
+            expect(advanced.edgeConfidence).toBe(51);
         });
     });
 
