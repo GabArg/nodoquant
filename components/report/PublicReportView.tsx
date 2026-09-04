@@ -51,7 +51,7 @@ export default function PublicReportView({ report }: { report: PublicReportProps
         maxDrawdown: report.max_drawdown,
         maxDrawdownAbs: 0,
         expectancy: report.metrics_json?.expectancy || 0,
-        sumProfit: report.metrics_json?.expectancy ? (report.metrics_json.expectancy * report.trades_count) : 0, 
+        sumProfit: report.metrics_json?.expectancy ? (report.metrics_json.expectancy * report.trades_count) : 0,
     };
 
     return (
@@ -100,10 +100,8 @@ export default function PublicReportView({ report }: { report: PublicReportProps
                 <div className="mt-16">
                     <FullReport
                         metrics={report.metrics_json}
-                        trades={[]} // Omitted for public view to reduce payload
                         analysisId={report.id}
-                        isPro={isProAccess} // Simulated mock paywall logic
-                        isInComparison={false}
+                        isPro={isProAccess}
                     />
                 </div>
 
@@ -141,8 +139,8 @@ export default function PublicReportView({ report }: { report: PublicReportProps
                 </div>
 
                 {showPaywall && !isProAccess && (
-                    <ManualPaymentModal 
-                        onClose={() => setShowPaywall(false)} 
+                    <ManualPaymentModal
+                        onClose={() => setShowPaywall(false)}
                         onSuccess={() => {
                             setIsProAccess(true);
                             console.log("REACTIVE_UNLOCK_SUCCESS_PUBLIC");

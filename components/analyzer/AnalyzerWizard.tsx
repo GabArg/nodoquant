@@ -475,7 +475,7 @@ export default function AnalyzerWizard() {
 
                 {step === "full" && fullMetrics && parseResult && (
                     <div className="space-y-10 animate-fade-in">
-                        <FullReport metrics={fullMetrics} trades={parseResult.trades} analysisId={analysisId} isPro={isPro} />
+                        <FullReport metrics={fullMetrics} analysisId={analysisId} isPro={isPro} />
                     </div>
                 )}
             </div>

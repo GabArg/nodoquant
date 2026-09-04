@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useTranslations, useLocale } from "next-intl";
 import type { FullMetrics } from "@/lib/analyzer/metrics";
 import EquityChart from "./EquityChart";
 import DrawdownChart from "./DrawdownChart";
 import TradeHistogram from "./TradeHistogram";
-import type { Trade } from "@/lib/analyzer/parser";
 import MonteCarloChart from "./MonteCarloChart";
 import MonteCarloSummary from "./MonteCarloSummary";
 import StrategyEvolution from "./Dashboard/StrategyEvolution";
@@ -15,11 +14,7 @@ import { trackEvent } from "@/lib/trackEvent";
 
 interface Props {
     metrics: FullMetrics;
-    trades: Trade[];
     analysisId?: string | null;
-    onSimulate?: () => void;
-    onAddToComparison?: () => void;
-    isInComparison?: boolean;
     isPro?: boolean;
 }
 
@@ -210,39 +205,6 @@ function SignalCard({ label, value, icon, tooltip, isNoEdge = false }: { label: 
     );
 }
 
-function MetricRow({ label, value, tooltip, highlight = false, locked = false }: { label: string; value: string; tooltip?: string; highlight?: boolean; locked?: boolean }) {
-    return (
-        <div className="flex justify-between items-center py-3 group/row transition-all"
-            style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-            <div className="flex items-center gap-2">
-                <span className="text-sm" style={{ color: locked ? "#4b5563" : "#9ca3af" }}>{label}</span>
-                {tooltip && !locked && (
-                    <div className="relative group/tip">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-gray-600 cursor-help hover:text-indigo-400 transition-colors">
-                            <circle cx="12" cy="12" r="10" />
-                            <path d="M12 16v-4" />
-                            <path d="M12 8h.01" />
-                        </svg>
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-gray-900 border border-white/10 rounded-lg text-[10px] text-gray-300 opacity-0 group-hover/tip:opacity-100 pointer-events-none transition-opacity z-50 shadow-2xl">
-                            {tooltip}
-                        </div>
-                    </div>
-                )}
-            </div>
-            {locked ? (
-                <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-black text-gray-700 blur-[2px] select-none">$88.88</span>
-                    <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-gray-600 uppercase tracking-widest">Locked</span>
-                </div>
-            ) : (
-                <span className={`text-sm font-semibold tabular-nums ${highlight ? "text-indigo-300" : "text-white"}`}>
-                    {value}
-                </span>
-            )}
-        </div>
-    );
-}
-
 function LockedSection({ title, desc, children, isPro = false, onUnlockClick }: { title: string; desc: string; children: React.ReactNode; isPro?: boolean; onUnlockClick?: () => void }) {
     const t = useTranslations("analyzer.report.pro");
     const tFunnel = useTranslations("analyzer.funnel");
@@ -272,13 +234,10 @@ function LockedSection({ title, desc, children, isPro = false, onUnlockClick }: 
     );
 }
 
-export default function FullReport({ metrics, trades, analysisId, onSimulate, onAddToComparison, isInComparison, isPro }: Props) {
+export default function FullReport({ metrics, analysisId, isPro }: Props) {
     const t = useTranslations("analyzer.report");
-    const tSummary = useTranslations("analyzer.report.summaryBlock");
-    const tDiagnosis = useTranslations("analyzer.report.diagnosis");
     const tFunnel = useTranslations("analyzer.funnel");
     const locale = useLocale();
-    const [copying, setCopying] = React.useState(false);
     const [linkCopied, setLinkCopied] = React.useState(false);
     const [showPaywall, setShowPaywall] = React.useState(false);
     const [isProInternal, setIsProInternal] = React.useState(isPro || false);
@@ -330,29 +289,6 @@ export default function FullReport({ metrics, trades, analysisId, onSimulate, on
     };
     
     const monteCarlo = metrics.monteCarlo;
-    const verdictKey = metrics.advanced?.verdict || "unstableEdge";
-
-    const riskLevelColor = metrics.riskOfRuin < 1 ? "text-emerald-400" : metrics.riskOfRuin < 10 ? "text-yellow-500" : "text-red-500";
-    const riskLevelLabel = metrics.riskOfRuin < 1 ? tSummary("riskLow") : metrics.riskOfRuin < 10 ? tSummary("riskModerate") : tSummary("riskHigh");
-
-    const copyStrategySummary = () => {
-        setCopying(true);
-        const score = (metrics.advanced?.edgeConfidence ?? 0).toFixed(0);
-        const diagnosis = tDiagnosis(verdictKey);
-        const summaryText = `
-NodoQuant Strategy Analysis
-
-Strategy Score: ${score} / 100
-Diagnosis: ${diagnosis}
-Expectancy: $${(metrics.expectancy || 0).toFixed(2)}
-Profit Factor: ${(metrics.profitFactor || 0).toFixed(2)}
-Max Drawdown: ${(metrics.maxDrawdown || 0).toFixed(2)}%
-Trades analyzed: ${metrics.totalTrades || 0}
-        `.trim();
-
-        navigator.clipboard.writeText(summaryText);
-        setTimeout(() => setCopying(false), 2000);
-    };
 
     return (
         <div className="w-full max-w-2xl mx-auto space-y-8 animate-fade-in">
