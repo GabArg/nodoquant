@@ -8,6 +8,8 @@
 
 Next.js · TypeScript · Supabase · Recharts · Vitest · Quantitative Analysis
 
+[![Live App](https://img.shields.io/badge/LIVE_APP-OPEN_NODOQUANT-111827?style=for-the-badge)](https://nodoquant.com/es)
+
 </div>
 
 ---
@@ -20,9 +22,34 @@ Instead of asking only whether a strategy was profitable, the platform is built 
 
 > **Does this strategy show a repeatable statistical edge — and what risks come with it?**
 
-NodoQuant combines strategy analysis, performance metrics, dashboards, comparison views and account-based workflows in a web product built with Next.js and TypeScript.
+NodoQuant combines strategy analysis, performance metrics, dashboards, comparison views and account-based workflows in a live web product built with Next.js and TypeScript.
 
-The repository includes dedicated analyzer experiences, dashboards, strategy views, project organization, comparison tools, authentication, account pages and multilingual routing.
+The public application supports strategy verification through metrics, statistical diagnostics and risk-oriented analysis, with dedicated experiences for multiple markets and trading platforms.
+
+---
+
+## 🚀 Live Product
+
+NodoQuant is available publicly at:
+
+**https://nodoquant.com/es**
+
+The live application currently presents:
+
+- strategy analysis without mandatory registration,
+- CSV, MT4, MT5 and Binance-compatible imports,
+- Strategy Score,
+- Profit Factor,
+- Win Rate,
+- Expectancy,
+- Maximum Drawdown,
+- sample-size awareness,
+- Monte Carlo simulation,
+- variance detection,
+- statistical edge validation,
+- Forex, Crypto, Futures and Stocks positioning.
+
+The product also exposes dedicated public pages for analyzers, reports, scoring, leaderboard and FAQs.
 
 ---
 
@@ -71,7 +98,7 @@ The platform surfaces metrics such as:
 - **Expectancy**
 - **Maximum Drawdown**
 - **Number of Trades**
-- strategy scoring
+- **Strategy Score**
 
 These metrics are useful because no single number tells the whole story.
 
@@ -94,6 +121,29 @@ Acceptable Risk
 ```
 
 A profitable strategy may still be unattractive if drawdowns are too large or results are driven by too few observations.
+
+---
+
+## 🧠 Strategy Score
+
+The live product explains the Strategy Score as a weighted combination of:
+
+- Profit Factor,
+- Expectancy,
+- Maximum Drawdown,
+- Coefficient of Variation,
+- sample-size adjustment.
+
+The public scoring bands are presented as:
+
+```text
+0–40    Negative Expectancy
+40–60   Noise or Inconsistency
+60–80   Statistical Edge
+80–100  Robust Edge
+```
+
+This score is intended as a compact summary, not a replacement for the underlying metrics.
 
 ---
 
@@ -134,6 +184,8 @@ Core Metrics
       ↓
 Strategy Score
       ↓
+Monte Carlo / Variance Analysis
+      ↓
 Dashboard
       ↓
 Compare Strategies
@@ -149,7 +201,16 @@ Decision Support
 
 The analyzer is the core entry point for evaluating a strategy.
 
-The app also includes dedicated landing experiences for:
+The public app accepts common trading-history formats such as:
+
+```text
+CSV
+MT4
+MT5
+Binance exports
+```
+
+The product also includes dedicated landing experiences for:
 
 - **Crypto Strategy Analyzer**
 - **Forex Strategy Analyzer**
@@ -186,6 +247,18 @@ This is especially useful when strategies differ across:
 ### Reports & Certificates
 
 The application includes report/certificate routes for presenting analysis results in a shareable format.
+
+---
+
+## 🔐 Privacy by Design
+
+The public application states that basic trade-history processing is performed locally in the browser.
+
+Trading data is not sent to or stored on NodoQuant servers unless the user explicitly chooses to save a report.
+
+The product also avoids requiring broker credentials for the basic analysis workflow, relying instead on exported trading-history files.
+
+This reduces unnecessary credential exposure while keeping the analysis workflow practical.
 
 ---
 
@@ -245,7 +318,7 @@ app/[locale]/
 
 and `next-intl`.
 
-This allows product pages and analysis experiences to be presented across multiple locales without duplicating the main application structure.
+The live product currently exposes English and Spanish language options.
 
 ---
 
@@ -346,22 +419,21 @@ NodoQuant is designed to make those questions part of the product itself.
 - Small sample sizes can create misleading conclusions.
 - Backtest results may differ materially from live execution.
 - Trading costs, slippage and data quality can materially affect real-world outcomes.
-- The repository currently contains development/build artifacts that should be cleaned up for a more production-ready public structure.
+- The public product is still evolving and some advanced areas remain under development.
 
 ---
 
 ## 🚀 Potential Next Steps
 
-- Clean development logs and temporary build artifacts from the repository.
 - Expand analyzer test coverage.
 - Add clearer methodology documentation for the scoring model.
 - Add statistical confidence intervals.
-- Add bootstrap or Monte Carlo robustness analysis.
+- Expand Monte Carlo and robustness analysis.
 - Add walk-forward validation.
 - Add deeper drawdown and risk decomposition.
 - Add strategy-regime comparison.
-- Add public-safe screenshots to the README.
-- Document data-input requirements and validation rules.
+- Add public-safe screenshots to this README.
+- Document data-input requirements and validation rules in more detail.
 
 ---
 
