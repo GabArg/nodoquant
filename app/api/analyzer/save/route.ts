@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createHash } from "crypto";
 import { getSupabaseServer } from "@/lib/supabase";
 import { createClient } from "@/lib/auth/server";
 import { writeFile, readFile } from "fs/promises";
@@ -16,9 +17,10 @@ import { getBaseUrl } from "@/lib/url";
  * PRODUCTION-GRADE Save Analysis System
  *
  * Features:
- * - Idempotency: Uses DB-driven state (email_send_status)
- * - Race-Safe: Atomic claim before sending via conditional update
- * - Resilience: Tracks attempts and persists errors for safe retries
+ * - Idempotency: Uses a deterministic analysis fingerprint
+ * - Race-Safe: Unique DB index prevents duplicate analysis inserts
+ * - Email Race-Safe: Atomic claim before sending via conditional update
+ * - Resilience: Tracks email attempts and persists errors for safe retries
  * - Validation: Uses the authenticated session as the trusted email source
  */
 
@@ -100,7 +102,7 @@ export async function POST(req: NextRequest) {
         const sub = await getUserSubscription(user_id);
         const isPro = isProUser(sub);
 
-        // 3. Plan limit enforcement
+        // 3. Per-analysis plan limit enforcement
         if (
             !isPro &&
             trades_count > FREE_PLAN_LIMITS.MAX_TRADES_PER_ANALYSIS
@@ -117,32 +119,40 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const canSave = await canCreateStrategy(user_id, isPro);
-
-        if (!canSave) {
-            return NextResponse.json(
-                {
-                    ok: false,
-                    error: "Límite del plan superado",
-                    reason: `El plan gratuito permite hasta ${FREE_PLAN_LIMITS.MAX_SAVED_STRATEGIES} análisis guardado. Actualizá a Pro para guardar análisis ilimitados.`,
-                },
-                {
-                    status: 403,
-                }
-            );
-        }
-
         const safeFileName =
             typeof file_name === "string" && file_name.trim().length > 0
                 ? file_name.trim().slice(0, 100)
                 : null;
+
+        const normalizedMetrics =
+            metrics_json &&
+            typeof metrics_json === "object" &&
+            !Array.isArray(metrics_json)
+                ? metrics_json
+                : {};
+
+        const fingerprintPayload = {
+            user_id,
+            trades_count,
+            winrate,
+            profit_factor,
+            max_drawdown,
+            sum_profit: sum_profit ?? null,
+            date_range_start: date_range_start ?? null,
+            date_range_end: date_range_end ?? null,
+            metrics_json: normalizedMetrics,
+        };
+
+        const analysisFingerprint = createHash("sha256")
+            .update(stableStringify(fingerprintPayload))
+            .digest("hex");
 
         const record = {
             trades_count,
             winrate,
             profit_factor,
             max_drawdown,
-            metrics_json: metrics_json ?? {},
+            metrics_json: normalizedMetrics,
             user_email: sessionEmail,
             file_name: safeFileName,
             date_range_start: date_range_start ?? null,
@@ -152,6 +162,7 @@ export async function POST(req: NextRequest) {
             project_id: project_id ?? null,
             strategy_id: strategy_id ?? null,
             dataset_name: safeFileName ?? "Dataset",
+            analysis_fingerprint: analysisFingerprint,
             email_send_status: "pending",
             email_send_attempts: 0,
         };
@@ -162,51 +173,128 @@ export async function POST(req: NextRequest) {
             return handleLocalFallback(record);
         }
 
-        // 4. Record handling: deduplicate or create
-        const { data: existingAnalysis } = await supabase
-            .from("trade_analysis")
-            .select("id, email_send_status, email_send_attempts")
-            .eq("user_id", user_id)
-            .eq("trades_count", trades_count)
-            .eq("winrate", winrate)
-            .eq("profit_factor", profit_factor)
-            .eq("max_drawdown", max_drawdown)
-            .limit(1)
-            .single();
+        // 4. Record handling: fingerprint-based deduplication
+        const { data: existingAnalysis, error: existingError } =
+            await supabase
+                .from("trade_analysis")
+                .select("id, email_send_status, email_send_attempts")
+                .eq("user_id", user_id)
+                .eq("analysis_fingerprint", analysisFingerprint)
+                .maybeSingle();
+
+        if (existingError) {
+            console.error(
+                "[Analyzer] Supabase dedup lookup error:",
+                existingError.message
+            );
+
+            return NextResponse.json(
+                {
+                    ok: false,
+                    error: "Error al verificar análisis existente",
+                },
+                {
+                    status: 500,
+                }
+            );
+        }
 
         let reportId = existingAnalysis?.id;
-        const isNewInsert = !existingAnalysis;
+        let isNewInsert = !existingAnalysis;
+        let analysisForEmail = existingAnalysis;
 
         if (isNewInsert) {
-            const { data, error } = await supabase
-                .from("trade_analysis")
-                .insert(record)
-                .select("id")
-                .single();
+            // Only a genuinely new analysis consumes a saved-strategy slot.
+            const canSave = await canCreateStrategy(user_id, isPro);
 
-            if (error) {
-                console.error(
-                    "[Analyzer] Supabase insert error:",
-                    error.message
-                );
-
+            if (!canSave) {
                 return NextResponse.json(
                     {
                         ok: false,
-                        error: "Error al guardar análisis",
+                        error: "Límite del plan superado",
+                        reason: `El plan gratuito permite hasta ${FREE_PLAN_LIMITS.MAX_SAVED_STRATEGIES} análisis guardado. Actualizá a Pro para guardar análisis ilimitados.`,
                     },
                     {
-                        status: 500,
+                        status: 403,
                     }
                 );
             }
 
-            reportId = data?.id;
+            const { data, error } = await supabase
+                .from("trade_analysis")
+                .insert(record)
+                .select("id, email_send_status, email_send_attempts")
+                .single();
+
+            if (error) {
+                // A simultaneous request may have inserted the same fingerprint
+                // after our lookup but before this insert. The unique index is
+                // the final source of truth for idempotency.
+                if (error.code === "23505") {
+                    const {
+                        data: concurrentExisting,
+                        error: concurrentLookupError,
+                    } = await supabase
+                        .from("trade_analysis")
+                        .select(
+                            "id, email_send_status, email_send_attempts"
+                        )
+                        .eq("user_id", user_id)
+                        .eq(
+                            "analysis_fingerprint",
+                            analysisFingerprint
+                        )
+                        .maybeSingle();
+
+                    if (
+                        concurrentLookupError ||
+                        !concurrentExisting
+                    ) {
+                        console.error(
+                            "[Analyzer] Duplicate detected but existing analysis could not be recovered",
+                            concurrentLookupError?.message
+                        );
+
+                        return NextResponse.json(
+                            {
+                                ok: false,
+                                error: "Error al recuperar análisis existente",
+                            },
+                            {
+                                status: 500,
+                            }
+                        );
+                    }
+
+                    reportId = concurrentExisting.id;
+                    analysisForEmail = concurrentExisting;
+                    isNewInsert = false;
+                } else {
+                    console.error(
+                        "[Analyzer] Supabase insert error:",
+                        error.message
+                    );
+
+                    return NextResponse.json(
+                        {
+                            ok: false,
+                            error: "Error al guardar análisis",
+                        },
+                        {
+                            status: 500,
+                        }
+                    );
+                }
+            } else {
+                reportId = data?.id;
+                analysisForEmail = data;
+            }
         }
 
         console.log("[Analyzer] Analysis record processed", {
             id: reportId,
             isNewInsert,
+            fingerprint: analysisFingerprint,
         });
 
         // 5. Email trigger system
@@ -236,7 +324,7 @@ export async function POST(req: NextRequest) {
                 });
             } else {
                 const nextAttempt =
-                    (existingAnalysis?.email_send_attempts || 0) + 1;
+                    (analysisForEmail?.email_send_attempts || 0) + 1;
 
                 // Conditional claim: only pending or failed reports can send
                 const { data: claimed, error: claimError } = await supabase
@@ -358,6 +446,30 @@ export async function POST(req: NextRequest) {
     }
 }
 
+function stableStringify(value: unknown): string {
+    if (value === null || typeof value !== "object") {
+        return JSON.stringify(value);
+    }
+
+    if (Array.isArray(value)) {
+        return `[${value
+            .map((item) => stableStringify(item))
+            .join(",")}]`;
+    }
+
+    const objectValue = value as Record<string, unknown>;
+    const sortedKeys = Object.keys(objectValue).sort();
+
+    return `{${sortedKeys
+        .map(
+            (key) =>
+                `${JSON.stringify(key)}:${stableStringify(
+                    objectValue[key]
+                )}`
+        )
+        .join(",")}}`;
+}
+
 async function handleLocalFallback(record: Record<string, unknown>) {
     console.warn(
         "[Analyzer] Supabase not configured — saving to analysis-dev.json"
@@ -372,6 +484,27 @@ async function handleLocalFallback(record: Record<string, unknown>) {
         existing = JSON.parse(raw);
     } catch {
         // File may not exist yet in local development.
+    }
+
+    const fingerprint =
+        typeof record.analysis_fingerprint === "string"
+            ? record.analysis_fingerprint
+            : null;
+
+    const existingLocal = fingerprint
+        ? existing.find(
+              (item) =>
+                  item.analysis_fingerprint === fingerprint &&
+                  item.user_id === record.user_id
+          )
+        : undefined;
+
+    if (existingLocal?.id) {
+        return NextResponse.json({
+            ok: true,
+            id: existingLocal.id,
+            duplicated: true,
+        });
     }
 
     const id = crypto.randomUUID();
@@ -391,5 +524,6 @@ async function handleLocalFallback(record: Record<string, unknown>) {
     return NextResponse.json({
         ok: true,
         id,
+        duplicated: false,
     });
 }
