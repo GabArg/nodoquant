@@ -60,6 +60,19 @@ export default function AnalyzerWizard() {
     const searchParams = useSearchParams();
     const uploadRef = useRef<HTMLDivElement>(null);
     const isRestoring = useRef(false);
+    const loadingTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+    const clearLoadingTimers = useCallback(() => {
+        loadingTimersRef.current.forEach((timer) => clearTimeout(timer));
+        loadingTimersRef.current = [];
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            clearLoadingTimers();
+        };
+    }, [clearLoadingTimers]);
+
 
     useEffect(() => {
         if (isRestoring.current) return;
@@ -122,14 +135,6 @@ export default function AnalyzerWizard() {
     }, [step, importSource, fileState, parseResult, basicMetrics, fullMetrics, analysisId, pendingNormalized, isHydrated]);
 
     useEffect(() => {
-        if (!isHydrated) return;
-        const saved = sessionStorage.getItem("nodoquant_analyzer_state");
-        if (searchParams.get("sample") === "true" && !saved) {
-            handleFile(sampleCsvData, "sample_data.csv");
-        }
-    }, [searchParams, isHydrated]);
-
-    useEffect(() => {
         async function checkPlan() {
             try {
                 const supabase = (await import("@/lib/auth/client")).createClient();
@@ -155,21 +160,47 @@ export default function AnalyzerWizard() {
     const [loadingStage, setLoadingStage] = useState<"parsing" | "normalizing" | "diagnostics" | "finalizing">("parsing");
 
     const handleFile = useCallback((content: string, fileName: string) => {
+        clearLoadingTimers();
+
         setParseError(null);
         setLoading(true);
         setStep("upload");
         setLoadingStage("parsing");
-        const stages: Array<"parsing" | "normalizing" | "diagnostics" | "finalizing"> = ["parsing", "normalizing", "diagnostics", "finalizing"];
+
+        const stages: Array<"parsing" | "normalizing" | "diagnostics" | "finalizing"> = [
+            "parsing",
+            "normalizing",
+            "diagnostics",
+            "finalizing",
+        ];
+
         stages.forEach((stage, i) => {
-            setTimeout(() => setLoadingStage(stage), (i + 1) * 300);
+            const timer = setTimeout(() => {
+                setLoadingStage(stage);
+            }, (i + 1) * 300);
+
+            loadingTimersRef.current.push(timer);
         });
-        setTimeout(() => {
+
+        const completionTimer = setTimeout(() => {
             setFileState({ content, name: fileName });
             setStep("importing");
             setLoading(false);
             trackEvent("analysis_started", { fileName });
+            loadingTimersRef.current = [];
         }, 1300);
-    }, []);
+
+        loadingTimersRef.current.push(completionTimer);
+    }, [clearLoadingTimers]);
+
+    useEffect(() => {
+        if (!isHydrated) return;
+        const saved = sessionStorage.getItem("nodoquant_analyzer_state");
+        if (searchParams.get("sample") === "true" && !saved) {
+            handleFile(sampleCsvData, "sample_data.csv");
+        }
+    }, [searchParams, isHydrated, handleFile]);
+
 
     const handleNormalizedImport = useCallback((trades: NormalizedTrade[], source: ImportSource) => {
         setPendingNormalized({ trades, source });
@@ -201,7 +232,7 @@ export default function AnalyzerWizard() {
             setParseError(err instanceof Error ? err.message : "Error calculating metrics.");
             setStep("source");
         }
-    }, [pendingNormalized]);
+    }, [pendingNormalized, isPro]);
 
     const handleImportComplete = useCallback((result: ParseResult) => {
         try {
@@ -224,7 +255,7 @@ export default function AnalyzerWizard() {
             setParseError(err instanceof Error ? err.message : "Error calculando métricas.");
             setStep("upload");
         }
-    }, []);
+    }, [isPro]);
 
     const handleImportCancel = useCallback(() => {
         setFileState(null);
@@ -248,6 +279,7 @@ export default function AnalyzerWizard() {
     }
 
     const resetToSource = () => {
+        clearLoadingTimers();
         sessionStorage.removeItem("nodoquant_analyzer_state");
 
         setStep("source");
