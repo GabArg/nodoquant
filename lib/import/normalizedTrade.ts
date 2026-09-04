@@ -44,6 +44,28 @@ export interface NormalizedTrade {
     source: ImportSource;
 }
 
+type TradeConversionInput = Partial<NormalizedTrade> & {
+    entry_date?: Date | string | number | null;
+    entry_time?: Date | string | number | null;
+    exit_date?: Date | string | number | null;
+    exit_time?: Date | string | number | null;
+    datetime?: Date | string | number | null;
+    profit?: number | null;
+    volume?: number | null;
+    risk_reward?: number | null;
+};
+
+function toDate(value: Date | string | number | null | undefined): Date | undefined {
+    if (value == null) return undefined;
+
+    if (value instanceof Date) {
+        return new Date(value.getTime());
+    }
+
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? undefined : parsed;
+}
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 /**
@@ -99,12 +121,12 @@ export function normalizeDirection(raw: string): "long" | "short" | "unknown" {
 /**
  * Convert NormalizedTrade to the legacy Trade format consumed by `calcBasicMetrics` etc.
  */
-export function toTrade(n: any): Trade {
-    const rawOpen = n.open_time || n.entry_date || n.entry_time;
-    const rawClose = n.close_time || n.exit_date || n.exit_time || n.datetime;
+export function toTrade(n: TradeConversionInput): Trade {
+    const rawOpen = n.open_time ?? n.entry_date ?? n.entry_time;
+    const rawClose = n.close_time ?? n.exit_date ?? n.exit_time ?? n.datetime;
 
-    const openDate = rawOpen ? new Date(rawOpen) : undefined;
-    const closeDate = rawClose ? new Date(rawClose) : new Date();
+    const openDate = toDate(rawOpen);
+    const closeDate = toDate(rawClose) ?? new Date();
 
     return {
         datetime: closeDate,
