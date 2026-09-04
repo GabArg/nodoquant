@@ -17,7 +17,6 @@ interface Props {
     dateRangeStart?: string;
     dateRangeEnd?: string;
     strategyId?: string;
-    datasetName?: string;
     isAuthenticated: boolean;
     onUnlocked: (email: string, id: string) => void;
     triggerUnlock?: number;
@@ -30,7 +29,6 @@ export default function EmailGate({
     dateRangeStart,
     dateRangeEnd,
     strategyId,
-    datasetName,
     isAuthenticated,
     onUnlocked,
     triggerUnlock = 0,
@@ -58,13 +56,21 @@ export default function EmailGate({
     async function handleUnlock() {
         setError(null);
         setSubmitting(true);
-        const endpoint = isAuthenticated ? "/api/analyzer/save" : "/api/analyzer/anonymous";
-        console.log("[Unlock] Triggered", { isAuthenticated, endpoint });
+        const endpoint = isAuthenticated
+            ? "/api/analyzer/save"
+            : "/api/analyzer/anonymous";
+
+        console.log("[Unlock] Triggered", {
+            isAuthenticated,
+            endpoint,
+        });
 
         try {
             const res = await fetch(endpoint, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                },
                 body: JSON.stringify({
                     trades_count: basicMetrics.trades_count,
                     winrate: basicMetrics.winrate,
@@ -76,18 +82,27 @@ export default function EmailGate({
                     date_range_end: dateRangeEnd,
                     sum_profit: basicMetrics.sum_profit,
                     strategy_id: strategyId || null,
-                    dataset_name: datasetName || 'Dataset',
                 }),
             });
+
             const data = await res.json();
+
             if (!data.ok) {
-                // If the API provided a specific reason string, use it
-                const errorMsg = data.reason || data.error || t("form.errorSave");
+                const errorMsg =
+                    data.reason ||
+                    data.error ||
+                    t("form.errorSave");
+
                 throw new Error(errorMsg);
             }
+
             onUnlocked("", data.id);
         } catch (err: unknown) {
-            setError(err instanceof Error ? err.message : t("form.errorNetwork"));
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : t("form.errorNetwork")
+            );
         } finally {
             setSubmitting(false);
         }
@@ -96,30 +111,83 @@ export default function EmailGate({
     return (
         <div className="w-full max-w-xl mx-auto mt-10">
             {/* Teaser of locked content */}
-            <div className="relative rounded-2xl overflow-hidden mb-6"
-                style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+            <div
+                className="relative rounded-2xl overflow-hidden mb-6"
+                style={{
+                    border: "1px solid rgba(255,255,255,0.08)",
+                }}
+            >
                 {/* Blurred preview rows */}
-                <div className="px-6 py-5 select-none" style={{ filter: "blur(4px)", pointerEvents: "none" }}>
+                <div
+                    className="px-6 py-5 select-none"
+                    style={{
+                        filter: "blur(4px)",
+                        pointerEvents: "none",
+                    }}
+                >
                     {[0, 1, 2, 3].map((idx) => (
-                        <div key={idx} className="flex justify-between items-center py-3"
-                            style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                            <span className="text-sm text-gray-400">{t(`teaserLabels.${idx}`)}</span>
-                            <span className="text-sm font-semibold text-white">██████</span>
+                        <div
+                            key={idx}
+                            className="flex justify-between items-center py-3"
+                            style={{
+                                borderBottom:
+                                    "1px solid rgba(255,255,255,0.05)",
+                            }}
+                        >
+                            <span className="text-sm text-gray-400">
+                                {t(`teaserLabels.${idx}`)}
+                            </span>
+                            <span className="text-sm font-semibold text-white">
+                                ██████
+                            </span>
                         </div>
                     ))}
                 </div>
+
                 {/* Overlay */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center"
-                    style={{ background: "linear-gradient(to bottom, rgba(10,10,15,0.3) 0%, rgba(10,10,15,0.85) 60%)" }}>
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center mb-3"
-                        style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.3)" }}>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" strokeWidth="2">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <div
+                    className="absolute inset-0 flex flex-col items-center justify-center"
+                    style={{
+                        background:
+                            "linear-gradient(to bottom, rgba(10,10,15,0.3) 0%, rgba(10,10,15,0.85) 60%)",
+                    }}
+                >
+                    <div
+                        className="w-10 h-10 rounded-full flex items-center justify-center mb-3"
+                        style={{
+                            background: "rgba(99,102,241,0.15)",
+                            border:
+                                "1px solid rgba(99,102,241,0.3)",
+                        }}
+                    >
+                        <svg
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#818cf8"
+                            strokeWidth="2"
+                        >
+                            <rect
+                                x="3"
+                                y="11"
+                                width="18"
+                                height="11"
+                                rx="2"
+                                ry="2"
+                            />
                             <path d="M7 11V7a5 5 0 0110 0v4" />
                         </svg>
                     </div>
-                    <p className="text-sm font-semibold text-white">{t("title")}</p>
-                    <p className="text-xs mt-1" style={{ color: "#6b7280" }}>
+
+                    <p className="text-sm font-semibold text-white">
+                        {t("title")}
+                    </p>
+
+                    <p
+                        className="text-xs mt-1"
+                        style={{ color: "#6b7280" }}
+                    >
                         {t("subtitle")}
                     </p>
                 </div>
@@ -136,22 +204,47 @@ export default function EmailGate({
             ) : error ? (
                 <div className="w-full text-center py-8 space-y-4">
                     <div className="w-12 h-12 mx-auto rounded-full bg-red-500/10 flex items-center justify-center mb-4">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-red-400">
-                            <circle cx="12" cy="12" r="10"/>
-                            <line x1="12" y1="8" x2="12" y2="12"/>
-                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            className="text-red-400"
+                        >
+                            <circle cx="12" cy="12" r="10" />
+                            <line
+                                x1="12"
+                                y1="8"
+                                x2="12"
+                                y2="12"
+                            />
+                            <line
+                                x1="12"
+                                y1="16"
+                                x2="12.01"
+                                y2="16"
+                            />
                         </svg>
                     </div>
-                    <p className="text-sm font-semibold text-red-400">{error}</p>
+
+                    <p className="text-sm font-semibold text-red-400">
+                        {error}
+                    </p>
+
                     <div className="pt-4 flex justify-center gap-4">
-                        <button 
-                            onClick={() => handleUnlock()} 
+                        <button
+                            onClick={() => handleUnlock()}
                             className="px-6 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-bold transition-colors"
                         >
                             {t("form.retry")}
                         </button>
-                        <button 
-                            onClick={() => router.push(`/${locale}/dashboard`)} 
+
+                        <button
+                            onClick={() =>
+                                router.push(`/${locale}/dashboard`)
+                            }
                             className="px-6 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-colors shadow-lg shadow-indigo-600/20"
                         >
                             {t("form.goDashboard")}
@@ -171,7 +264,15 @@ export default function EmailGate({
                         onClick={() => handleUnlock()}
                         className="btn-primary w-full justify-center text-[12px] py-4 bg-indigo-600 hover:bg-indigo-500 shadow-[0_10px_30px_-10px_rgba(99,102,241,0.5)]"
                     >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="mr-2">
+                        <svg
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            className="mr-2"
+                        >
                             <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                         </svg>
                         Desbloquear análisis completo
@@ -179,10 +280,22 @@ export default function EmailGate({
 
                     <button
                         type="button"
-                        onClick={() => router.push(`/${locale}/signup?redirect=/${locale}/analyzer`)}
+                        onClick={() =>
+                            router.push(
+                                `/${locale}/signup?redirect=/${locale}/analyzer`
+                            )
+                        }
                         className="btn-secondary w-full justify-center text-[12px] py-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 shadow-sm"
                     >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="mr-2">
+                        <svg
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            className="mr-2"
+                        >
                             <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                         </svg>
                         {t("form.createAccountCta")}
@@ -190,12 +303,17 @@ export default function EmailGate({
 
                     <p className="text-xs text-center text-gray-400 font-medium">
                         {t("form.haveAccount")}{" "}
-                        <button onClick={() => router.push(`/${locale}/login?redirect=/${locale}/analyzer`)} className="text-indigo-400 hover:text-indigo-300 transition-colors">
+                        <button
+                            onClick={() =>
+                                router.push(
+                                    `/${locale}/login?redirect=/${locale}/analyzer`
+                                )
+                            }
+                            className="text-indigo-400 hover:text-indigo-300 transition-colors"
+                        >
                             {t("form.loginHere")}
                         </button>
                     </p>
-                    
-                    {/* Error rendering moved up to the root ternary, removed from here */}
                 </div>
             )}
         </div>

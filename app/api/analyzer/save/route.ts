@@ -35,7 +35,6 @@ export interface SaveAnalysisBody {
     sum_profit?: number;
     project_id?: string;
     strategy_id?: string;
-    dataset_name?: string;
     user_id?: string;
     isTest?: boolean;
     isAnonymous?: boolean;
@@ -57,7 +56,6 @@ export async function POST(req: NextRequest) {
             sum_profit,
             project_id,
             strategy_id,
-            dataset_name,
         } = body;
 
         // 1. Basic validation
@@ -134,6 +132,11 @@ export async function POST(req: NextRequest) {
             );
         }
 
+        const safeFileName =
+            typeof file_name === "string" && file_name.trim().length > 0
+                ? file_name.trim().slice(0, 100)
+                : null;
+
         const record = {
             trades_count,
             winrate,
@@ -141,14 +144,14 @@ export async function POST(req: NextRequest) {
             max_drawdown,
             metrics_json: metrics_json ?? {},
             user_email: sessionEmail,
-            file_name: file_name ?? null,
+            file_name: safeFileName,
             date_range_start: date_range_start ?? null,
             date_range_end: date_range_end ?? null,
             sum_profit: sum_profit ?? null,
             user_id,
             project_id: project_id ?? null,
             strategy_id: strategy_id ?? null,
-            dataset_name: dataset_name ?? "Dataset",
+            dataset_name: safeFileName ?? "Dataset",
             email_send_status: "pending",
             email_send_attempts: 0,
         };

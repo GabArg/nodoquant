@@ -56,7 +56,6 @@ export default function AnalyzerWizard() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [triggerUnlock, setTriggerUnlock] = useState(0);
     const [analysisId, setAnalysisId] = useState<string | null>(null);
-    const [datasetName, setDatasetName] = useState("");
     const [pendingNormalized, setPendingNormalized] = useState<{ trades: NormalizedTrade[]; source: ImportSource } | null>(null);
     const [isHydrated, setIsHydrated] = useState(false);
     const searchParams = useSearchParams();
@@ -94,7 +93,6 @@ export default function AnalyzerWizard() {
                 if (hydrated.fullMetrics) setFullMetrics(hydrated.fullMetrics);
                 if (hydrated.unlockedEmail) setUnlockedEmail(hydrated.unlockedEmail);
                 if (hydrated.analysisId) setAnalysisId(hydrated.analysisId);
-                if (hydrated.datasetName) setDatasetName(hydrated.datasetName);
                 if (hydrated.pendingNormalized) setPendingNormalized(hydrated.pendingNormalized);
 
                 setTimeout(() => setIsHydrated(true), 100);
@@ -118,14 +116,13 @@ export default function AnalyzerWizard() {
             fullMetrics,
             unlockedEmail,
             analysisId,
-            datasetName,
             pendingNormalized
         };
         const timer = setTimeout(() => {
             sessionStorage.setItem("nodoquant_analyzer_state", JSON.stringify(stateToSave));
         }, 500);
         return () => clearTimeout(timer);
-    }, [step, importSource, fileState, parseResult, basicMetrics, fullMetrics, unlockedEmail, analysisId, datasetName, pendingNormalized, isHydrated]);
+    }, [step, importSource, fileState, parseResult, basicMetrics, fullMetrics, unlockedEmail, analysisId, pendingNormalized, isHydrated]);
 
     useEffect(() => {
         if (!isHydrated) return;
@@ -269,7 +266,6 @@ export default function AnalyzerWizard() {
         setUnlockedEmail("");
         setTriggerUnlock(0);
         setAnalysisId(null);
-        setDatasetName("");
         setPendingNormalized(null);
     };
 
@@ -405,7 +401,7 @@ export default function AnalyzerWizard() {
                 {step === "gate" && parseResult && basicMetrics && (
                     <div className="space-y-4">
                         <BasicResults metrics={basicMetrics} fullMetrics={fullMetrics || undefined} format={parseResult.format} fileName={parseResult.fileName} trades={parseResult.trades} onReset={resetToSource} onViewFullReport={() => { setTriggerUnlock(prev => prev + 1); window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }} />
-                        <EmailGate metricsPayload={{ basic: basicMetrics, equity_curve: fullMetrics?.equityCurve, drawdown_curve: fullMetrics?.drawdownCurve, trade_histogram: fullMetrics?.tradeHistogram }} basicMetrics={{ trades_count: basicMetrics.totalTrades, winrate: basicMetrics.winrate, profit_factor: basicMetrics.profitFactor, max_drawdown: basicMetrics.maxDrawdown, sum_profit: basicMetrics.sumProfit }} fileName={parseResult.fileName} dateRangeStart={parseResult.dateRangeStart?.toISOString()} dateRangeEnd={parseResult.dateRangeEnd?.toISOString()} strategyId={""} datasetName={datasetName} isAuthenticated={isAuthenticated} onUnlocked={handleEmailUnlocked} triggerUnlock={triggerUnlock} />
+                        <EmailGate metricsPayload={{ basic: basicMetrics, equity_curve: fullMetrics?.equityCurve, drawdown_curve: fullMetrics?.drawdownCurve, trade_histogram: fullMetrics?.tradeHistogram }} basicMetrics={{ trades_count: basicMetrics.totalTrades, winrate: basicMetrics.winrate, profit_factor: basicMetrics.profitFactor, max_drawdown: basicMetrics.maxDrawdown, sum_profit: basicMetrics.sumProfit }} fileName={parseResult.fileName} dateRangeStart={parseResult.dateRangeStart?.toISOString()} dateRangeEnd={parseResult.dateRangeEnd?.toISOString()} strategyId={""} isAuthenticated={isAuthenticated} onUnlocked={handleEmailUnlocked} triggerUnlock={triggerUnlock} />
                     </div>
                 )}
 
