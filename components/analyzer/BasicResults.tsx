@@ -36,7 +36,7 @@ function computeExpectancyR(trades: Trade[]): number | null {
     return parseFloat(((wr * avgWinR) - (1 - wr) * 1).toFixed(2));
 }
 
-function getDiagnosisState(metrics: BasicMetrics, fullMetrics?: FullMetrics, rawScore?: number): string {
+function getDiagnosisState(metrics: BasicMetrics, fullMetrics?: FullMetrics): string {
     if (fullMetrics?.advanced?.verdict) {
         return fullMetrics.advanced.verdict;
     }
@@ -48,7 +48,7 @@ function getDiagnosisState(metrics: BasicMetrics, fullMetrics?: FullMetrics, raw
     if (n < 30) return "insufficientSample";
     if (pf < 1 || exp <= 0) return "noEdge";
     if (pf >= 1.3 && n >= 100) return "strongEdge";
-    if (pf >= 1.1 && n >= 50) return "weakEdge";
+    if (pf >= 1.1 && n >= 30) return "weakEdge";
     
     return "unstableEdge";
 }
@@ -67,24 +67,36 @@ export default function BasicResults({ metrics, fullMetrics, format, fileName, t
     
     const [copied, setCopied] = useState(false);
     
-    // Compute 0-100 score: use advanced edgeConfidence if available, else basic calc
-    let rawScore = 0;
+    // Canonical 0-100 Edge Confidence.
+    // Prefer the advanced analyzer value. The legacy edge score is used only
+    // as a fallback when full metrics are unavailable.
+    let edgeConfidence = 0;
     if (fullMetrics?.advanced?.edgeConfidence !== undefined) {
-        rawScore = fullMetrics.advanced.edgeConfidence;
+        edgeConfidence = fullMetrics.advanced.edgeConfidence;
     } else {
-        const edgeRaw = calcEdgeScore(metrics.winrate, metrics.profitFactor, metrics.maxDrawdown, metrics.totalTrades);
-        rawScore = Math.round(edgeRaw * 10);
-        if (metrics.totalTrades < 50) rawScore = Math.round(rawScore * 0.6);
-        else if (metrics.totalTrades < 100) rawScore = Math.round(rawScore * 0.8);
-    }
-    rawScore = Math.min(100, Math.max(0, rawScore));
+        const edgeRaw = calcEdgeScore(
+            metrics.winrate,
+            metrics.profitFactor,
+            metrics.maxDrawdown,
+            metrics.totalTrades
+        );
 
-    const diagState = getDiagnosisState(metrics, fullMetrics, rawScore);
-    const animatedScore = useCountUp(rawScore, 1200, 300);
-    const animatedConfidence = useCountUp(fullMetrics?.advanced?.edgeConfidence ?? 0, 1500, 500);
+        edgeConfidence = Math.round(edgeRaw * 10);
+
+        if (metrics.totalTrades < 50) {
+            edgeConfidence = Math.round(edgeConfidence * 0.6);
+        } else if (metrics.totalTrades < 100) {
+            edgeConfidence = Math.round(edgeConfidence * 0.8);
+        }
+    }
+
+    edgeConfidence = Math.min(100, Math.max(0, edgeConfidence));
+
+    const diagState = getDiagnosisState(metrics, fullMetrics);
+    const animatedConfidence = useCountUp(edgeConfidence, 1500, 500);
     
     const copySummary = () => {
-        const text = `${t("summaryLabels.score")}: ${rawScore}
+        const text = `${confT("title")}: ${edgeConfidence}
 ${t("summaryLabels.trades")}: ${metrics.totalTrades}
 ${t("summaryLabels.winRate")}: ${metrics.winrate.toFixed(1)}%
 ${t("summaryLabels.pf")}: ${metrics.profitFactor.toFixed(2)}
@@ -97,11 +109,44 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
     };
 
     const metricCards = [
-        { id: "score", label: t("metrics.score") || "Strategy Score", value: animatedScore, color: "#818cf8", tip: ttT("score") },
-        { id: "conf", label: confT("title"), value: animatedConfidence, color: (fullMetrics?.advanced?.edgeConfidence ?? 0) >= 70 ? "#10b981" : (fullMetrics?.advanced?.edgeConfidence ?? 0) >= 30 ? "#fb923c" : "#f87171", tip: confT("tooltip") },
-        { id: "pf", label: t("metrics.profitFactor"), value: metrics.profitFactor.toFixed(2), color: metrics.profitFactor >= 1.5 ? "#10b981" : metrics.profitFactor >= 1 ? "#fb923c" : "#f87171", tip: ttT("pf") },
-        { id: "exp", label: t("metrics.expectancy") || "Expectancy", value: metrics.expectancy.toFixed(2), color: metrics.expectancy > 0 ? "#10b981" : "#f87171", tip: ttT("expectancy") },
-        { id: "dd", label: t("metrics.maxDrawdown"), value: `${Math.abs(metrics.maxDrawdown).toFixed(1)}%`, color: Math.abs(metrics.maxDrawdown) <= 15 ? "#10b981" : "#fb923c", tip: ttT("maxDrawdown") },
+        {
+            id: "conf",
+            label: confT("title"),
+            value: animatedConfidence,
+            color:
+                edgeConfidence >= 70
+                    ? "#10b981"
+                    : edgeConfidence >= 30
+                      ? "#fb923c"
+                      : "#f87171",
+            tip: confT("tooltip"),
+        },
+        {
+            id: "pf",
+            label: t("metrics.profitFactor"),
+            value: metrics.profitFactor.toFixed(2),
+            color:
+                metrics.profitFactor >= 1.5
+                    ? "#10b981"
+                    : metrics.profitFactor >= 1
+                      ? "#fb923c"
+                      : "#f87171",
+            tip: ttT("pf"),
+        },
+        {
+            id: "exp",
+            label: t("metrics.expectancy") || "Expectancy",
+            value: metrics.expectancy.toFixed(2),
+            color: metrics.expectancy > 0 ? "#10b981" : "#f87171",
+            tip: ttT("expectancy"),
+        },
+        {
+            id: "dd",
+            label: t("metrics.maxDrawdown"),
+            value: `${Math.abs(metrics.maxDrawdown).toFixed(1)}%`,
+            color: Math.abs(metrics.maxDrawdown) <= 15 ? "#10b981" : "#fb923c",
+            tip: ttT("maxDrawdown"),
+        },
     ];
 
     const stateInfo = diagT.raw(diagState);
@@ -155,7 +200,7 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
                         <button onClick={() => {
                                     trackEvent("CTA_CLICK_TOP", {
                                         source: "BASIC_RESULTS_TEASER",
-                                        score: rawScore,
+                                        score: edgeConfidence,
                                         verdict: diagState
                                     });
                                     if (onViewFullReport) onViewFullReport();
@@ -179,7 +224,7 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
             {!hideMetrics && (
                 <>
                     {/* ── Section 2: Key Metrics Panel (2x2 Grid) ── */}
-                    <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                         {metricCards.map((m) => (
                             <div key={m.id} className="group relative flex flex-col p-6 rounded-[32px] bg-white/[0.01] border border-white/[0.05] hover:bg-white/[0.03] hover:border-white/10 transition-all duration-500 overflow-visible shadow-lg shadow-black/10">
                                 <div className="flex items-start gap-2 mb-4 relative group-hover:z-50 min-h-[32px]">
@@ -288,7 +333,7 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
                                         <button onClick={() => {
                                                     trackEvent("CTA_CLICK_TOP", {
                                                         source: "BASIC_RESULTS_FOOTER",
-                                                        score: rawScore,
+                                                        score: edgeConfidence,
                                                         verdict: diagState
                                                     });
                                                     if (onViewFullReport) onViewFullReport();
