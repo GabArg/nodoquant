@@ -490,98 +490,245 @@ export function calcRHistogram(trades: Trade[], bins = 20): { counts: number[]; 
     return calcHistogram(rValues, bins);
 }
 
-export function calcAdvancedRobustness(trades: Trade[], basic: BasicMetrics, mc: MonteCarloResult): AdvancedRobustness {
-    const profits = trades.map(t => t.profit);
+export function calcAdvancedRobustness(
+    trades: Trade[],
+    basic: BasicMetrics,
+    mc: MonteCarloResult
+): AdvancedRobustness {
+    const profits = trades.map((t) => t.profit);
     const n = trades.length;
-    
-    // 1. SQN = (Expectancy / StdDev) * sqrt(N)
-    // Refinement: SQN is highly sensitive to outlier trades. We use a normalized stdDev.
-    const avg = basic.expectancy;
-    const stdDev = n > 1 
-        ? Math.sqrt(profits.reduce((s, p) => s + Math.pow(p - avg, 2), 0) / (n - 1))
-        : 1;
-    const sqn = stdDev === 0 ? 0 : (avg / stdDev) * Math.sqrt(n);
-    
-    let sqnLevel: AdvancedRobustness["sqnLevel"] = "poor";
-    if (sqn >= 7) sqnLevel = "elite";
-    else if (sqn >= 5) sqnLevel = "excellent";
-    else if (sqn >= 3) sqnLevel = "good";
-    else if (sqn >= 1.6) sqnLevel = "below";
 
-    // 2. Z-Score (Trade sequence dependency)
-    // Formula: Z = (N*(R - 0.5) - X) / sqrt((X*(X - N)) / (N - 1))
-    // Interpret: > 2.0 (clustering/dependency), < -2.0 (alternating/randomness)
-    const winners = profits.map(p => p > 0);
-    let runs = profits.length > 0 ? 1 : 0;
-    for (let i = 1; i < winners.length; i++) {
-        if (winners[i] !== winners[i - 1]) runs++;
+    // 1. SQN = (Expectancy / StdDev) * sqrt(N)
+    // Uses sample standard deviation (n - 1).
+    const avg = basic.expectancy;
+    const stdDev =
+        n > 1
+            ? Math.sqrt(
+                  profits.reduce(
+                      (sum, profit) =>
+                          sum + Math.pow(profit - avg, 2),
+                      0
+                  ) /
+                      (n - 1)
+              )
+            : 1;
+
+    const sqn =
+        stdDev === 0
+            ? 0
+            : (avg / stdDev) * Math.sqrt(n);
+
+    let sqnLevel: AdvancedRobustness["sqnLevel"] = "poor";
+
+    if (sqn >= 7) {
+        sqnLevel = "elite";
+    } else if (sqn >= 5) {
+        sqnLevel = "excellent";
+    } else if (sqn >= 3) {
+        sqnLevel = "good";
+    } else if (sqn >= 1.6) {
+        sqnLevel = "below";
     }
-    
-    const W = profits.filter(p => p > 0).length;
+
+    // 2. Z-Score (trade sequence dependency)
+    const winners = profits.map((profit) => profit > 0);
+    let runs = profits.length > 0 ? 1 : 0;
+
+    for (let i = 1; i < winners.length; i++) {
+        if (winners[i] !== winners[i - 1]) {
+            runs++;
+        }
+    }
+
+    const W = profits.filter((profit) => profit > 0).length;
     const L = n - W;
     const X = 2 * W * L;
+
     let zScore = 0;
+
     if (n > 1 && X > 0 && n !== X) {
         const numerator = n * (runs - 0.5) - X;
-        const denominator = Math.sqrt((X * (X - n)) / (n - 1));
-        zScore = denominator === 0 ? 0 : numerator / denominator;
+        const denominator = Math.sqrt(
+            (X * (X - n)) / (n - 1)
+        );
+
+        zScore =
+            denominator === 0
+                ? 0
+                : numerator / denominator;
     }
 
     let zLevel: AdvancedRobustness["zLevel"] = "random";
     const absZ = Math.abs(zScore);
-    if (absZ > 2) zLevel = "strong";
-    else if (absZ >= 1) zLevel = "mild";
+
+    if (absZ > 2) {
+        zLevel = "strong";
+    } else if (absZ >= 1) {
+        zLevel = "mild";
+    }
 
     // 3. Edge Confidence (0-100 composite)
-    // Components: SQN (40%), PF (25%), MC Stability (15%), Sample Size (10%), Risk of Ruin (10%)
-    // Non-linear mapping for SQN and PF to be more punitive
-    const sqnScore = Math.min(100, Math.pow(Math.max(0, sqn / 4), 1.5) * 100);
-    const pfScore = Math.min(100, Math.pow(Math.max(0, (basic.profitFactor - 1) / 1.5), 1.2) * 100);
-    const mcScore = Math.max(0, 100 - (mc.drawdownAt5Pct > 0 ? (mc.drawdownAt5Pct / 40) * 100 : 0));
-    const sampleScore = Math.min(100, (n / 100) * 100);
-    const rorScore = Math.max(0, 100 - (mc.riskOfRuin * 3));
+    //
+    // Components:
+    // - SQN: 40%
+    // - Profit Factor: 25%
+    // - Monte Carlo stability: 15%
+    // - Sample size: 10%
+    // - Risk of Ruin: 10%
+    const sqnScore = Math.min(
+        100,
+        Math.pow(
+            Math.max(0, sqn / 4),
+            1.5
+        ) * 100
+    );
 
-    let edgeConfidence = (sqnScore * 0.4) + (pfScore * 0.25) + (mcScore * 0.15) + (sampleScore * 0.1) + (rorScore * 0.1);
-    
-    // Martingale / Skewness Penalty
-    // Calculate ratio of largest loss to average win
-    const maxLoss = Math.abs(Math.min(...profits, 0));
-    const avgWin = basic.sumProfit > 0 ? (basic.sumProfit / (profits.filter(p => p > 0).length || 1)) : 1;
+    const pfScore = Math.min(
+        100,
+        Math.pow(
+            Math.max(
+                0,
+                (basic.profitFactor - 1) / 1.5
+            ),
+            1.2
+        ) * 100
+    );
+
+    const mcScore = Math.max(
+        0,
+        100 -
+            (mc.drawdownAt5Pct > 0
+                ? (mc.drawdownAt5Pct / 40) * 100
+                : 0)
+    );
+
+    const sampleScore = Math.min(
+        100,
+        (n / 100) * 100
+    );
+
+    const rorScore = Math.max(
+        0,
+        100 - mc.riskOfRuin * 3
+    );
+
+    let edgeConfidence =
+        sqnScore * 0.4 +
+        pfScore * 0.25 +
+        mcScore * 0.15 +
+        sampleScore * 0.1 +
+        rorScore * 0.1;
+
+    // 4. Martingale / skewness penalty
+    const maxLoss = Math.abs(
+        Math.min(...profits, 0)
+    );
+
+    const positiveTrades = profits.filter(
+        (profit) => profit > 0
+    );
+
+    const avgWin =
+        positiveTrades.length > 0
+            ? positiveTrades.reduce(
+                  (sum, profit) => sum + profit,
+                  0
+              ) / positiveTrades.length
+            : 1;
+
     if (maxLoss > avgWin * 15) {
-        edgeConfidence *= 0.6; // High penalty for extreme outliers (Martingale sign)
+        edgeConfidence *= 0.6;
     }
 
-    // Penalty for small samples
-    if (n < 30) edgeConfidence *= 0.4;
-    else if (n < 50) edgeConfidence *= 0.8;
+    // 5. Small sample penalty
+    if (n < 30) {
+        edgeConfidence *= 0.4;
+    } else if (n < 50) {
+        edgeConfidence *= 0.8;
+    }
 
-    edgeConfidence = Math.min(100, Math.max(0, edgeConfidence));
+    edgeConfidence = Math.min(
+        100,
+        Math.max(0, edgeConfidence)
+    );
 
-    // 4. Robustness Level
-    let robustnessLevel: AdvancedRobustness["robustnessLevel"] = "fragile";
+    // 6. Robustness Level
+    let robustnessLevel: AdvancedRobustness["robustnessLevel"] =
+        "fragile";
+
     if (n >= 30) {
-        if (edgeConfidence >= 75 && sqn >= 2.5) robustnessLevel = "elite";
-        else if (edgeConfidence >= 55 && sqn >= 1.8) robustnessLevel = "robust";
-        else if (edgeConfidence >= 35 && sqn >= 1.2) robustnessLevel = "moderate";
+        if (
+            edgeConfidence >= 75 &&
+            sqn >= 2.5
+        ) {
+            robustnessLevel = "elite";
+        } else if (
+            edgeConfidence >= 55 &&
+            sqn >= 1.8
+        ) {
+            robustnessLevel = "robust";
+        } else if (
+            edgeConfidence >= 35 &&
+            sqn >= 1.2
+        ) {
+            robustnessLevel = "moderate";
+        }
     }
 
-    // 5. Expert Tips Logic
+    // 7. Expert Tips
     const expertTips: string[] = [];
-    if (absZ > 2) expertTips.push("tipZScoreHigh");
-    if (sqn < 2 && n >= 30) expertTips.push("tipSQNLow");
-    if (mc.drawdownAt5Pct > basic.maxDrawdown * 2) expertTips.push("tipMCDDHigh");
-    if (n < 50) expertTips.push("tipSampleSizeLow");
 
-    // 6. Diagnosis Verdict Logic (Hierarchical)
+    if (absZ > 2) {
+        expertTips.push("tipZScoreHigh");
+    }
+
+    if (sqn < 2 && n >= 30) {
+        expertTips.push("tipSQNLow");
+    }
+
+    if (
+        mc.drawdownAt5Pct >
+        basic.maxDrawdown * 2
+    ) {
+        expertTips.push("tipMCDDHigh");
+    }
+
+    if (n < 50) {
+        expertTips.push("tipSampleSizeLow");
+    }
+
+    // 8. Diagnosis Verdict
+    //
+    // Important distinction:
+    // - < 30 trades: insufficient evidence
+    // - 30+ trades with poor metrics: noEdge
+    // - 30+ trades with positive evidence: weakEdge
+    // - 100+ trades with strong evidence: strongEdge
+    //
+    // "unstableEdge" is reserved for strategies that show
+    // positive characteristics but do not meet the minimum
+    // confidence / robustness requirements for weakEdge.
     let verdict: DiagnosisVerdict = "unstableEdge";
 
     if (n < 30) {
         verdict = "insufficientSample";
-    } else if (basic.profitFactor < 1 || edgeConfidence < 40 || basic.expectancy <= 0) {
+    } else if (
+        basic.profitFactor < 1 ||
+        edgeConfidence < 40 ||
+        basic.expectancy <= 0
+    ) {
         verdict = "noEdge";
-    } else if (edgeConfidence >= 75 && basic.profitFactor >= 1.3 && n >= 100) {
+    } else if (
+        edgeConfidence >= 75 &&
+        basic.profitFactor >= 1.3 &&
+        n >= 100
+    ) {
         verdict = "strongEdge";
-    } else if (edgeConfidence >= 55 && basic.profitFactor >= 1.1 && n >= 50) {
+    } else if (
+        edgeConfidence >= 55 &&
+        basic.profitFactor >= 1.1 &&
+        n >= 30
+    ) {
         verdict = "weakEdge";
     }
 
@@ -593,7 +740,7 @@ export function calcAdvancedRobustness(trades: Trade[], basic: BasicMetrics, mc:
         edgeConfidence: Math.round(edgeConfidence),
         robustnessLevel,
         expertTips,
-        verdict
+        verdict,
     };
 }
 
