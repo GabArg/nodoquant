@@ -256,12 +256,21 @@ export default function AnalyzerWizard() {
 
     const resetToSource = () => {
         sessionStorage.removeItem("nodoquant_analyzer_state");
+
         setStep("source");
         setImportSource(null);
         setFileState(null);
         setParseResult(null);
         setBasicMetrics(null);
+        setFullMetrics(null);
         setParseError(null);
+        setLoading(false);
+        setLoadingStage("parsing");
+        setUnlockedEmail("");
+        setTriggerUnlock(0);
+        setAnalysisId(null);
+        setDatasetName("");
+        setPendingNormalized(null);
     };
 
     const isNoEdge = fullMetrics?.advanced?.verdict === "noEdge";
