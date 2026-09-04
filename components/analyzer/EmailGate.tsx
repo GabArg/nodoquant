@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 
@@ -38,24 +38,33 @@ export default function EmailGate({
     const router = useRouter();
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const unlockInFlightRef = useRef(false);
 
-    // Auto-unlock if authenticated
+    // Auto-unlock if authenticated.
+    // handleUnlock has its own synchronous lock, so simultaneous effects
+    // cannot create duplicate requests.
     useEffect(() => {
-        if (isAuthenticated && !submitting) {
+        if (isAuthenticated) {
             handleUnlock();
         }
     }, [isAuthenticated]);
 
-    // Lifted trigger from parent (Top Button)
+    // Lifted trigger from parent (Top Button).
     useEffect(() => {
-        if (triggerUnlock > 0 && !submitting) {
+        if (triggerUnlock > 0) {
             handleUnlock();
         }
     }, [triggerUnlock]);
 
     async function handleUnlock() {
+        if (unlockInFlightRef.current) {
+            return;
+        }
+
+        unlockInFlightRef.current = true;
         setError(null);
         setSubmitting(true);
+
         const endpoint = isAuthenticated
             ? "/api/analyzer/save"
             : "/api/analyzer/anonymous";
@@ -104,6 +113,7 @@ export default function EmailGate({
                     : t("form.errorNetwork")
             );
         } finally {
+            unlockInFlightRef.current = false;
             setSubmitting(false);
         }
     }
