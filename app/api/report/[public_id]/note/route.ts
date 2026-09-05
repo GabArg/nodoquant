@@ -39,7 +39,7 @@ export async function PUT(
         }
 
         return NextResponse.json({ ok: true });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error("[Report Note Error]:", err);
         return NextResponse.json({ ok: false, error: "Internal error" }, { status: 500 });
     }
