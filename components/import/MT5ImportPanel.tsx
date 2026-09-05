@@ -44,8 +44,12 @@ export default function MT5ImportPanel({ onComplete, onBack }: Props) {
             }
 
             onComplete(trades);
-        } catch (e: any) {
-            setError(e?.message ?? "Failed to parse MT5 file.");
+        } catch (error: unknown) {
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to parse MT5 file."
+            );
         } finally {
             setLoading(false);
         }
