@@ -288,12 +288,6 @@ export async function POST(req: NextRequest) {
             }
         }
 
-        console.log("[Analyzer] Analysis record processed", {
-            id: reportId,
-            isNewInsert,
-            fingerprint: analysisFingerprint,
-        });
-
         // 5. Reconcile stale "sending" state without risking duplicate emails
         if (
             reportId &&
@@ -348,13 +342,6 @@ export async function POST(req: NextRequest) {
                         ...analysisForEmail,
                         email_send_status: "sent_unconfirmed",
                     };
-                } else {
-                    console.log(
-                        "[Email Workflow] Stale sending reconciliation skipped because state changed concurrently",
-                        {
-                            report_id: reportId,
-                        }
-                    );
                 }
             }
         }
@@ -376,13 +363,7 @@ export async function POST(req: NextRequest) {
                 ? "invalid_email"
                 : null;
 
-            if (skipReason) {
-                console.log("[Email Workflow] Skipped", {
-                    report_id: reportId,
-                    reason: skipReason,
-                    email: effectiveEmail,
-                });
-            } else {
+            if (!skipReason) {
                 const nextAttempt =
                     (analysisForEmail?.email_send_attempts || 0) + 1;
 
@@ -400,22 +381,7 @@ export async function POST(req: NextRequest) {
                     .select("id")
                     .single();
 
-                if (claimError || !claimed) {
-                    console.log(
-                        "[Email Workflow] Claim skipped (already claimed/sent)",
-                        {
-                            report_id: reportId,
-                        }
-                    );
-                } else {
-                    console.log(
-                        "[Email Workflow] Claimed successfully, starting send",
-                        {
-                            report_id: reportId,
-                            user: effectiveEmail,
-                        }
-                    );
-
+                if (!claimError && claimed) {
                     const userName =
                         session.user.user_metadata?.full_name ||
                         session.user.user_metadata?.name ||
@@ -428,10 +394,6 @@ export async function POST(req: NextRequest) {
                             to: effectiveEmail!,
                             name: userName,
                             reportUrl,
-                        });
-
-                        console.log("[Email Workflow] SUCCESS", {
-                            report_id: reportId,
                         });
 
                         const { error: sentUpdateError } = await supabase
@@ -452,7 +414,7 @@ export async function POST(req: NextRequest) {
                                 }
                             );
                         }
-                    } catch (err) {
+                    } catch (err: unknown) {
                         const message =
                             err instanceof Error
                                 ? err.message
@@ -493,7 +455,7 @@ export async function POST(req: NextRequest) {
             id: reportId,
             duplicated: !isNewInsert,
         });
-    } catch (err) {
+    } catch (err: unknown) {
         console.error("[Analyzer] Save route error:", err);
 
         return NextResponse.json(
