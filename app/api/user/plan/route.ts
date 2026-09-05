@@ -3,6 +3,10 @@ import { createClient } from "@/lib/auth/server";
 import { getUserSubscription, isProUser, getUserPlanStatus } from "@/lib/payments/subscription";
 import { trackEvent } from "@/lib/analytics";
 
+function getErrorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : "Internal error";
+}
+
 export async function GET() {
     try {
         const supabase = createClient();
@@ -11,7 +15,6 @@ export async function GET() {
         if (userError || !user) {
             return NextResponse.json({ plan: "free", isPro: false });
         }
-
 
         const sub = await getUserSubscription(user.id);
         const fullStatus = await getUserPlanStatus(user.id);
@@ -28,7 +31,11 @@ export async function GET() {
             isPro: isPro,
             trialDaysRemaining: fullStatus.trialDaysRemaining
         });
-    } catch (err: any) {
-        return NextResponse.json({ plan: "free", isPro: false, error: err.message });
+    } catch (err: unknown) {
+        return NextResponse.json({
+            plan: "free",
+            isPro: false,
+            error: getErrorMessage(err),
+        });
     }
 }
