@@ -6,6 +6,7 @@ export const FREE_PLAN_LIMITS = {
 };
 
 export type PlanType = "free" | "pro_trial" | "pro";
+export type SubscriptionStatus = "trialing" | "active" | "inactive";
 
 export interface UserPlanStatus {
     plan: PlanType;
@@ -16,10 +17,48 @@ export interface UserPlanStatus {
     trialDaysRemaining: number;
 }
 
+export interface UserSubscription {
+    plan: "free" | "pro";
+    status: SubscriptionStatus;
+    current_period_end: string | null;
+}
+
+interface UserPlanRow {
+    plan_type: PlanType;
+    trial_start: string | null;
+    trial_end: string | null;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isPlanType(value: unknown): value is PlanType {
+    return value === "free" || value === "pro_trial" || value === "pro";
+}
+
+function normalizeNullableString(value: unknown): string | null {
+    return typeof value === "string" ? value : null;
+}
+
+function parseUserPlanRow(value: unknown): UserPlanRow | null {
+    if (!isRecord(value) || !isPlanType(value.plan_type)) {
+        return null;
+    }
+
+    return {
+        plan_type: value.plan_type,
+        trial_start: normalizeNullableString(value.trial_start),
+        trial_end: normalizeNullableString(value.trial_end),
+    };
+}
+
 /**
  * Fetch user's plan from user_plans table
  */
-export async function getUserPlanStatus(userId: string): Promise<UserPlanStatus> {
+export async function getUserPlanStatus(
+    userId: string
+): Promise<UserPlanStatus> {
     const supabase = getSupabaseServer();
     const defaultStatus: UserPlanStatus = {
         plan: "free",
@@ -27,41 +66,56 @@ export async function getUserPlanStatus(userId: string): Promise<UserPlanStatus>
         trial_end: null,
         isPro: false,
         isTrial: false,
-        trialDaysRemaining: 0
+        trialDaysRemaining: 0,
     };
 
     if (!supabase) return defaultStatus;
 
-    const { data: plan } = await supabase
+    const { data } = await supabase
         .from("user_plans")
-        .select("*")
+        .select("plan_type, trial_start, trial_end")
         .eq("user_id", userId)
         .single();
+
+    const plan = parseUserPlanRow(data);
 
     if (!plan) return defaultStatus;
 
     const now = new Date();
     const trialEnd = plan.trial_end ? new Date(plan.trial_end) : null;
-    
+
     let isTrialActive = false;
     let daysRemaining = 0;
 
-    if (plan.plan_type === "pro_trial" && trialEnd) {
+    if (
+        plan.plan_type === "pro_trial" &&
+        trialEnd &&
+        Number.isFinite(trialEnd.getTime())
+    ) {
         isTrialActive = trialEnd > now;
+
         if (isTrialActive) {
-            daysRemaining = Math.max(0, Math.ceil((trialEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+            daysRemaining = Math.max(
+                0,
+                Math.ceil(
+                    (trialEnd.getTime() - now.getTime()) /
+                        (1000 * 60 * 60 * 24)
+                )
+            );
         }
     }
 
-    const isPro = plan.plan_type === "pro" || (plan.plan_type === "pro_trial" && isTrialActive);
+    const isPro =
+        plan.plan_type === "pro" ||
+        (plan.plan_type === "pro_trial" && isTrialActive);
 
     return {
-        plan: plan.plan_type as PlanType,
+        plan: plan.plan_type,
         trial_start: plan.trial_start,
         trial_end: plan.trial_end,
         isPro,
         isTrial: plan.plan_type === "pro_trial" && isTrialActive,
-        trialDaysRemaining: daysRemaining
+        trialDaysRemaining: daysRemaining,
     };
 }
 
@@ -69,14 +123,17 @@ export async function getUserPlanStatus(userId: string): Promise<UserPlanStatus>
  * Ensures a user has a trial entry if they are new.
  * Automatically enrolls them in a 30-day PRO trial.
  */
-export async function ensureTrialEnrollment(userId: string): Promise<boolean> {
+export async function ensureTrialEnrollment(
+    userId: string
+): Promise<boolean> {
     const supabase = getSupabaseServer();
+
     if (!supabase) return false;
 
     // Check if they already have a plan
     const { data: existing } = await supabase
         .from("user_plans")
-        .select("*")
+        .select("user_id")
         .eq("user_id", userId)
         .single();
 
@@ -87,63 +144,89 @@ export async function ensureTrialEnrollment(userId: string): Promise<boolean> {
     const trialEnd = new Date();
     trialEnd.setDate(now.getDate() + 30);
 
-    const { error } = await supabase
-        .from("user_plans")
-        .insert({
-            user_id: userId,
-            plan_type: 'pro_trial',
-            trial_start: now.toISOString(),
-            trial_end: trialEnd.toISOString()
-        });
+    const { error } = await supabase.from("user_plans").insert({
+        user_id: userId,
+        plan_type: "pro_trial",
+        trial_start: now.toISOString(),
+        trial_end: trialEnd.toISOString(),
+    });
 
     if (error) {
         console.error("Error enrolling user in trial:", error);
         return false;
     }
 
-    // Since trackEvent usually needs to be imported or handled, we assume we want to track this.
-    // However, subscription.ts is a low-level lib, maybe we track in the route?
     return true;
 }
 
 /**
- * Tracks trial expiration when a user fetches their plan and it's found to be expired.
+ * Compatibility hook for callers that still check trial expiration here.
+ * Analytics emission remains the responsibility of the route layer.
  */
-export async function trackTrialExpiration(userId: string, plan: any) {
-    if (plan.plan_type !== 'pro_trial' || !plan.trial_end) return;
-    
-    const now = new Date();
-    const trialEnd = new Date(plan.trial_end);
-    
-    if (trialEnd < now) {
-        // This is where we would fire the analytics event 'trial_expired'
-        // We can do this in the route handler to avoid circular deps if any
+export async function trackTrialExpiration(
+    _userId: string,
+    plan: unknown
+): Promise<void> {
+    if (!isRecord(plan)) return;
+
+    const planType = plan.plan_type;
+    const trialEndValue = plan.trial_end;
+
+    if (
+        planType !== "pro_trial" ||
+        typeof trialEndValue !== "string"
+    ) {
+        return;
+    }
+
+    const trialEnd = new Date(trialEndValue);
+
+    if (!Number.isFinite(trialEnd.getTime())) {
+        return;
+    }
+
+    if (trialEnd < new Date()) {
+        // Analytics event 'trial_expired' is intentionally handled by the route layer.
     }
 }
 
 /**
  * Compatibility helper (deprecated LS logic)
  */
-export async function getUserSubscription(userId: string) {
+export async function getUserSubscription(
+    userId: string
+): Promise<UserSubscription> {
     const status = await getUserPlanStatus(userId);
+
     return {
         plan: status.isPro ? "pro" : "free",
-        status: status.isTrial ? "trialing" : (status.isPro ? "active" : "inactive"),
+        status: status.isTrial
+            ? "trialing"
+            : status.isPro
+            ? "active"
+            : "inactive",
         current_period_end: status.trial_end,
     };
 }
 
-export function isProUser(status: any): boolean {
-    if (!status) return false;
-    // Handle both old and new shapes for compatibility during migration
-    if ('isPro' in status) return status.isPro;
+export function isProUser(status: unknown): boolean {
+    if (!isRecord(status)) return false;
+
+    if (typeof status.isPro === "boolean") {
+        return status.isPro;
+    }
+
     return status.plan === "pro" || status.status === "trialing";
 }
 
-export async function canCreateStrategy(userId: string, isPro: boolean): Promise<boolean> {
+export async function canCreateStrategy(
+    userId: string,
+    isPro: boolean
+): Promise<boolean> {
     if (isPro) return true;
 
     const supabase = getSupabaseServer();
+
     if (!supabase) return false;
 
     const { count, error } = await supabase
