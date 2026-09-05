@@ -3,11 +3,16 @@
 import React, { useEffect, useState } from "react";
 import BasicResults from "@/components/analyzer/BasicResults";
 import FullReport from "@/components/analyzer/FullReport";
-import type { BasicMetrics, FullMetrics } from "@/lib/analyzer/metrics";
+import type { BasicMetrics, DiagnosisVerdict, FullMetrics } from "@/lib/analyzer/metrics";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { trackEvent } from "@/lib/trackEvent";
 import ManualPaymentModal from "@/components/analyzer/ManualPaymentModal";
+
+type PublicReportMetrics = FullMetrics & {
+    score?: number;
+    verdict?: DiagnosisVerdict;
+};
 
 interface PublicReportProps {
     id: string;
@@ -17,7 +22,7 @@ interface PublicReportProps {
     profit_factor: number;
     max_drawdown: number;
     sum_profit: number; // Might not be saved in root, but metrics_json has it
-    metrics_json: FullMetrics;
+    metrics_json: PublicReportMetrics;
     created_at: string;
 }
 
@@ -26,6 +31,14 @@ export default function PublicReportView({ report }: { report: PublicReportProps
     const t = useTranslations("publicReport");
     const [isProAccess, setIsProAccess] = useState(false);
     const [showPaywall, setShowPaywall] = useState(false);
+
+    const reportScore =
+        report.metrics_json.advanced?.edgeConfidence ??
+        report.metrics_json.score;
+
+    const reportVerdict =
+        report.metrics_json.advanced?.verdict ??
+        report.metrics_json.verdict;
 
     useEffect(() => {
         setIsProAccess(localStorage.getItem("nodoquant_pro_access") === "true");
@@ -36,12 +49,12 @@ export default function PublicReportView({ report }: { report: PublicReportProps
         // Track report view once
         const analyticsData = {
             report_id: report.id,
-            score: report.metrics_json?.advanced?.edgeConfidence || (report.metrics_json as any).score,
-            verdict: report.metrics_json?.advanced?.verdict || (report.metrics_json as any).verdict
+            score: reportScore,
+            verdict: reportVerdict,
         };
         console.log("REPORT_VIEW Tracking Data:", analyticsData);
         trackEvent("REPORT_VIEW", analyticsData);
-    }, [report.id, report.metrics_json]);
+    }, [report.id, report.metrics_json, reportScore, reportVerdict]);
 
     // Extract basic metrics from the root column or deep json if possible
     const basicMetrics: BasicMetrics = {
@@ -79,8 +92,8 @@ export default function PublicReportView({ report }: { report: PublicReportProps
                     onViewFullReport={async () => {
                         await trackEvent("CTA_CLICK_BASIC_RESULTS", {
                             report_id: report.id,
-                            score: report.metrics_json?.advanced?.edgeConfidence || (report.metrics_json as any).score,
-                            verdict: report.metrics_json?.advanced?.verdict || (report.metrics_json as any).verdict
+                            score: reportScore,
+                            verdict: reportVerdict,
                         });
                         setShowPaywall(true);
                     }}
@@ -147,8 +160,8 @@ export default function PublicReportView({ report }: { report: PublicReportProps
                         }}
                         metadata={{
                             report_id: report.id,
-                            score: report.metrics_json?.advanced?.edgeConfidence || (report.metrics_json as any).score,
-                            verdict: report.metrics_json?.advanced?.verdict || (report.metrics_json as any).verdict
+                            score: reportScore,
+                            verdict: reportVerdict,
                         }}
                     />
                 )}
