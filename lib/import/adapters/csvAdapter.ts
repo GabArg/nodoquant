@@ -3,7 +3,12 @@
  * This preserves full backward compatibility with all CSV edge cases already handled.
  */
 
-import { parseTrades, parseGenericCSV, type ParseResult } from "@/lib/analyzer/parser";
+import {
+    parseTrades,
+    parseGenericCSV,
+    type ParseResult,
+    type Trade,
+} from "@/lib/analyzer/parser";
 import {
     type NormalizedTrade,
     type ImportSource,
@@ -11,25 +16,28 @@ import {
     normalizeDirection,
 } from "../normalizedTrade";
 
-function tradeToNormalized(t: any, source: ImportSource): NormalizedTrade {
-    const symbol = t.symbol ?? "";
-    const direction = normalizeDirection(t.direction ?? "");
-    const riskMultiple = t.risk_reward ?? null;
+function tradeToNormalized(
+    trade: Trade,
+    source: ImportSource
+): NormalizedTrade {
+    const symbol = trade.symbol ?? "";
+    const direction = normalizeDirection(trade.direction ?? "");
+    const riskMultiple = trade.risk_reward ?? null;
 
     return {
         symbol,
         market_type: inferMarketType(symbol),
         direction,
-        entry_price: t.entry_price ?? null,
-        exit_price: t.exit_price ?? null,
-        stop_loss: t.stop_loss ?? null,
-        take_profit: t.take_profit ?? null,
-        position_size: t.volume ?? null,
-        open_time: t.entry_time ?? null,
-        close_time: t.exit_time ?? t.datetime,
+        entry_price: trade.entry_price ?? null,
+        exit_price: trade.exit_price ?? null,
+        stop_loss: trade.stop_loss ?? null,
+        take_profit: trade.take_profit ?? null,
+        position_size: trade.volume ?? null,
+        open_time: trade.entry_time ?? null,
+        close_time: trade.exit_time ?? trade.datetime,
         commission: 0,
         swap: 0,
-        profit_loss: t.profit,
+        profit_loss: trade.profit,
         risk_multiple: riskMultiple,
         source,
     };
@@ -44,7 +52,9 @@ export function parseCsvToNormalized(
     fileName?: string,
 ): NormalizedTrade[] {
     const result: ParseResult = parseTrades(content, fileName);
-    return result.trades.map((t) => tradeToNormalized(t, "csv"));
+    return result.trades.map((trade) =>
+        tradeToNormalized(trade, "csv")
+    );
 }
 
 /**
@@ -67,5 +77,7 @@ export function parseMappedCsvToNormalized(
     },
 ): NormalizedTrade[] {
     const result = parseGenericCSV(dataLines, mapping);
-    return result.trades.map((t) => tradeToNormalized(t, "csv"));
+    return result.trades.map((trade) =>
+        tradeToNormalized(trade, "csv")
+    );
 }
