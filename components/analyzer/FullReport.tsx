@@ -207,7 +207,6 @@ function SignalCard({ label, value, icon, tooltip, isNoEdge = false }: { label: 
 
 function LockedSection({ title, desc, children, isPro = false, onUnlockClick }: { title: string; desc: string; children: React.ReactNode; isPro?: boolean; onUnlockClick?: () => void }) {
     const t = useTranslations("analyzer.report.pro");
-    const tFunnel = useTranslations("analyzer.funnel");
     if (isPro) return <div className="animate-fade-in">{children}</div>;
 
     return (
@@ -247,14 +246,12 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
     }, [isPro]);
     
     const handleUnlockClick = (source: "TOP" | "MID" | "BOTTOM") => {
-        console.log(`[FullReport] handleUnlockClick triggered from: ${source}`);
         try {
             trackEvent(`CTA_CLICK_${source}`, {
                 report_id: analysisId,
                 score: metrics.advanced?.edgeConfidence,
                 verdict: metrics.advanced?.verdict
             });
-            console.log(`[FullReport] trackEvent called for: ${source}`);
         } catch (err) {
             console.error(`[FullReport] trackEvent FAILED for: ${source}`, err);
         }
@@ -263,7 +260,6 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
     
     const copyPublicLink = () => {
         if (!analysisId) return;
-        console.log("SHARE_COPY_LINK");
         const url = `${window.location.origin}/${locale}/report/${analysisId}`;
         navigator.clipboard.writeText(url);
         setLinkCopied(true);
@@ -272,7 +268,6 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
 
     const shareWhatsApp = () => {
         if (!analysisId) return;
-        console.log("SHARE_WHATSAPP");
         const url = `${window.location.origin}/${locale}/report/${analysisId}`;
         const text = `Estoy analizando mi estrategia. No sé si tengo ventaja real… ¿y vos? ${url}`;
         const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
@@ -281,7 +276,6 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
 
     const shareTwitter = () => {
         if (!analysisId) return;
-        console.log("SHARE_TWITTER");
         const url = `${window.location.origin}/${locale}/report/${analysisId}`;
         const text = "El mercado no perdona estrategias sin ventaja estadística. Estoy verificando la mía en NodoQuant.";
         const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
@@ -575,8 +569,6 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
                     onClose={() => setShowPaywall(false)} 
                     onSuccess={() => {
                         setIsProInternal(true);
-                        // Optional: also track a success event specifically for the reactive unlock
-                        console.log("REACTIVE_UNLOCK_SUCCESS");
                     }}
                     metadata={{
                         report_id: analysisId,
