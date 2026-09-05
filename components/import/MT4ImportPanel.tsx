@@ -62,8 +62,12 @@ export default function MT4ImportPanel({ onComplete, onBack }: Props) {
             }
 
             onComplete(trades);
-        } catch (e: any) {
-            setError(e?.message ?? "Failed to parse file.");
+        } catch (error: unknown) {
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to parse file."
+            );
         } finally {
             setLoading(false);
         }
