@@ -2,7 +2,7 @@ import "server-only";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
-// Minimum viable in-memory rate limiting. 
+// Minimum viable in-memory rate limiting.
 const rateLimitCache = new Map<string, { count: number; expiresAt: number }>();
 
 function checkRateLimit(ip: string): boolean {
@@ -14,7 +14,7 @@ function checkRateLimit(ip: string): boolean {
     if (!record || record.expiresAt < now) {
         record = { count: 0, expiresAt: now + windowMs };
     }
-    
+
     if (record.count >= maxRequests) {
         return false;
     }
@@ -24,8 +24,8 @@ function checkRateLimit(ip: string): boolean {
     return true;
 }
 
-function isValidFiniteNumber(val: any): boolean {
-    return typeof val === 'number' && Number.isFinite(val);
+function isValidFiniteNumber(value: unknown): value is number {
+    return typeof value === "number" && Number.isFinite(value);
 }
 
 export async function POST(req: NextRequest) {
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
         if (!checkRateLimit(ip)) {
             console.warn(`[Analyzer Anonymous] Rate limit exceeded for IP: ${ip}`);
             return NextResponse.json(
-                { ok: false, error: "Demasiados intentos. Intente más tarde." }, 
+                { ok: false, error: "Demasiados intentos. Intente más tarde." },
                 { status: 429 }
             );
         }
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
         const { trades_count, winrate, profit_factor, max_drawdown, metrics_json, file_name, date_range_start, date_range_end } = body;
 
         // --- Numeric Validation ---
-        if (!isValidFiniteNumber(trades_count) || !isValidFiniteNumber(winrate) || 
+        if (!isValidFiniteNumber(trades_count) || !isValidFiniteNumber(winrate) ||
             !isValidFiniteNumber(profit_factor) || !isValidFiniteNumber(max_drawdown)) {
             console.warn(`[Analyzer Anonymous] Rejected: Invalid non-finite numeric types from IP: ${ip}`);
             return NextResponse.json({ ok: false, error: "Datos numéricos inválidos" }, { status: 400 });
@@ -71,16 +71,15 @@ export async function POST(req: NextRequest) {
 
         // --- JSON Size Protection ---
         let safeMetricsJson = {};
-        if (metrics_json && typeof metrics_json === 'object') {
+        if (metrics_json && typeof metrics_json === "object") {
             try {
                 const stringified = JSON.stringify(metrics_json);
-                console.log("[Analyzer Payload Size]", stringified.length);
                 if (stringified.length > 51200) { // 50KB
                     console.warn(`[Analyzer Anonymous] Rejected: metrics_json too large (${stringified.length} bytes) from IP: ${ip}`);
                     return NextResponse.json({ ok: false, error: "El objeto de métricas excede el tamaño máximo permitido." }, { status: 400 });
                 }
                 safeMetricsJson = JSON.parse(stringified);
-            } catch (err) {
+            } catch {
                 console.warn(`[Analyzer Anonymous] Rejected: Malformed metrics_json from IP: ${ip}`);
                 return NextResponse.json({ ok: false, error: "Estructura JSON inválida" }, { status: 400 });
             }
@@ -100,7 +99,7 @@ export async function POST(req: NextRequest) {
             date_range_start: date_range_start ?? null,
             date_range_end: date_range_end ?? null,
             user_id: null,
-            is_public: false, 
+            is_public: false,
         };
 
         const { data, error } = await supabaseAdmin
@@ -114,7 +113,6 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ ok: false, error: "Error de guardado en la base de datos" }, { status: 500 });
         }
 
-        console.log(`[Analyzer Anonymous] Success: Saved anonymous analysis ${data.id} from IP: ${ip}`);
         return NextResponse.json({ ok: true, id: data.id });
 
     } catch (err) {
