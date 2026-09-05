@@ -14,6 +14,10 @@ function generateSlug(name: string, asset?: string | null, timeframe?: string | 
     return `${base}-${suffix}`;
 }
 
+function getErrorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : "Error interno";
+}
+
 export async function GET() {
     try {
         const supabase = createClient();
@@ -35,9 +39,9 @@ export async function GET() {
         if (error) throw error;
 
         return NextResponse.json({ ok: true, strategies: data });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error("GET /api/strategies error:", err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        return NextResponse.json({ error: getErrorMessage(err) }, { status: 500 });
     }
 }
 
@@ -49,14 +53,11 @@ export async function POST(req: Request) {
             error: userError,
         } = await supabase.auth.getUser();
 
-        console.log("[API/Strategies] Auth result:", { userId: user?.id, userError });
-
         if (userError || !user) {
             return NextResponse.json({ error: "No autorizado" }, { status: 401 });
         }
 
         const body = await req.json();
-        console.log("[API/Strategies] POST body:", body);
 
         const { name, description, market, asset, timeframe, strategy_style, analysis_id } = body;
 
@@ -81,10 +82,8 @@ export async function POST(req: Request) {
             .select()
             .single();
 
-        console.log("[API/Strategies] DB insert result:", { strategy, stratError });
-
         if (stratError) {
-            if (stratError.code === '23505') {
+            if (stratError.code === "23505") {
                 return NextResponse.json({ error: "Ya existe una estrategia con ese nombre." }, { status: 400 });
             }
             throw stratError;
@@ -97,7 +96,7 @@ export async function POST(req: Request) {
                 .update({ strategy_id: strategy.id })
                 .eq("id", analysis_id)
                 .eq("user_id", user.id); // Security: ensure user owns the analysis
-            
+
             if (linkError) {
                 console.error("[API/Strategies] Error linking analysis:", linkError);
                 // We don't fail the whole request because the strategy WAS created
@@ -105,8 +104,8 @@ export async function POST(req: Request) {
         }
 
         return NextResponse.json({ ok: true, strategy: strategy });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error("POST /api/strategies error:", err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        return NextResponse.json({ error: getErrorMessage(err) }, { status: 500 });
     }
 }
