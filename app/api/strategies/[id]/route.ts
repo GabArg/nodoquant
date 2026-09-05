@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/auth/server";
 
+function getErrorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : "Error interno";
+}
+
 export async function GET(req: Request, { params }: { params: { id: string } }) {
     try {
         const supabase = createClient();
@@ -14,8 +18,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
             return NextResponse.json({ error: error.message }, { status: 400 });
         }
         return NextResponse.json({ ok: true, strategy: data });
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+    } catch (err: unknown) {
+        return NextResponse.json({ error: getErrorMessage(err) }, { status: 500 });
     }
 }
 
@@ -47,7 +51,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
             return NextResponse.json({ error: error.message }, { status: 400 });
         }
         return NextResponse.json({ ok: true, strategy: data });
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+    } catch (err: unknown) {
+        return NextResponse.json({ error: getErrorMessage(err) }, { status: 500 });
     }
 }
