@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
         const publicUrl = `${baseUrl}/report/${publicId}`;
 
         return NextResponse.json({ ok: true, public_url: publicUrl, public_id: publicId });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error("[Report] Share route error:", err);
         return NextResponse.json({ error: "Error interno" }, { status: 500 });
     }
