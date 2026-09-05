@@ -123,8 +123,8 @@ export async function GET(req: Request) {
                 },
             }
         );
-    } catch (e: any) {
-        console.log(`${e.message}`);
+    } catch (error: unknown) {
+        console.error("[Strategy OG] Failed to generate image:", error);
         return new Response(`Failed to generate the image`, {
             status: 500,
         });
