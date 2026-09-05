@@ -3,6 +3,10 @@ import { createClient } from "@/lib/auth/server";
 import { getUserPlanStatus, ensureTrialEnrollment } from "@/lib/payments/subscription";
 import { trackEvent } from "@/lib/analytics";
 
+function getErrorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : "Internal error";
+}
+
 export async function POST() {
     try {
         const supabase = createClient();
@@ -14,18 +18,13 @@ export async function POST() {
 
         // 1. Trigger the logic to ensure they have a trial (sets plan_type, trial_start, trial_end)
         const enrolled = await ensureTrialEnrollment(user.id);
-        
+
         // 2. Refresh the actual DB plan status to confirm
         const fullStatus = await getUserPlanStatus(user.id);
 
         if (enrolled) {
-            console.log(`[API /trial] User ${user.id} trial activation complete.`);
-            console.log(`[API /trial] plan_type: ${fullStatus.plan}, trial_start: ${fullStatus.trial_start}, trial_end: ${fullStatus.trial_end}`);
-            
             // Fire tracking event if they were just enrolled
             await trackEvent("trial_started", { userId: user.id }, user.id);
-        } else {
-            console.log(`[API /trial] User ${user.id} already had an active trial or plan.`);
         }
 
         return NextResponse.json({
@@ -35,8 +34,11 @@ export async function POST() {
             trialDaysRemaining: fullStatus.trialDaysRemaining,
             enrolledJustNow: enrolled,
         });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error("[API /trial] Error activating trial:", err);
-        return NextResponse.json({ ok: false, error: err.message }, { status: 500 });
+        return NextResponse.json(
+            { ok: false, error: getErrorMessage(err) },
+            { status: 500 }
+        );
     }
 }
