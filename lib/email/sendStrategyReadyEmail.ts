@@ -19,7 +19,7 @@ export async function sendStrategyReadyEmail({
         reportUrl,
     });
 
-    const { data, error } = await resend.emails.send({
+    const { error } = await resend.emails.send({
         from: "NodoQuant <hola@nodoquant.com>",
         to,
         subject: "Your strategy has a verdict ⚠️",
@@ -27,13 +27,10 @@ export async function sendStrategyReadyEmail({
     });
 
     if (error) {
-        console.error("EMAIL ERROR:", error);
+        console.error("[Email] Failed to send strategy-ready email:", error);
 
         throw new Error(
             error.message || "Failed to send strategy-ready email"
         );
     }
-
-    console.log("EMAIL SENT:", data?.id);
-    console.log("EMAIL TO:", to);
 }
