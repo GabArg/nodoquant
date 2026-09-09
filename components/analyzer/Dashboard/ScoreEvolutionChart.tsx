@@ -1,17 +1,20 @@
 "use client";
 
 import React from "react";
+import { useLocale, useTranslations } from "next-intl";
 
 interface Props {
     data: { date: string; score: number }[];
 }
 
 export default function ScoreEvolutionChart({ data }: Props) {
+    const t = useTranslations("dashboard.scoreChart");
+    const locale = useLocale();
     if (!data || data.length < 2) {
         return (
             <div className="card rounded-2xl p-6 border border-white/5 bg-[#111118] h-64 flex flex-col items-center justify-center">
                 <span className="text-3xl mb-3">📊</span>
-                <p className="text-sm text-gray-500">Not enough data to display chart.</p>
+                <p className="text-sm text-gray-500 text-center">{t("needsHistory")}</p>
             </div>
         );
     }
@@ -35,7 +38,7 @@ export default function ScoreEvolutionChart({ data }: Props) {
 
     return (
         <div className="card rounded-2xl p-6 border border-white/5 bg-[#111118]">
-            <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">Evolución del Score</h3>
+            <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">{t("title")}</h3>
             <div className="w-full overflow-x-auto">
                 <svg viewBox={`0 0 ${width} ${height}`} className="w-full min-w-[500px] h-auto text-indigo-500 drop-shadow-lg">
                     {/* Grid lines */}
@@ -68,7 +71,7 @@ export default function ScoreEvolutionChart({ data }: Props) {
                                     {Math.round(d.score)}
                                 </text>
                                 <text x={x} y={height - padding + 16} fill="#6b7280" fontSize="9" textAnchor="middle">
-                                    {new Date(d.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                    {new Date(d.date).toLocaleDateString(locale, { month: 'short', day: 'numeric' })}
                                 </text>
                             </g>
                         );

@@ -646,9 +646,19 @@
         }
     },
     "dashboard": {
+        "scoreBanner": {
+            "title": "Tu mejor Puntaje de estrategia",
+            "description": "Puntaje compuesto de calidad y riesgo. Es distinto de la Confianza del edge del reporte.",
+            "cta": "Analizar más trades",
+            "levels": { "high": "Nivel alto", "medium": "Nivel medio", "low": "Necesita revisión" }
+        },
+        "scoreChart": {
+            "title": "Evolución del Puntaje de estrategia",
+            "needsHistory": "Se necesitan al menos 2 análisis guardados en fechas diferentes para mostrar la evolución del puntaje."
+        },
         "title": "Bienvenido de nuevo",
         "greeting": "Bienvenido de nuevo",
-        "subtitle": "Aquí está el estado actual de tus estrategias quant.",
+        "subtitle": "Resumen de Strategy Lab y tus análisis guardados.",
         "analytics": {
             "title": "Analítica Avanzada",
             "proNotice": "Módulo avanzado no incluido en la beta actual."
@@ -661,9 +671,9 @@
             "bestPF": "Mejor Profit Factor"
         },
         "history": {
-            "title": "Historial de Estrategias",
+            "title": "Historial de análisis",
             "analyzeNew": "Analizar nueva →",
-            "empty": "No tienes estrategias analizadas todavía.",
+            "empty": "No tenés análisis guardados todavía.",
             "tryAnalyzer": "Probar Analyzer →",
             "analysis": "Análisis",
             "trades": "Trades",
@@ -967,6 +977,7 @@
                 "title": "Evolución de la Estrategia",
                 "desc": "Monitoreo de cómo cambia tu rendimiento estadístico a lo largo del tiempo.",
                 "reqTrades": "Requiere al menos {count} operaciones para un análisis válido",
+                "savedBreakdownMissing": "Este análisis guardado no incluye el desglose de esta ventana de trades.",
                 "lastX": "Últimos {count}"
             },
             "diagnosis": {
@@ -1505,7 +1516,7 @@
             }
         },
         "edgeAlerts": {
-            "title": "Edge Alerts",
+            "title": "Alertas del edge",
             "edge": {
                 "intro": "Tu estrategia ",
                 "symbol": "tiene su mayor rentabilidad en {symbol}",

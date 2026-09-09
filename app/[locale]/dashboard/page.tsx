@@ -162,6 +162,7 @@ export default async function DashboardPage({ params }: { params: { locale: stri
                     <ScoreEvolutionChart data={chartData} />
                     <StrategyEvolution 
                         evolution={(latestReport?.metrics_json as any)?.evolution} 
+                        savedReportView
                     />
                 </div>
                 <div className="space-y-6">

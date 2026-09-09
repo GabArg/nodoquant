@@ -541,6 +541,7 @@
                 "title": "Strategy Evolution",
                 "desc": "Tracking your statistical performance changes over time with different sample sizes.",
                 "reqTrades": "Requires at least {count} trades for valid analysis",
+                "savedBreakdownMissing": "This saved analysis does not include the trade-window breakdown for this view.",
                 "lastX": "Last {count}"
             },
             "proBenefits": {
@@ -1627,9 +1628,19 @@
         }
     },
     "dashboard": {
+        "scoreBanner": {
+            "title": "Your best Strategy Score",
+            "description": "Composite quality and risk score. It is distinct from the report's Edge Confidence.",
+            "cta": "Analyze more trades",
+            "levels": { "high": "High level", "medium": "Medium level", "low": "Needs review" }
+        },
+        "scoreChart": {
+            "title": "Strategy Score evolution",
+            "needsHistory": "At least 2 saved analyses from different dates are required to show score evolution."
+        },
         "title": "Welcome back",
         "greeting": "Welcome back",
-        "subtitle": "Here is the current state of your quant strategies.",
+        "subtitle": "Summary of Strategy Lab and your saved analyses.",
         "analytics": {
             "title": "Advanced Analytics",
             "proNotice": "Advanced module not included in the current beta."
@@ -1642,9 +1653,9 @@
             "bestPF": "Best Profit Factor"
         },
         "history": {
-            "title": "Strategy History",
+            "title": "Analysis history",
             "analyzeNew": "Analyze new →",
-            "empty": "You don't have any analyzed strategies yet.",
+            "empty": "You don't have any saved analyses yet.",
             "tryAnalyzer": "Try Analyzer →",
             "analysis": "Analysis",
             "trades": "Trades",

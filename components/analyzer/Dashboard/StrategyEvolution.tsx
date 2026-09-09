@@ -10,16 +10,17 @@ interface Props {
         last50?: BasicMetrics;
         last30?: BasicMetrics;
     };
+    savedReportView?: boolean;
 }
 
-function EvolColumn({ label, metrics, req }: { label: string; metrics?: BasicMetrics; req: number }) {
+function EvolColumn({ label, metrics, req, savedReportView }: { label: string; metrics?: BasicMetrics; req: number; savedReportView?: boolean }) {
     const t = useTranslations("analyzer.report");
     if (!metrics) {
         return (
             <div className="flex-1 p-4 rounded-2xl bg-white/[0.02] border border-white/5 flex flex-col items-center justify-center opacity-40">
                 <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{label}</span>
                 <span className="text-[9px] font-medium text-gray-600 mt-2 italic text-center">
-                    {t("evolution.reqTrades", { count: req })}
+                    {savedReportView ? t("evolution.savedBreakdownMissing") : t("evolution.reqTrades", { count: req })}
                 </span>
             </div>
         );
@@ -46,7 +47,7 @@ function EvolColumn({ label, metrics, req }: { label: string; metrics?: BasicMet
     );
 }
 
-export default function StrategyEvolution({ evolution }: Props) {
+export default function StrategyEvolution({ evolution, savedReportView = false }: Props) {
     const t = useTranslations("analyzer.report");
     return (
         <div className="card rounded-[32px] p-8 border border-white/[0.06] bg-white/[0.01] relative overflow-hidden">
@@ -58,9 +59,9 @@ export default function StrategyEvolution({ evolution }: Props) {
             </div>
 
             <div className="flex gap-3">
-                <EvolColumn label={t("evolution.lastX", { count: 100 })} metrics={evolution?.last100} req={100} />
-                <EvolColumn label={t("evolution.lastX", { count: 50 })} metrics={evolution?.last50} req={50} />
-                <EvolColumn label={t("evolution.lastX", { count: 30 })} metrics={evolution?.last30} req={30} />
+                <EvolColumn label={t("evolution.lastX", { count: 100 })} metrics={evolution?.last100} req={100} savedReportView={savedReportView} />
+                <EvolColumn label={t("evolution.lastX", { count: 50 })} metrics={evolution?.last50} req={50} savedReportView={savedReportView} />
+                <EvolColumn label={t("evolution.lastX", { count: 30 })} metrics={evolution?.last30} req={30} savedReportView={savedReportView} />
             </div>
         </div>
     );

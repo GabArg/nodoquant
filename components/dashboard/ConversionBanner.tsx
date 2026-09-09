@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 interface Props {
     bestScore: number | null;
@@ -6,23 +7,24 @@ interface Props {
 }
 
 export default function ConversionBanner({ bestScore, locale }: Props) {
+    const t = useTranslations("dashboard.scoreBanner");
     if (bestScore === null) return null;
 
     let color = "#34d399";
     let bgStyle = "rgba(16,185,129,0.06)";
     let borderStyle = "rgba(16,185,129,0.2)";
-    let label = "Strong Edge";
+    let label = t("levels.high");
 
     if (bestScore < 40) {
         color = "#f87171";
         bgStyle = "rgba(239,68,68,0.06)";
         borderStyle = "rgba(239,68,68,0.2)";
-        label = "Needs Improvement";
+        label = t("levels.low");
     } else if (bestScore < 70) {
         color = "#fbbf24";
         bgStyle = "rgba(251,191,36,0.06)";
         borderStyle = "rgba(251,191,36,0.2)";
-        label = "Marginal Edge";
+        label = t("levels.medium");
     }
 
     return (
@@ -36,10 +38,10 @@ export default function ConversionBanner({ bestScore, locale }: Props) {
                 </div>
                 <div>
                     <p className="text-sm font-bold text-white leading-tight">
-                        Your best Strategy Score: <span style={{ color }}>{label}</span>
+                        {t("title")}: <span style={{ color }}>{label}</span>
                     </p>
                     <p className="text-xs mt-0.5" style={{ color: "#9ca3af" }}>
-                        Analyze more trades to refine your score and uncover statistical patterns.
+                        {t("description")}
                     </p>
                 </div>
             </div>
@@ -54,7 +56,7 @@ export default function ConversionBanner({ bestScore, locale }: Props) {
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                 </svg>
-                Analyze more trades
+                {t("cta")}
             </Link>
         </div>
     );
