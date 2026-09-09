@@ -1,4 +1,5 @@
 import { getSupabaseServer } from "../supabase";
+import { getUserEntitlement } from "./entitlements";
 
 export const FREE_PLAN_LIMITS = {
     MAX_TRADES_PER_ANALYSIS: 500,
@@ -23,38 +24,13 @@ export interface UserSubscription {
     current_period_end: string | null;
 }
 
-interface UserPlanRow {
-    plan_type: PlanType;
-    trial_start: string | null;
-    trial_end: string | null;
-}
-
 function isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function isPlanType(value: unknown): value is PlanType {
-    return value === "free" || value === "pro_trial" || value === "pro";
-}
-
-function normalizeNullableString(value: unknown): string | null {
-    return typeof value === "string" ? value : null;
-}
-
-function parseUserPlanRow(value: unknown): UserPlanRow | null {
-    if (!isRecord(value) || !isPlanType(value.plan_type)) {
-        return null;
-    }
-
-    return {
-        plan_type: value.plan_type,
-        trial_start: normalizeNullableString(value.trial_start),
-        trial_end: normalizeNullableString(value.trial_end),
-    };
-}
-
 /**
- * Fetch user's plan from user_plans table
+ * Compatibility facade. Authorization is resolved exclusively by the
+ * provider-independent entitlements layer.
  */
 export async function getUserPlanStatus(
     userId: string
@@ -71,51 +47,16 @@ export async function getUserPlanStatus(
 
     if (!supabase) return defaultStatus;
 
-    const { data } = await supabase
-        .from("user_plans")
-        .select("plan_type, trial_start, trial_end")
-        .eq("user_id", userId)
-        .single();
-
-    const plan = parseUserPlanRow(data);
-
-    if (!plan) return defaultStatus;
-
-    const now = new Date();
-    const trialEnd = plan.trial_end ? new Date(plan.trial_end) : null;
-
-    let isTrialActive = false;
-    let daysRemaining = 0;
-
-    if (
-        plan.plan_type === "pro_trial" &&
-        trialEnd &&
-        Number.isFinite(trialEnd.getTime())
-    ) {
-        isTrialActive = trialEnd > now;
-
-        if (isTrialActive) {
-            daysRemaining = Math.max(
-                0,
-                Math.ceil(
-                    (trialEnd.getTime() - now.getTime()) /
-                        (1000 * 60 * 60 * 24)
-                )
-            );
-        }
-    }
-
-    const isPro =
-        plan.plan_type === "pro" ||
-        (plan.plan_type === "pro_trial" && isTrialActive);
+    const entitlement = await getUserEntitlement(supabase, userId);
+    const isPro = entitlement.isPro;
 
     return {
-        plan: plan.plan_type,
-        trial_start: plan.trial_start,
-        trial_end: plan.trial_end,
+        plan: isPro ? "pro" : "free",
+        trial_start: null,
+        trial_end: null,
         isPro,
-        isTrial: plan.plan_type === "pro_trial" && isTrialActive,
-        trialDaysRemaining: daysRemaining,
+        isTrial: false,
+        trialDaysRemaining: 0,
     };
 }
 
@@ -124,39 +65,9 @@ export async function getUserPlanStatus(
  * Automatically enrolls them in a 30-day PRO trial.
  */
 export async function ensureTrialEnrollment(
-    userId: string
+    _userId: string
 ): Promise<boolean> {
-    const supabase = getSupabaseServer();
-
-    if (!supabase) return false;
-
-    // Check if they already have a plan
-    const { data: existing } = await supabase
-        .from("user_plans")
-        .select("user_id")
-        .eq("user_id", userId)
-        .single();
-
-    if (existing) return true;
-
-    // Create 30-day trial
-    const now = new Date();
-    const trialEnd = new Date();
-    trialEnd.setDate(now.getDate() + 30);
-
-    const { error } = await supabase.from("user_plans").insert({
-        user_id: userId,
-        plan_type: "pro_trial",
-        trial_start: now.toISOString(),
-        trial_end: trialEnd.toISOString(),
-    });
-
-    if (error) {
-        console.error("Error enrolling user in trial:", error);
-        return false;
-    }
-
-    return true;
+    return false;
 }
 
 /**

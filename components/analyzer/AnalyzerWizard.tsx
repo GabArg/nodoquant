@@ -306,16 +306,6 @@ export default function AnalyzerWizard() {
     async function handleEmailUnlocked(id: string) {
         if (!parseResult) return;
         setAnalysisId(id);
-        try {
-            const { data: { user } } = await (await import("@/lib/auth/client")).createClient().auth.getUser();
-            if (user) {
-                const res = await fetch(`/${locale}/api/user/trial`, { method: "POST" });
-                const data = await res.json();
-                if (data.ok && data.isPro) setIsPro(true);
-            }
-        } catch (e) {
-            console.error("Trial activation failed:", e);
-        }
         setStep("full");
     }
 

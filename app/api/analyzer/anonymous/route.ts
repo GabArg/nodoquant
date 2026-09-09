@@ -1,6 +1,7 @@
 import "server-only";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
+import { FREE_PLAN_LIMITS } from "@/lib/payments/subscription";
 
 // Minimum viable in-memory rate limiting.
 const rateLimitCache = new Map<string, { count: number; expiresAt: number }>();
@@ -54,9 +55,9 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ ok: false, error: "Datos numéricos inválidos" }, { status: 400 });
         }
 
-        if (trades_count <= 0 || trades_count > 1000) {
+        if (trades_count <= 0 || trades_count > FREE_PLAN_LIMITS.MAX_TRADES_PER_ANALYSIS) {
             console.warn(`[Analyzer Anonymous] Rejected: trades_count out of bounds (${trades_count}) from IP: ${ip}`);
-            return NextResponse.json({ ok: false, error: "Cantidad de trades fuera de límite (1-1000)" }, { status: 400 });
+            return NextResponse.json({ ok: false, code: "BETA_TRADE_LIMIT", error: `La beta permite entre 1 y ${FREE_PLAN_LIMITS.MAX_TRADES_PER_ANALYSIS} trades por análisis.` }, { status: 403 });
         }
 
         if (winrate < 0 || winrate > 100) {

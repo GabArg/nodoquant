@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServer } from "@/lib/supabase";
 import { createClient } from "@/lib/auth/server";
+import { FREE_PLAN_LIMITS, getUserPlanStatus } from "@/lib/payments/subscription";
 
 const PYTHON_ENGINE_URL = process.env.PYTHON_ENGINE_URL || "http://127.0.0.1:8000";
 
@@ -13,6 +14,19 @@ export async function POST(req: NextRequest) {
             return NextResponse.json(
                 { ok: false, error: "Datos de trades inválidos o insuficientes." },
                 { status: 400 }
+            );
+        }
+
+        const authClient = createClient();
+        const { data: { session } } = await authClient.auth.getSession();
+        const plan = session?.user?.id
+            ? await getUserPlanStatus(session.user.id)
+            : null;
+
+        if (!plan?.isPro && trades.length > FREE_PLAN_LIMITS.MAX_TRADES_PER_ANALYSIS) {
+            return NextResponse.json(
+                { ok: false, code: "BETA_TRADE_LIMIT", error: `The free beta allows up to ${FREE_PLAN_LIMITS.MAX_TRADES_PER_ANALYSIS} trades per analysis.` },
+                { status: 403 }
             );
         }
 
@@ -36,8 +50,6 @@ export async function POST(req: NextRequest) {
 
         // 2. Save results to Supabase Strategy Reports (Phase 1 Data Model)
         // Check active session
-        const authClient = createClient();
-        const { data: { session } } = await authClient.auth.getSession();
         const user_id = session?.user?.id ?? null;
 
         const supabase = getSupabaseServer();

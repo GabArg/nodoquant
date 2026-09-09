@@ -608,7 +608,6 @@
     "pricing": {
         "title": "Mejora tu Trading con {brand}",
         "desc": "Desbloquea métricas avanzadas, simulaciones de Monte Carlo y análisis ilimitados para refinar tu operativa.",
-        "errorCheckout": "No se pudo iniciar el checkout. Intenta de nuevo.",
         "errorNetwork": "Error de red. Intenta de nuevo.",
         "month": "mes",
         "cancelAnytime": "Cancela en cualquier momento",
@@ -690,9 +689,9 @@
             "credibilityFooter": "Simulación basada en más de 10,000 escenarios Monte Carlo usando tus datos reales.",
             "mcPlaceholder": "(calculado con más de 10,000 simulaciones Monte Carlo)",
             "closingLine": "Podés ignorar esto… o seguir operando sin saber cuánto estás arriesgando.",
-            "unlockNow": "Desbloquear ahora — 15 USDT",
-            "unlockFull": "Ver exactamente cuánto vas a perder — 15 USDT",
-            "unlockSubtext": "Pago único · Acceso inmediato · Basado en tus trades reales",
+            "unlockNow": "Volver al análisis guardado",
+            "unlockFull": "Volver al análisis guardado",
+            "unlockSubtext": "La beta no ofrece compras ni módulos ilimitados",
             "shortTermImprovement": "Mejora a corto plazo detectada",
             "longTermStabilityNotProven": "Estabilidad a largo plazo: NO comprobada",
             "edgeInsightTip": "Este análisis parcial no puede confirmar una ventaja real. Necesitás la simulación completa de 10,000 escenarios para validar tu estrategia.",
@@ -777,8 +776,8 @@
                 "analysis": "Análisis",
                 "report": "Reporte"
             },
-            "viewReport": "Desbloquear análisis completo",
-            "importAnother": "Analizar otro archivo",
+            "viewReport": "Ver reporte de la beta",
+            "importAnother": "Probar otro archivo (no reemplaza el guardado)",
             "freeTool": "Herramienta de Diagnóstico Profesional",
             "loading": {
                 "parsing": "Leyendo historial de trading...",
@@ -1017,7 +1016,7 @@
                 "label": "Función PRO",
                 "lockedTitle": "Inteligencia Profunda Bloqueada",
                 "lockedDesc": "Desbloquea simulaciones de Monte Carlo, detección de degradación de ventaja y métricas de riesgo profesional.",
-                "upgradeCta": "Ver el análisis completo"
+                "upgradeCta": "Volver al análisis guardado"
             },
             "performance": {
                 "title": "Métricas de Performance",
@@ -2053,35 +2052,6 @@
             "sec4_content": "Utilizamos cookies para mantener tu sesión activa y mejorar tu experiencia de navegación. Puedes desactivar las cookies en la configuración de tu navegador, aunque esto puede afectar algunas funciones del sitio.",
             "sec5": "5. Tus Derechos",
             "sec5_content": "Tienes derecho a acceder, rectificar o eliminar tu información personal en cualquier momento. Puedes hacerlo desde la configuración de tu cuenta o contactándonos directamente."
-        },
-        "manualPayment": {
-            "decision": {
-                "title": "Estás a punto de ver lo que la mayoría de traders ignora.",
-                "points": [
-                    "Cuándo tu estrategia colapsa",
-                    "Cuánto capital podés perder realmente",
-                    "Si lo que estás viendo es ventaja… o suerte"
-                ],
-                "hook": "Este análisis está basado en tus propios trades.",
-                "footer": "Pago único. Acceso inmediato.",
-                "price": "5 USDT",
-                "cta": "Continuar al pago"
-            },
-            "payment": {
-                "title": "Instrucciones de Pago",
-                "amount": "Monto: 5 USDT",
-                "network": "Red: TRC20 (USDT)",
-                "address": "TXXXXXXX_REPLACE_THIS",
-                "instruction": "Enviá exactamente 5 USDT a esta dirección.",
-                "confirmation": "Una vez enviado, confirmá el pago para desbloquear tu análisis.",
-                "cta": "Ya pagué",
-                "urgency1": "Acceso inmediato después de confirmar.",
-                "urgency2": "Este análisis puede cambiar cómo estás operando hoy."
-            },
-            "verifying": {
-                "title": "Estamos verificando tu pago.",
-                "subtitle": "Esto puede tardar unos minutos."
-            }
         },
         "publicReport": {
             "header": {

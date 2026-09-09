@@ -40,6 +40,9 @@ export interface SaveAnalysisBody {
 
 export async function POST(req: NextRequest) {
     try {
+        const wantsSpanish = (req.headers.get("accept-language") || "")
+            .toLowerCase()
+            .startsWith("es");
         const body: SaveAnalysisBody = await req.json();
 
         const {
@@ -106,8 +109,11 @@ export async function POST(req: NextRequest) {
             return NextResponse.json(
                 {
                     ok: false,
-                    error: "Límite del plan superado",
-                    reason: `El plan gratuito permite hasta ${FREE_PLAN_LIMITS.MAX_TRADES_PER_ANALYSIS} transacciones por análisis. Actualizá a Pro para analizar sin límites.`,
+                    error: wantsSpanish ? "Límite de la beta alcanzado" : "Beta limit reached",
+                    code: "BETA_TRADE_LIMIT",
+                    reason: wantsSpanish
+                        ? `La beta gratuita permite hasta ${FREE_PLAN_LIMITS.MAX_TRADES_PER_ANALYSIS} trades por análisis.`
+                        : `The free beta allows up to ${FREE_PLAN_LIMITS.MAX_TRADES_PER_ANALYSIS} trades per analysis.`,
                 },
                 {
                     status: 403,
@@ -205,11 +211,23 @@ export async function POST(req: NextRequest) {
             const canSave = await canCreateStrategy(user_id, isPro);
 
             if (!canSave) {
+                const { data: savedAnalysis } = await supabase
+                    .from("trade_analysis")
+                    .select("id")
+                    .eq("user_id", user_id)
+                    .order("created_at", { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+
                 return NextResponse.json(
                     {
                         ok: false,
-                        error: "Límite del plan superado",
-                        reason: `El plan gratuito permite hasta ${FREE_PLAN_LIMITS.MAX_SAVED_STRATEGIES} análisis guardado. Actualizá a Pro para guardar análisis ilimitados.`,
+                        error: wantsSpanish ? "Límite de la beta alcanzado" : "Beta limit reached",
+                        code: "BETA_SAVED_ANALYSIS_LIMIT",
+                        existingReportId: savedAnalysis?.id ?? null,
+                        reason: wantsSpanish
+                            ? `La beta gratuita permite ${FREE_PLAN_LIMITS.MAX_SAVED_STRATEGIES} análisis guardado. Podés volver al que ya guardaste.`
+                            : `The free beta allows ${FREE_PLAN_LIMITS.MAX_SAVED_STRATEGIES} saved analysis. You can return to your existing report.`,
                     },
                     {
                         status: 403,

@@ -7,10 +7,8 @@ import StrategyEvolution from "@/components/analyzer/Dashboard/StrategyEvolution
 import ScoreEvolutionChart from "@/components/analyzer/Dashboard/ScoreEvolutionChart";
 import EdgeAlerts from "@/components/analyzer/Dashboard/EdgeAlerts";
 import WeeklySummary from "@/components/analyzer/Dashboard/WeeklySummary";
-import { getUserSubscription, isProUser } from "@/lib/payments/subscription";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import TrialBanner from "@/components/nodoquant/TrialBanner";
 
 export const dynamic = "force-dynamic";
 
@@ -110,13 +108,16 @@ export default async function DashboardPage({ params }: { params: { locale: stri
         quant_score: computeQuantScore100(Number(recentAnalyses[1].winrate), Number(recentAnalyses[1].profit_factor), Number(recentAnalyses[1].max_drawdown), Number(recentAnalyses[1].trades_count || 0)),
     } : null;
 
+    const betaSaveLimitReached = !isPro && statsList.analyses >= 1;
+    const primaryAnalysisHref = betaSaveLimitReached && recentAnalyses[0]
+        ? `/${params.locale}/report/${recentAnalyses[0].id}`
+        : `/${params.locale}/analyzer`;
+    const primaryAnalysisLabel = betaSaveLimitReached
+        ? (params.locale === "es" ? "Ver análisis guardado" : "View saved analysis")
+        : t("history.analyzeNew");
+
     return (
         <div className="space-y-8">
-            {planStatus?.isTrial && (
-                <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-8 mb-8">
-                    <TrialBanner daysRemaining={planStatus.trialDaysRemaining} plan={planStatus.plan} />
-                </div>
-            )}
             <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
@@ -126,9 +127,9 @@ export default async function DashboardPage({ params }: { params: { locale: stri
                     <p className="text-gray-400">{t("subtitle")}</p>
                 </div>
                 {!isPro && (
-                    <Link href={`/${params.locale}/pricing`} className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold rounded-xl transition-all shadow-lg flex items-center gap-2">
-                        {t("upgrade")}
-                    </Link>
+                    <div className="px-5 py-2.5 bg-indigo-500/10 border border-indigo-500/20 text-indigo-200 text-sm font-semibold rounded-xl">
+                        {params.locale === "es" ? "Beta gratuita · 500 trades · 1 análisis guardado" : "Free beta · 500 trades · 1 saved analysis"}
+                    </div>
                 )}
             </header>
 
@@ -171,7 +172,7 @@ export default async function DashboardPage({ params }: { params: { locale: stri
             <section>
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="text-xl font-bold text-white">{t("history.title")}</h2>
-                    <Link href={`/${params.locale}/analyzer`} className="text-sm text-indigo-400 hover:text-indigo-300 font-medium bg-indigo-500/10 px-4 py-2 rounded-lg transition-colors">{t("history.analyzeNew")}</Link>
+                    <Link href={primaryAnalysisHref} className="text-sm text-indigo-400 hover:text-indigo-300 font-medium bg-indigo-500/10 px-4 py-2 rounded-lg transition-colors">{primaryAnalysisLabel}</Link>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

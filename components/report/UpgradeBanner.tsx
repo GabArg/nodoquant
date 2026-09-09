@@ -33,10 +33,10 @@ export default function UpgradeBanner() {
             
             <div className="relative z-10 shrink-0">
                 <a 
-                    href="/pricing"
+                    href="/dashboard"
                     className="btn-primary py-3 px-8 text-sm shadow-lg shadow-indigo-500/20 hover:scale-105 transition-transform"
                 >
-                    Actualizar a Pro
+                    Volver al análisis guardado
                 </a>
             </div>
         </div>

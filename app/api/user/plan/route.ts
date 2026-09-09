@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/auth/server";
-import { getUserSubscription, isProUser, getUserPlanStatus } from "@/lib/payments/subscription";
-import { trackEvent } from "@/lib/analytics";
+import { getSupabaseServer } from "@/lib/supabase";
+import { getUserEntitlement } from "@/lib/payments/entitlements";
 
 function getErrorMessage(error: unknown): string {
     return error instanceof Error ? error.message : "Internal error";
@@ -16,20 +16,14 @@ export async function GET() {
             return NextResponse.json({ plan: "free", isPro: false });
         }
 
-        const sub = await getUserSubscription(user.id);
-        const fullStatus = await getUserPlanStatus(user.id);
-        const isPro = isProUser(sub);
-
-        // Track trial expiration if it just happened
-        if (fullStatus.plan === "pro_trial" && !fullStatus.isTrial) {
-            await trackEvent("trial_expired", { userId: user.id }, user.id);
-        }
+        const entitlement = await getUserEntitlement(getSupabaseServer(), user.id);
 
         return NextResponse.json({
             ok: true,
-            plan: sub?.plan ?? "free",
-            isPro: isPro,
-            trialDaysRemaining: fullStatus.trialDaysRemaining
+            plan: entitlement.tier,
+            isPro: entitlement.isPro,
+            source: entitlement.source,
+            trialDaysRemaining: 0
         });
     } catch (err: unknown) {
         return NextResponse.json({

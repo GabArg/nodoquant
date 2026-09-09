@@ -386,9 +386,9 @@ export default function PublicReportClient({ reportId, locale, initialData }: Pr
                             The real risk — and the real edge — is hidden below.
                         </p>
                     </div>
-                    <Link href={`/${locale}/pricing`}
+                    <Link href={`/${locale}/dashboard`}
                         className="btn-primary px-8 py-3 w-fit mx-auto">
-                        Unlock Full Strategy Diagnostics →
+                        {locale === "es" ? "Volver al análisis guardado" : "Return to saved analysis"} →
                     </Link>
                 </div>
 
@@ -594,9 +594,9 @@ export default function PublicReportClient({ reportId, locale, initialData }: Pr
                     <p className="text-gray-400 mb-8">
                         Unlock full diagnostics, advanced metrics, and deeper insights to fully master your statistical edge.
                     </p>
-                    <Link href={`/${locale}/pricing`}
+                    <Link href={`/${locale}/analyzer`}
                         className="btn-primary px-8 py-4 justify-center">
-                        Reveal what your strategy is really doing →
+                        {locale === "es" ? "Analizar otra estrategia" : "Analyze another strategy"} →
                     </Link>
                 </div>
 

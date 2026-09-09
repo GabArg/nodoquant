@@ -1,51 +1,23 @@
-import { createClient } from "@/lib/auth/server";
-import { getSupabaseServer } from "@/lib/supabase";
-import PricingPlan from "@/components/pricing/PricingPlan";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
 
-export const dynamic = "force-dynamic";
-
-export default async function PricingPage({ params }: { params: { locale: string } }) {
-    const t = await getTranslations({ locale: params.locale, namespace: "pricing" });
-    const authClient = createClient();
-    const { data: { user } } = await authClient.auth.getUser();
-
-    let isPro = false;
-    if (user) {
-        const supabase = getSupabaseServer();
-        if (supabase) {
-            const { data: profile } = await supabase
-                .from("user_profiles")
-                .select("plan")
-                .eq("id", user.id)
-                .single();
-            isPro = profile?.plan === "pro";
-        }
-    }
-
-    if (isPro) {
-        return (
-            <main className="min-h-screen bg-[#07090F] pt-10 flex items-center justify-center px-6">
-                <div className="text-center max-w-md">
-                    <div className="w-20 h-20 bg-indigo-500/20 text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-                        ✨
-                    </div>
-                    <h1 className="text-3xl font-bold text-white mb-4">{t("alreadyPro.title")}</h1>
-                    <p className="text-gray-400 mb-8">
-                        {t("alreadyPro.desc")}
-                    </p>
-                    <Link href={`/${params.locale}/dashboard`} className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold transition-all inline-block">
-                        {t("alreadyPro.cta")}
-                    </Link>
-                </div>
-            </main>
-        );
-    }
+export default function BetaPage({ params }: { params: { locale: string } }) {
+    const es = params.locale === "es";
+    const features = es
+        ? ["Hasta 500 trades por análisis", "1 análisis guardado por usuario", "Reportes públicos y herramientas cuantitativas incluidas en la beta"]
+        : ["Up to 500 trades per analysis", "1 saved analysis per user", "Public reports and quantitative tools included in the beta"];
 
     return (
-        <main className="min-h-screen bg-[#07090F] pt-10">
-            <PricingPlan isPro={false} />
+        <main className="min-h-screen bg-[#07090F] pt-28 pb-20 px-6 text-white">
+            <div className="max-w-3xl mx-auto text-center">
+                <span className="inline-flex px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-bold uppercase tracking-widest mb-6">{es ? "Beta pública" : "Public beta"}</span>
+                <h1 className="text-4xl md:text-5xl font-black mb-5">{es ? "NodoQuant es gratis durante la beta" : "NodoQuant is free during beta"}</h1>
+                <p className="text-lg text-gray-400 mb-10">{es ? "Todavía no ofrecemos planes pagos ni checkout. Usá la beta limitada y ayudanos con tu feedback." : "We do not offer paid plans or checkout yet. Use the limited beta and help us with your feedback."}</p>
+                <div className="rounded-3xl p-8 border border-indigo-500/25 bg-indigo-500/5 text-left mb-8">
+                    <h2 className="text-xl font-bold mb-5">{es ? "Qué incluye" : "What's included"}</h2>
+                    <ul className="space-y-4 text-gray-300">{features.map((feature) => <li key={feature} className="flex gap-3"><span className="text-emerald-400">✓</span>{feature}</li>)}</ul>
+                </div>
+                <Link href={`/${params.locale}/analyzer`} className="btn-primary px-8 py-4 inline-flex justify-center">{es ? "Analizar una estrategia" : "Analyze a strategy"}</Link>
+            </div>
         </main>
     );
 }

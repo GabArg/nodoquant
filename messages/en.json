@@ -181,9 +181,9 @@
             "credibilityFooter": "Simulation based on over 10,000 Monte Carlo scenarios using your real data.",
             "mcPlaceholder": "(calculated with over 10,000 Monte Carlo simulations)",
             "closingLine": "You can ignore this… or keep trading without knowing how much you are risking.",
-            "unlockNow": "Unlock now — 15 USDT",
-            "unlockFull": "See exactly how much you are going to lose — 15 USDT",
-            "unlockSubtext": "One-time payment · Instant access · Based on your real trades",
+            "unlockNow": "Return to saved analysis",
+            "unlockFull": "Return to saved analysis",
+            "unlockSubtext": "The beta does not offer purchases or unlimited modules",
             "shortTermImprovement": "Short-term improvement detected",
             "longTermStabilityNotProven": "Long-term stability: NOT proven",
             "edgeInsightTip": "This partial analysis cannot confirm a real advantage. You need the full simulation of 10,000 scenarios to validate your strategy.",
@@ -268,8 +268,8 @@
                 "analysis": "Analysis",
                 "report": "Report"
             },
-            "viewReport": "Unlock full analysis",
-            "importAnother": "Analyze another file",
+            "viewReport": "View beta report",
+            "importAnother": "Try another file (saved report stays)",
             "freeTool": "Professional Diagnostic Tool",
             "loading": {
                 "parsing": "Reading trading history...",
@@ -518,8 +518,8 @@
                 "label": "PRO Feature",
                 "lockedTitle": "Deep Intelligence Locked",
                 "lockedDesc": "Unlock advanced risk analysis to simulate thousands of future trajectories and estimate worst-case scenarios.",
-                "upgradeCta": "Start PRO Trial",
-                "upgradeSubtitle": "30 days free"
+                "upgradeCta": "Return to saved analysis",
+                "upgradeSubtitle": "Public beta limits apply"
             },
             "actions": {
                 "title": "Next Steps",
@@ -723,7 +723,7 @@
                 "label": "PRO Feature",
                 "lockedTitle": "Deep Intelligence Locked",
                 "lockedDesc": "Unlock Monte Carlo simulations, edge degradation detection, and professional risk metrics.",
-                "upgradeCta": "See Full Analysis"
+                "upgradeCta": "Return to saved analysis"
             },
             "propFirm": {
                 "title": "Prop Firm Evaluation",
@@ -1586,7 +1586,6 @@
     "pricing": {
         "title": "Level up your trading with {brand}",
         "desc": "Unlock advanced metrics, Monte Carlo simulations and unlimited analysis to refine your edge.",
-        "errorCheckout": "Could not start checkout. Please try again.",
         "errorNetwork": "Network error. Please try again.",
         "month": "mo",
         "cancelAnytime": "Cancel anytime",
@@ -2001,50 +2000,6 @@
             "sec4_content": "We use cookies to keep your session active and improve your browsing experience. You can disable cookies in your browser settings, although this may affect some site functions.",
             "sec5": "5. Your Rights",
             "sec5_content": "You have the right to access, rectify, or delete your personal information at any time. You can do this from your account settings or by contacting us directly."
-        }
-    },
-    "paywall": {
-        "title": "Your strategy might not survive.",
-        "subtitle": "This full analysis reveals if you actually have an edge… or if you're trading purely on luck.",
-        "featuresTitle": "Deep Intelligence",
-        "features": [
-            "Real probability of ruin",
-            "Simulation across thousands of scenarios",
-            "Complete statistical validation"
-        ],
-        "activateTitle": "Activate PRO access",
-        "activateSubtitle": "Send <bold>15 USDT</bold> to the address below and we'll activate your access manually.",
-        "network": "USDT (TRC20)",
-        "cta": "View Full Analysis — 15 USDT",
-        "footer": "One-time payment · Immediate access"
-    },
-    "manualPayment": {
-        "decision": {
-            "title": "You are about to see what most traders ignore.",
-            "points": [
-                "When your strategy collapses",
-                "How much capital you can really lose",
-                "If what you see is an edge… or just luck"
-            ],
-            "hook": "This analysis is based on your own trades.",
-            "footer": "One-time payment. Immediate access.",
-            "price": "5 USDT",
-            "cta": "Continue to payment"
-        },
-        "payment": {
-            "title": "Payment Instructions",
-            "amount": "Amount: 5 USDT",
-            "network": "Network: TRC20 (USDT)",
-            "address": "TXXXXXXX_REPLACE_THIS",
-            "instruction": "Send exactly 5 USDT to this address.",
-            "confirmation": "Once sent, confirm payment to unlock your analysis.",
-            "cta": "I have already paid",
-            "urgency1": "Immediate access after confirmation.",
-            "urgency2": "This analysis could change how you are trading today."
-        },
-        "verifying": {
-            "title": "We are verifying your payment.",
-            "subtitle": "This may take a few minutes."
         }
     },
     "publicReport": {

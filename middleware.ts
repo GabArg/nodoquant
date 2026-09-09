@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import createIntlMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
+import { getUserEntitlement } from "./lib/payments/entitlements";
 
 type Locale = (typeof routing.locales)[number];
 
@@ -78,16 +79,10 @@ export async function middleware(request: NextRequest) {
     );
 
     // Fetch user plan if needed (only for protected or pro paths to save latency)
-    let userPlan = "free";
+    let hasProAccess = false;
 
     if (user && (isProtected || isProPath)) {
-        const { data: profile } = await supabase
-            .from("user_profiles")
-            .select("plan")
-            .eq("id", user.id)
-            .single();
-
-        userPlan = profile?.plan || "free";
+        hasProAccess = (await getUserEntitlement(supabase, user.id)).isPro;
     }
 
     if (isProtected && !user) {
@@ -102,14 +97,14 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(url);
     }
 
-    if (isProPath && userPlan !== "pro") {
-        // Redirigir a pricing si intenta entrar a ruta PRO sin ser PRO
+    if (isProPath && !hasProAccess) {
+        // Paid upgrades are unavailable during beta; return users to their dashboard.
         const url = request.nextUrl.clone();
         const locale = getRequestLocale(request);
 
         url.pathname = locale
-            ? `/${locale}/pricing`
-            : "/pricing";
+            ? `/${locale}/dashboard?beta_limit=advanced`
+            : "/dashboard?beta_limit=advanced";
 
         return NextResponse.redirect(url);
     }

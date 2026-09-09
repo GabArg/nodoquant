@@ -152,7 +152,7 @@ function CalculatorSection({ t, locale }: { t: any, locale: string }) {
             </div>
 
             <div className="text-center py-20 pb-0 flex flex-col items-center gap-8">
-                <Link href="/pricing" className="text-gray-500 hover:text-gray-400 text-sm">
+                <Link href={`/${locale}/analyzer`} className="text-gray-500 hover:text-gray-400 text-sm">
                     {t("content.leaderboardLink")}
                 </Link>
                 <Link href="/analyzer" className="text-indigo-400 hover:text-indigo-300 font-bold underline underline-offset-8">

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import type { FullMetrics } from "@/lib/analyzer/metrics";
 import EquityChart from "./EquityChart";
@@ -9,7 +10,6 @@ import TradeHistogram from "./TradeHistogram";
 import MonteCarloChart from "./MonteCarloChart";
 import MonteCarloSummary from "./MonteCarloSummary";
 import StrategyEvolution from "./Dashboard/StrategyEvolution";
-import ManualPaymentModal from "./ManualPaymentModal";
 import { trackEvent } from "@/lib/trackEvent";
 
 interface Props {
@@ -18,20 +18,21 @@ interface Props {
     isPro?: boolean;
 }
 
-function PrimaryCTA({ onClick }: { onClick: () => void }) {
+function PrimaryCTA({ reportHref }: { reportHref: string }) {
     const tFunnel = useTranslations("analyzer.funnel");
+    const locale = useLocale();
     return (
         <div className="flex flex-col items-center gap-6 w-full py-8">
-            <button
-                onClick={onClick}
+            <Link
+                href={reportHref}
                 className="group relative px-10 py-6 rounded-3xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 text-white text-[15px] font-black uppercase tracking-[0.2em] transition-all shadow-[0_20px_50px_rgba(79,70,229,0.5)] hover:shadow-[0_25px_60px_rgba(79,70,229,0.7)] active:scale-95 border border-white/20 ring-4 ring-indigo-500/10 overflow-hidden"
             >
                 <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-shimmer" />
-                <span className="relative z-10">{tFunnel("unlockFull")}</span>
-            </button>
+                <span className="relative z-10">{locale === "es" ? "Volver al análisis guardado" : "Return to saved analysis"}</span>
+            </Link>
             <div className="flex flex-col items-center gap-2 text-center">
                 <p className="text-[12px] text-indigo-300 font-black uppercase tracking-[0.15em] drop-shadow-sm">
-                    {tFunnel("unlockSubtext")}
+                    {locale === "es" ? "Los módulos avanzados no están incluidos en esta beta" : "Advanced modules are not included in this beta"}
                 </p>
                 <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.1em] opacity-60">
                     {tFunnel("basedOnTrades")}
@@ -225,7 +226,7 @@ function LockedSection({ title, desc, children, isPro = false, onUnlockClick }: 
                     
                     {/* CTA 2: Over Monte Carlo blur */}
                     <div className="mt-8">
-                        <PrimaryCTA onClick={() => onUnlockClick?.()} />
+                        <PrimaryCTA reportHref="/dashboard" />
                     </div>
                 </div>
             </div>
@@ -238,7 +239,6 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
     const tFunnel = useTranslations("analyzer.funnel");
     const locale = useLocale();
     const [linkCopied, setLinkCopied] = React.useState(false);
-    const [showPaywall, setShowPaywall] = React.useState(false);
     const [isProInternal, setIsProInternal] = React.useState(isPro || false);
 
     React.useEffect(() => {
@@ -255,8 +255,11 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
         } catch (err) {
             console.error(`[FullReport] trackEvent FAILED for: ${source}`, err);
         }
-        setShowPaywall(true);
     };
+
+    const savedReportHref = analysisId
+        ? `/${locale}/report/${analysisId}`
+        : `/${locale}/dashboard`;
     
     const copyPublicLink = () => {
         if (!analysisId) return;
@@ -318,7 +321,7 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
                         </div>
 
                         {/* CTA 1: After Red Warning Block */}
-                        <PrimaryCTA onClick={() => handleUnlockClick("TOP")} />
+                        <PrimaryCTA reportHref={savedReportHref} />
                         
                         <p className="text-[10px] text-red-300/40 font-bold uppercase tracking-widest text-center pt-4 border-t border-red-500/10">
                             {tFunnel("credibilityFooter")}
@@ -497,7 +500,7 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
                             {tFunnel("closingLine")}
                         </p>
                     </div>
-                    <PrimaryCTA onClick={() => handleUnlockClick("BOTTOM")} />
+                    <PrimaryCTA reportHref={savedReportHref} />
                 </div>
             )}
 
@@ -563,20 +566,6 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
                 {t("disclaimer")}
             </p>
 
-            {/* Manual Payment Modal */}
-            {showPaywall && !isProInternal && (
-                <ManualPaymentModal 
-                    onClose={() => setShowPaywall(false)} 
-                    onSuccess={() => {
-                        setIsProInternal(true);
-                    }}
-                    metadata={{
-                        report_id: analysisId,
-                        score: metrics.advanced?.edgeConfidence,
-                        verdict: metrics.advanced?.verdict
-                    }}
-                />
-            )}
         </div>
     );
 }

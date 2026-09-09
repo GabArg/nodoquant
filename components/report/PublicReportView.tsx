@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import BasicResults from "@/components/analyzer/BasicResults";
 import FullReport from "@/components/analyzer/FullReport";
 import type {
@@ -11,7 +11,6 @@ import type {
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { trackEvent } from "@/lib/trackEvent";
-import ManualPaymentModal from "@/components/analyzer/ManualPaymentModal";
 
 type PublicReportMetrics = FullMetrics & {
     score?: number;
@@ -36,9 +35,6 @@ export default function PublicReportView({
     report: PublicReportProps;
 }) {
     const t = useTranslations("publicReport");
-    const [isProAccess, setIsProAccess] = useState(false);
-    const [showPaywall, setShowPaywall] = useState(false);
-
     const reportScore =
         report.metrics_json.advanced?.edgeConfidence ??
         report.metrics_json.score;
@@ -48,10 +44,6 @@ export default function PublicReportView({
         report.metrics_json.verdict;
 
     useEffect(() => {
-        setIsProAccess(
-            localStorage.getItem("nodoquant_pro_access") === "true"
-        );
-
         const analyticsData = {
             report_id: report.id,
             score: reportScore,
@@ -109,7 +101,7 @@ export default function PublicReportView({
                                 verdict: reportVerdict,
                             }
                         );
-                        setShowPaywall(true);
+                        document.getElementById("beta-report-details")?.scrollIntoView({ behavior: "smooth" });
                     }}
                 />
 
@@ -126,11 +118,11 @@ export default function PublicReportView({
                     </div>
                 </div>
 
-                <div className="mt-16">
+                <div id="beta-report-details" className="mt-16">
                     <FullReport
                         metrics={report.metrics_json}
                         analysisId={report.id}
-                        isPro={isProAccess}
+                        isPro={false}
                     />
                 </div>
 
@@ -182,19 +174,6 @@ export default function PublicReportView({
                     </div>
                 </div>
 
-                {showPaywall && !isProAccess && (
-                    <ManualPaymentModal
-                        onClose={() => setShowPaywall(false)}
-                        onSuccess={() => {
-                            setIsProAccess(true);
-                        }}
-                        metadata={{
-                            report_id: report.id,
-                            score: reportScore,
-                            verdict: reportVerdict,
-                        }}
-                    />
-                )}
             </div>
         </div>
     );

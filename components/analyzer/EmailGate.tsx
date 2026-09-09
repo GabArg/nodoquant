@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface Props {
     metricsPayload: object;
@@ -38,6 +39,7 @@ export default function EmailGate({
     const router = useRouter();
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [existingReportId, setExistingReportId] = useState<string | null>(null);
     const unlockInFlightRef = useRef(false);
 
     // Auto-unlock if authenticated.
@@ -97,6 +99,11 @@ export default function EmailGate({
             const data = await res.json();
 
             if (!data.ok) {
+                setExistingReportId(
+                    typeof data.existingReportId === "string"
+                        ? data.existingReportId
+                        : null
+                );
                 const errorMsg =
                     data.reason ||
                     data.error ||
@@ -242,6 +249,15 @@ export default function EmailGate({
                     <p className="text-sm font-semibold text-red-400">
                         {error}
                     </p>
+
+                    {existingReportId && (
+                        <Link
+                            href={`/${locale}/report/${existingReportId}`}
+                            className="inline-flex px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-colors"
+                        >
+                            {locale === "es" ? "Volver al análisis guardado" : "Return to saved analysis"}
+                        </Link>
+                    )}
 
                     <div className="pt-4 flex justify-center gap-4">
                         <button

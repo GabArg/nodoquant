@@ -46,15 +46,6 @@ export default function SignupPage() {
         }
 
         if (data.session) {
-            try {
-                await fetch("/api/user/plan");
-            } catch (trialError) {
-                console.error(
-                    "Trial enrollment fallback failed:",
-                    trialError
-                );
-            }
-
             router.push(redirectUrl || `/${locale}/dashboard`);
             router.refresh();
             return;
