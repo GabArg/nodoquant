@@ -2066,21 +2066,27 @@
             "sec4_content": "Utilizamos cookies para mantener tu sesión activa y mejorar tu experiencia de navegación. Puedes desactivar las cookies en la configuración de tu navegador, aunque esto puede afectar algunas funciones del sitio.",
             "sec5": "5. Tus Derechos",
             "sec5_content": "Tienes derecho a acceder, rectificar o eliminar tu información personal en cualquier momento. Puedes hacerlo desde la configuración de tu cuenta o contactándonos directamente."
-        },
-        "publicReport": {
-            "header": {
-                "title": "Reporte Público",
-                "subtitle": "Cualquiera con este link puede ver el reporte."
-            },
-            "hook": "Este análisis revela si tenés ventaja real… <bold>o si estás operando por suerte</bold>.",
-            "ctaTitle": "Si esta fuera tu estrategia...",
-            "ctaWarning": "YA ESTARÍAS PERDIENDO DINERO.",
-            "cta": "Verificar mi estrategia ahora",
-            "urgency": "Cada operación sin ventaja estadística te cuesta dinero.",
-            "socialProof": "+3,000 estrategias analizadas",
-            "poweredBy": "Powered by NodoQuant",
-            "defaultFileName": "Estrategia Compartida",
-            "anonymousUser": "Anónimo"
         }
+    },
+    "publicReport": {
+        "header": {
+            "title": "Reporte Público",
+            "subtitle": "Cualquiera con este link puede ver el reporte."
+        },
+        "diagnosis": {
+            "positive": "Los datos muestran una <bold>ventaja estadística favorable</bold> en esta muestra.",
+            "negative": "Los datos todavía <bold>no muestran una ventaja estadística confiable</bold>.",
+            "insufficient": "Esta muestra todavía <bold>no tiene suficientes operaciones</bold> para un diagnóstico confiable."
+        },
+        "hook": "Diagnóstico cuantitativo basado en los datos de esta muestra.",
+        "ctaTitle": "Analizá tu propia estrategia",
+        "ctaSubtitle": "CON LA BETA GRATUITA",
+        "ctaWarning": "BETA GRATUITA LIMITADA",
+        "cta": "Crear mi reporte de la beta",
+        "urgency": "Importá hasta 500 operaciones y obtené un diagnóstico cuantitativo basado en tus datos.",
+        "socialProof": "Beta gratuita · Sin compra ni suscripción",
+        "poweredBy": "Creado con NodoQuant",
+        "defaultFileName": "Análisis compartido",
+        "anonymousUser": "Anónimo"
     }
 }

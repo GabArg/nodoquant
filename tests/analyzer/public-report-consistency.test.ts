@@ -1,0 +1,70 @@
+import { describe, expect, it } from "vitest";
+import es from "../../messages/es.json";
+import en from "../../messages/en.json";
+import { getCanonicalDiagnosis, isNegativeDiagnosis } from "../../lib/analyzer/diagnosis";
+import { getPublicReportDiagnosis, normalizePublicReportMetrics } from "../../lib/analyzer/publicReportMetrics";
+
+const strongReport = {
+    trades_count: 140,
+    winrate: 64.3,
+    profit_factor: 2.49,
+    max_drawdown: 0.7,
+    sum_profit: 140,
+    metrics_json: {
+        basic: {
+            totalTrades: 140,
+            winrate: 64.3,
+            profitFactor: 2.49,
+            maxDrawdown: 0.7,
+            maxDrawdownAbs: 0.7,
+            expectancy: 1,
+            sumProfit: 140,
+        },
+    },
+};
+
+describe("public report diagnosis", () => {
+    it("keeps a reduced strong-edge payload positive and aligned with Analyzer", () => {
+        const normalized = normalizePublicReportMetrics(strongReport);
+        const publicVerdict = getPublicReportDiagnosis(strongReport);
+
+        expect(publicVerdict).toBe("strongEdge");
+        expect(publicVerdict).toBe(getCanonicalDiagnosis(normalized, normalized));
+        expect(isNegativeDiagnosis(publicVerdict)).toBe(false);
+    });
+
+    it.each([
+        ["noEdge", { ...strongReport, profit_factor: 0.8, sum_profit: -10, metrics_json: { basic: { expectancy: -1 } } }],
+        ["unstableEdge", { ...strongReport, profit_factor: 1.05, sum_profit: 10, metrics_json: { basic: { expectancy: 0.1 } } }],
+    ])("allows a negative warning for %s", (_label, report) => {
+        expect(isNegativeDiagnosis(getPublicReportDiagnosis(report))).toBe(true);
+    });
+
+    it("honors a persisted advanced verdict before the deterministic fallback", () => {
+        const report = { ...strongReport, metrics_json: { advanced: { verdict: "weakEdge" } } };
+        expect(getPublicReportDiagnosis(report)).toBe("weakEdge");
+    });
+});
+
+describe("public report translations", () => {
+    it.each([["es", es], ["en", en]])("defines every visible key for %s", (_locale, messages) => {
+        const publicReport = messages.publicReport;
+        const visibleValues = [
+            publicReport.header.title,
+            publicReport.header.subtitle,
+            publicReport.diagnosis.positive,
+            publicReport.diagnosis.negative,
+            publicReport.diagnosis.insufficient,
+            publicReport.ctaTitle,
+            publicReport.ctaSubtitle,
+            publicReport.ctaWarning,
+            publicReport.urgency,
+            publicReport.cta,
+            publicReport.socialProof,
+            publicReport.poweredBy,
+        ];
+
+        expect(visibleValues.every(value => typeof value === "string" && value.length > 0)).toBe(true);
+        expect(visibleValues.some(value => value.includes("publicReport."))).toBe(false);
+    });
+});

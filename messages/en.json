@@ -2021,14 +2021,20 @@
             "title": "Public Report",
             "subtitle": "Anyone with this link can view this report."
         },
-        "hook": "This analysis reveals if you have a real edge… <bold>or if you're just getting lucky</bold>.",
-        "ctaTitle": "If this was your strategy...",
-        "ctaWarning": "YOU WOULD ALREADY BE LOSING MONEY.",
-        "cta": "Verify my strategy now",
-        "urgency": "Every trade without a statistical edge costs you money.",
-        "socialProof": "+3,000 strategies analyzed",
-        "poweredBy": "Powered by NodoQuant",
-        "defaultFileName": "Shared Strategy",
+        "diagnosis": {
+            "positive": "The data shows a <bold>favorable statistical edge</bold> in this sample.",
+            "negative": "The data does <bold>not yet show a reliable statistical edge</bold>.",
+            "insufficient": "This sample does <bold>not yet contain enough trades</bold> for a reliable diagnosis."
+        },
+        "hook": "Quantitative diagnosis based on the data in this sample.",
+        "ctaTitle": "Analyze your own strategy",
+        "ctaSubtitle": "WITH THE FREE BETA",
+        "ctaWarning": "LIMITED FREE BETA",
+        "cta": "Create my beta report",
+        "urgency": "Import up to 500 trades and get a quantitative diagnosis based on your data.",
+        "socialProof": "Free beta · No purchase or subscription",
+        "poweredBy": "Created with NodoQuant",
+        "defaultFileName": "Shared analysis",
         "anonymousUser": "Anonymous"
     }
 }

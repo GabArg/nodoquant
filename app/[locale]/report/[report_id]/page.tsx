@@ -2,6 +2,7 @@ import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { notFound } from "next/navigation";
 import PublicReportView from "@/components/report/PublicReportView";
 import type { Metadata } from "next";
+import { normalizePublicReportMetrics } from "@/lib/analyzer/publicReportMetrics";
 
 export const revalidate = 3600; // Cache for 1 hour
 
@@ -17,13 +18,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         const adminClient = getSupabaseAdmin();
         const { data } = await adminClient
             .from("trade_analysis")
-            .select("metrics_json, file_name, trades_count")
+            .select("metrics_json, file_name, trades_count, winrate, profit_factor, max_drawdown, sum_profit")
             .eq("id", params.report_id)
             .single();
 
         if (!data) return { title: "Reporte no encontrado — NodoQuant" };
 
-        const metrics = data.metrics_json as any;
+        const metrics = normalizePublicReportMetrics(data);
         const score = Math.round(metrics?.advanced?.edgeConfidence ?? 0);
         
         // This dynamic title provokes curiosity and establishes credibility:
