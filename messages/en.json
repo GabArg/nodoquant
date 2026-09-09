@@ -137,7 +137,7 @@
         "q6": "What does 'Real Edge' mean?",
         "a6": "It means the probability of your winning streak being pure luck is extremely low under Monte Carlo simulations.",
         "q7": "Does it have a cost?",
-        "a7": "Basic analysis is free. Portfolio tracking and advanced simulation features require the Pro plan."
+        "a7": "The free beta includes limited analysis. Some advanced modules are coming soon."
     },
     "finalCta": {
         "label": "Final Decision",
@@ -169,10 +169,13 @@
             "description": "Upload your trading history and get a quantitative analysis of your strategy. Compatible with CSV and MetaTrader 5 exports. Free."
         },
         "funnel": {
-            "painTitle": "If you trade like this, you will lose capital.",
-            "painSubtitle": "It is not an opinion. It's statistics.",
+            "evidenceWarningTitle": "The diagnosis indicates insufficient statistical edge.",
+            "evidenceWarningSubtitle": "Review the sample and risk before trading real capital.",
+            "evidenceWarningFooter": "Conclusion based on this report's quantitative diagnosis.",
+            "painTitle": "The current evidence does not confirm a statistical edge.",
+            "painSubtitle": "Review the sample and risk before trading real capital.",
             "painMessage": "If you trade like this, you will lose capital.\nIt is not an opinion. It's statistics.",
-            "fearMessage": "If you trade like this, it's only a matter of time before you lose money.",
+            "fearMessage": "The current sample presents risks that require review.",
             "incompleteResult": "Incomplete result",
             "partialAnalysisTitle": "This partial analysis doesn't show the real risk. The full analysis reveals:",
             "benefit1": "You will see exactly when your strategy collapses",
@@ -180,7 +183,7 @@
             "benefit3": "If you can actually survive in the long term",
             "credibilityFooter": "Simulation based on over 10,000 Monte Carlo scenarios using your real data.",
             "mcPlaceholder": "(calculated with over 10,000 Monte Carlo simulations)",
-            "closingLine": "You can ignore this… or keep trading without knowing how much you are risking.",
+            "closingLine": "Use these results to review risk and gather more evidence.",
             "unlockNow": "Return to saved analysis",
             "unlockFull": "Return to saved analysis",
             "unlockSubtext": "The beta does not offer purchases or unlimited modules",
@@ -190,7 +193,7 @@
             "unvalidatedEdge": "No statistical edge",
             "unvalidatedEdgeDesc": "You are trading without a proven advantage",
             "basedOnTrades": "Based on your real trades · No assumptions",
-            "oneTimePayment": "One-time payment · Immediate access · No subscription",
+            "oneTimePayment": "Free beta · Limited report",
             "ruinProbLabel": "Risk of Ruin",
             "expectedDdLabel": "Expected Drawdown",
             "timeToBreakLabel": "Time to Ruin",
@@ -386,7 +389,7 @@
             },
             "proLocked": {
                 "title": "Simulator Results Locked",
-                "desc": "Access Monte Carlo edge validation and prop firm passing probabilities with NodoQuant PRO."
+                "desc": "Monte Carlo validation and passing probabilities are advanced modules in development."
             }
         },
         "gate": {
@@ -403,7 +406,7 @@
                 "namePlaceholder": "Your name",
                 "email": "Email",
                 "emailPlaceholder": "your@email.com",
-                "submit": "Unlock Full Report",
+                "submit": "Generate beta report",
                 "processing": "Processing...",
                 "errorRequired": "Please fill in your name and email to continue.",
                 "errorSave": "Error saving",
@@ -413,7 +416,7 @@
                 "retry": "Retry",
                 "goDashboard": "Go to Dashboard",
                 "complete": "Completed",
-                "unlockCta": "UNLOCK FULL ANALYSIS",
+                "unlockCta": "GENERATE BETA REPORT",
                 "createAccountCta": "CREATE ACCOUNT TO UNLOCK",
                 "haveAccount": "Already have an account?",
                 "loginHere": "Log in here"
@@ -494,7 +497,7 @@
                 "score": "Health Score"
             },
             "monteCarlo": {
-                "title": "Advanced Risk Analysis (PRO)",
+                "title": "Advanced Risk Analysis (coming soon)",
                 "worstCase": "Worst Case (P5)",
                 "averageCase": "Average Case (Median)",
                 "bestCase": "Best Case (P95)",
@@ -510,14 +513,14 @@
                 "desc": "Simulate thousands of possible future outcomes and understand worst-case drawdowns before risking real capital."
             },
             "propFirm": {
-                "title": "Prop Firm Readiness (PRO)",
+                "title": "Prop Firm Readiness (coming soon)",
                 "subtitle": "Check if your strategy can pass prop firm rules before risking a real challenge account.",
                 "cta": "Run Challenge Simulation"
             },
             "pro": {
-                "label": "PRO Feature",
+                "label": "Advanced module",
                 "lockedTitle": "Deep Intelligence Locked",
-                "lockedDesc": "Unlock advanced risk analysis to simulate thousands of future trajectories and estimate worst-case scenarios.",
+                "lockedDesc": "This advanced module is not included in the current beta.",
                 "upgradeCta": "Return to saved analysis",
                 "upgradeSubtitle": "Public beta limits apply"
             },
@@ -526,7 +529,7 @@
                 "copySummary": "Copy Summary",
                 "copySuccess": "Copied!",
                 "downloadCert": "Download Certificate",
-                "propFirmSim": "Prop Firm Challenge Simulation (PRO)",
+                "propFirmSim": "Prop Firm Challenge Simulation (coming soon)",
                 "propFirmSubtitle": "Check if this strategy would survive common prop firm rules.",
                 "compare": "Compare Strategies",
                 "publish": "Publish Strategy"
@@ -720,9 +723,9 @@
                 "mcWorstCase": "MC Worst case"
             },
             "pro": {
-                "label": "PRO Feature",
+                "label": "Advanced module",
                 "lockedTitle": "Deep Intelligence Locked",
-                "lockedDesc": "Unlock Monte Carlo simulations, edge degradation detection, and professional risk metrics.",
+                "lockedDesc": "This advanced module is not included in the current beta.",
                 "upgradeCta": "Return to saved analysis"
             },
             "propFirm": {
@@ -827,7 +830,7 @@
         },
         "insights": {
             "title": "Strategy Insights",
-            "proTip": "PRO TIP:",
+            "proTip": "ANALYSIS NOTE:",
             "levels": {
                 "optimal": "Optimal",
                 "warning": "Warning",
@@ -1072,8 +1075,8 @@
             "nameRequired": "Enter a name for the strategy.",
             "defaultDesc": "Saved from Analyzer",
             "saveError": "Error saving",
-            "proRequired": "Saving strategies is available on the <pro>Pro</pro> plan.",
-            "upgradeBtn": "Upgrade to Pro",
+            "proRequired": "This advanced module is not included in the current beta.",
+            "upgradeBtn": "Coming soon",
             "savedSuccess": "Strategy saved successfully!",
             "savedSub": "You can view it on your Dashboard.",
             "saveAction": "Save this strategy",
@@ -1593,10 +1596,10 @@
         "activePlan": "Active Plan",
         "basePlan": "Base Plan",
         "currentPlan": "Current Plan",
-        "upgradeBtn": "Upgrade to Pro ✨",
+        "upgradeBtn": "Coming soon",
         "alreadyPro": {
             "title": "You're already Pro!",
-            "desc": "You have full access to all NodoQuant Pro's advanced tools.",
+            "desc": "You are participating in NodoQuant's free beta.",
             "cta": "Go to Dashboard →"
         },
         "free": {
@@ -1611,7 +1614,7 @@
             ]
         },
         "pro": {
-            "name": "NodoQuant Pro",
+            "name": "Advanced modules",
             "features": [
                 "Unlimited saved analyses",
                 "Unlimited trades per analysis",
@@ -1619,7 +1622,7 @@
                 "Edge Alerts (Consistency & Risk)",
                 "Monte Carlo Simulator (Risk of Ruin)",
                 "Interactive Strategy Journal",
-                "Access to future Pro features"
+                "Access to future advanced features"
             ]
         }
     },
@@ -1629,12 +1632,12 @@
         "subtitle": "Here is the current state of your quant strategies.",
         "analytics": {
             "title": "Advanced Analytics",
-            "proNotice": "This is a Pro feature. If you are seeing this, it's because you have an active subscription."
+            "proNotice": "Advanced module not included in the current beta."
         },
-        "upgrade": "Upgrade to Pro ✨",
+        "upgrade": "Coming soon",
         "stats": {
             "strategies": "Strategies",
-            "totalAnalyses": "Total Analyses",
+            "totalAnalyses": "Saved analyses",
             "avgWinrate": "Avg Winrate",
             "bestPF": "Best Profit Factor"
         },
@@ -1737,7 +1740,7 @@
         },
         "equity": {
             "title": "Equity Curve",
-            "proLock": "The progressive capital curve and trade-by-trade drawdown chart is reserved for Pro users."
+            "proLock": "Advanced module unavailable during beta."
         },
         "journal": {
             "title": "Strategy Journal",
@@ -1749,7 +1752,7 @@
         },
         "alerts": {
             "title": "Edge Alerts",
-            "proLock": "Unlock advanced risk and consistency alerts for your operations."
+            "proLock": "Advanced module unavailable during beta."
         },
         "reliability": {
             "title": "Statistical Reliability Warning:",

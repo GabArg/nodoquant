@@ -105,7 +105,7 @@ function SampleContent({ t }: { t: any }) {
                     {t("sampleSection.p_why")}
                 </p>
                 <div className="bg-indigo-600/10 border border-indigo-500/20 rounded-2xl p-6 my-8">
-                    <h4 className="text-indigo-400 font-bold mb-2">Pro Tip:</h4>
+                    <h4 className="text-indigo-400 font-bold mb-2">Analysis note:</h4>
                     <p className="text-sm italic">
                         "{t("sampleSection.proTip")}"
                     </p>

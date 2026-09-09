@@ -24,6 +24,7 @@ import {
     type BasicMetrics,
     type FullMetrics,
 } from "@/lib/analyzer/metrics";
+import { getCanonicalDiagnosis } from "@/lib/analyzer/diagnosis";
 import { sampleCsvData } from "@/lib/analyzer/sampleData";
 import TradeSummaryPreview from "@/components/import/TradeSummaryPreview";
 import { toTradeArray, buildParseResult, type ImportSource } from "@/lib/import/normalizedTrade";
@@ -327,7 +328,10 @@ export default function AnalyzerWizard() {
         setPendingNormalized(null);
     };
 
-    const isNoEdge = fullMetrics?.advanced?.verdict === "noEdge";
+    const canonicalVerdict = basicMetrics
+        ? getCanonicalDiagnosis(basicMetrics, fullMetrics || undefined)
+        : null;
+    const isNoEdge = canonicalVerdict === "noEdge";
     const currentIdx = getUIStepIndex(step);
 
     return (
@@ -444,7 +448,7 @@ export default function AnalyzerWizard() {
                             <div className="flex flex-col items-center gap-8">
                                 <div className="flex flex-col items-center gap-4 w-full sm:w-auto">
                                     <button onClick={() => { setStep("gate"); setTriggerUnlock(prev => prev + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="btn-primary px-16 py-6 w-full sm:w-auto text-[13px] font-black uppercase tracking-[0.2em] shadow-[0_20px_50px_rgba(99,102,241,0.5)] group rounded-3xl border border-white/20 active:scale-95 transition-all">
-                                        <span className="flex items-center gap-3">{t("viewReport") || "Unlock full analysis"}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" className="group-hover:translate-x-1 transition-transform"><path d="M5 12h14M12 5l7 7-7 7" /></svg></span>
+                                        <span className="flex items-center gap-3">{t("viewReport") || "View beta report"}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" className="group-hover:translate-x-1 transition-transform"><path d="M5 12h14M12 5l7 7-7 7" /></svg></span>
                                     </button>
                                     <div className="text-center space-y-2">
                                         <p className="text-[11px] text-indigo-300 font-black uppercase tracking-[0.2em] drop-shadow-sm">{t("viewReportSubtitle") || "See failure scenarios, risk simulations, and real expectancy."}</p>

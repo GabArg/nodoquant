@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import type { BasicMetrics, FullMetrics } from "@/lib/analyzer/metrics";
 import type { Trade } from "@/lib/analyzer/parser";
 import { calcEdgeScore } from "@/lib/edgeScore";
-import { useTranslations } from "next-intl";
+import { getCanonicalDiagnosis } from "@/lib/analyzer/diagnosis";
+import { useLocale, useTranslations } from "next-intl";
 import { trackEvent } from "@/lib/trackEvent";
 
 interface Props {
@@ -36,24 +37,8 @@ function computeExpectancyR(trades: Trade[]): number | null {
     return parseFloat(((wr * avgWinR) - (1 - wr) * 1).toFixed(2));
 }
 
-function getDiagnosisState(metrics: BasicMetrics, fullMetrics?: FullMetrics): string {
-    if (fullMetrics?.advanced?.verdict) {
-        return fullMetrics.advanced.verdict;
-    }
-
-    const pf = metrics.profitFactor;
-    const exp = metrics.expectancy;
-    const n = metrics.totalTrades;
-    
-    if (n < 30) return "insufficientSample";
-    if (pf < 1 || exp <= 0) return "noEdge";
-    if (pf >= 1.3 && n >= 100) return "strongEdge";
-    if (pf >= 1.1 && n >= 30) return "weakEdge";
-    
-    return "unstableEdge";
-}
-
 export default function BasicResults({ metrics, fullMetrics, format, fileName, trades = [], onViewFullReport, onReset, hideScore, hideMetrics }: Props) {
+    const locale = useLocale();
     const t = useTranslations("analyzer.results");
     const diagT = useTranslations("analyzer.results.diagnosis");
     const interpT = useTranslations("analyzer.results.interpretation");
@@ -92,7 +77,7 @@ export default function BasicResults({ metrics, fullMetrics, format, fileName, t
 
     edgeConfidence = Math.min(100, Math.max(0, edgeConfidence));
 
-    const diagState = getDiagnosisState(metrics, fullMetrics);
+    const diagState = getCanonicalDiagnosis(metrics, fullMetrics);
     const animatedConfidence = useCountUp(edgeConfidence, 1500, 500);
     
     const copySummary = () => {
@@ -213,7 +198,7 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
                                 {tFunnel("basedOnTrades")}
                             </p>
                             <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.1em]">
-                                {tFunnel("oneTimePayment")}
+                                {locale === "es" ? "Beta gratuita · Sin compra ni suscripción" : "Free beta · No purchase or subscription"}
                             </p>
                         </div>
                     </div>
@@ -339,7 +324,7 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
                                                     if (onViewFullReport) onViewFullReport();
                                                 }} 
                                                 className="px-8 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-black uppercase tracking-widest transition-all shadow-xl shadow-indigo-600/30 active:scale-95">
-                                            {wizT("viewReport") || "Unlock full analysis"}
+                                            {wizT("viewReport") || "View beta report"}
                                         </button>
                                         {onReset && (
                                             <button onClick={onReset}

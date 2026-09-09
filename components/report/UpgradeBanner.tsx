@@ -9,10 +9,10 @@ export default function UpgradeBanner() {
             <div className="relative z-10 space-y-3 text-center sm:text-left">
                 <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
                     <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-                    Mejora tu cuenta
+                    Próximamente
                 </div>
                 <h3 className="text-xl font-bold text-white leading-tight">
-                    Desbloqueá el diagnóstico avanzado de estrategias
+                    Módulos avanzados en desarrollo
                 </h3>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
                     {[

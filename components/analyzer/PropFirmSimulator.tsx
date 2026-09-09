@@ -189,7 +189,7 @@ export default function PropFirmSimulator({ trades, isPro = false }: Props) {
                         </p>
                         {!isPro && (
                             <span className="text-[10px] font-black px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 uppercase tracking-widest">
-                                PRO
+                                {locale === "es" ? "PRÓXIMAMENTE" : "COMING SOON"}
                             </span>
                         )}
                     </div>

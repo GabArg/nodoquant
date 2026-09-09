@@ -592,7 +592,7 @@ export default function PublicReportClient({ reportId, locale, initialData }: Pr
                 <div className="mt-12 text-center max-w-2xl mx-auto py-12 px-6 rounded-3xl border border-white/5 bg-white/[0.02]">
                     <h2 className="text-2xl font-bold text-white mb-3">Go deeper into your strategy</h2>
                     <p className="text-gray-400 mb-8">
-                        Unlock full diagnostics, advanced metrics, and deeper insights to fully master your statistical edge.
+                        {locale === "es" ? "Seguimos desarrollando módulos avanzados para futuras versiones." : "We are continuing to develop advanced modules for future releases."}
                     </p>
                     <Link href={`/${locale}/analyzer`}
                         className="btn-primary px-8 py-4 justify-center">

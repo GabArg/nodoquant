@@ -137,7 +137,7 @@
         "q6": "¿Qué significa una 'Ventaja Real'?",
         "a6": "Significa que la probabilidad de que tu racha ganadora sea pura suerte es extremadamente baja bajo simulaciones Monte Carlo.",
         "q7": "¿Tiene costo?",
-        "a7": "El análisis básico es gratuito. Las funciones de seguimiento de cartera y simulaciones avanzadas requieren el plan Pro."
+        "a7": "La beta gratuita incluye análisis limitado. Algunos módulos avanzados estarán disponibles próximamente."
     },
     "finalCta": {
         "label": "Decisión Final",
@@ -615,10 +615,10 @@
         "activePlan": "Plan Activo",
         "basePlan": "Plan Base",
         "currentPlan": "Plan Actual",
-        "upgradeBtn": "Actualizar a Pro ✨",
+        "upgradeBtn": "Próximamente",
         "alreadyPro": {
             "title": "¡Ya eres Pro!",
-            "desc": "Tienes acceso completo a todas las herramientas avanzadas de NodoQuant Pro.",
+            "desc": "Estás participando de la beta gratuita de NodoQuant.",
             "cta": "Ir al Dashboard →"
         },
         "free": {
@@ -633,7 +633,7 @@
             ]
         },
         "pro": {
-            "name": "NodoQuant Pro",
+            "name": "Módulos avanzados",
             "features": [
                 "Análisis guardados ilimitados",
                 "Trades ilimitados por análisis",
@@ -641,7 +641,7 @@
                 "Edge Alerts (Consistencia y Riesgo)",
                 "Simulador Monte Carlo (Riesgo de Ruina)",
                 "Bitácora interactiva de Estrategia",
-                "Acceso a futuras funcionalidades Pro"
+                "Acceso a futuras funcionalidades avanzadas"
             ]
         }
     },
@@ -651,12 +651,12 @@
         "subtitle": "Aquí está el estado actual de tus estrategias quant.",
         "analytics": {
             "title": "Analítica Avanzada",
-            "proNotice": "Esta es una funcionalidad Pro. Si estás viendo esto, es porque tenés una suscripción activa."
+            "proNotice": "Módulo avanzado no incluido en la beta actual."
         },
-        "upgrade": "Actualizar a Pro ✨",
+        "upgrade": "Próximamente",
         "stats": {
             "strategies": "Estrategias",
-            "totalAnalyses": "Análisis Totales",
+            "totalAnalyses": "Análisis guardados",
             "avgWinrate": "Winrate Promedio",
             "bestPF": "Mejor Profit Factor"
         },
@@ -677,10 +677,13 @@
             "description": "Sube tu historial de trading y obtén un análisis cuantitativo de tu estrategia. Compatible con CSV y export de MetaTrader 5. Gratis."
         },
         "funnel": {
-            "painTitle": "Si operás así, vas a perder capital.",
-            "painSubtitle": "No es una opinión. Es estadística.",
+            "evidenceWarningTitle": "El diagnóstico indica una ventaja estadística insuficiente.",
+            "evidenceWarningSubtitle": "Revisá la muestra y el riesgo antes de operar capital real.",
+            "evidenceWarningFooter": "Conclusión basada en el diagnóstico cuantitativo de este reporte.",
+            "painTitle": "La evidencia actual no confirma una ventaja estadística.",
+            "painSubtitle": "Revisá la muestra y el riesgo antes de operar capital real.",
             "painMessage": "Si operás así, vas a perder capital.\nNo es una opinión. Es estadística.",
-            "fearMessage": "Si operás así, es cuestión de tiempo hasta que pierdas dinero.",
+            "fearMessage": "La muestra actual presenta riesgos que requieren revisión.",
             "incompleteResult": "Resultado incompleto",
             "partialAnalysisTitle": "Este análisis parcial no muestra el riesgo real. El análisis completo revela:",
             "benefit1": "Vas a ver exactamente cuándo tu estrategia colapsa",
@@ -688,7 +691,7 @@
             "benefit3": "Si realmente podés sobrevivir a largo plazo",
             "credibilityFooter": "Simulación basada en más de 10,000 escenarios Monte Carlo usando tus datos reales.",
             "mcPlaceholder": "(calculado con más de 10,000 simulaciones Monte Carlo)",
-            "closingLine": "Podés ignorar esto… o seguir operando sin saber cuánto estás arriesgando.",
+            "closingLine": "Usá estos resultados para revisar el riesgo y reunir más evidencia.",
             "unlockNow": "Volver al análisis guardado",
             "unlockFull": "Volver al análisis guardado",
             "unlockSubtext": "La beta no ofrece compras ni módulos ilimitados",
@@ -698,7 +701,7 @@
             "unvalidatedEdge": "Sin ventaja estadística",
             "unvalidatedEdgeDesc": "Estás operando sin una ventaja comprobada",
             "basedOnTrades": "Basado en tus trades reales · Sin suposiciones",
-            "oneTimePayment": "Pago único · Acceso inmediato · Sin suscripción",
+            "oneTimePayment": "Beta gratuita · Reporte limitado",
             "ruinProbLabel": "Probabilidad de ruina",
             "expectedDdLabel": "Drawdown esperado",
             "timeToBreakLabel": "Tiempo hasta quiebre",
@@ -894,7 +897,7 @@
             },
             "proLocked": {
                 "title": "Resultados del Simulador Bloqueados",
-                "desc": "Accede a la validación de ventaja por Monte Carlo y probabilidades de pase con NodoQuant PRO."
+                "desc": "La validación Monte Carlo y las probabilidades de pase son módulos avanzados en desarrollo."
             }
         },
         "gate": {
@@ -911,7 +914,7 @@
                 "namePlaceholder": "Tu nombre",
                 "email": "Email",
                 "emailPlaceholder": "tu@email.com",
-                "submit": "Desbloquear Reporte Completo",
+                "submit": "Generar reporte de la beta",
                 "processing": "Procesando...",
                 "errorRequired": "Por favor completa tu nombre y email para continuar.",
                 "errorSave": "Error al guardar",
@@ -921,8 +924,8 @@
                 "retry": "Reintentar",
                 "goDashboard": "Ir al Dashboard",
                 "complete": "Completado",
-                "unlockCta": "DESBLOQUEAR ANÁLISIS COMPLETO",
-                "createAccountCta": "CREAR CUENTA PARA DESBLOQUEAR",
+                "unlockCta": "GENERAR REPORTE DE LA BETA",
+                "createAccountCta": "CREAR CUENTA PARA GUARDAR EL REPORTE",
                 "haveAccount": "¿Ya tienes una cuenta?",
                 "loginHere": "Inicia sesión aquí"
             }
@@ -1013,9 +1016,9 @@
                 "recoveryFactor": "Factor Recuperación"
             },
             "pro": {
-                "label": "Función PRO",
+                "label": "Módulo avanzado",
                 "lockedTitle": "Inteligencia Profunda Bloqueada",
-                "lockedDesc": "Desbloquea simulaciones de Monte Carlo, detección de degradación de ventaja y métricas de riesgo profesional.",
+                "lockedDesc": "Este módulo avanzado no está incluido en la beta actual.",
                 "upgradeCta": "Volver al análisis guardado"
             },
             "performance": {
@@ -1073,7 +1076,7 @@
                 "copySummary": "Copiar Resultados",
                 "copySuccess": "¡Copiado!",
                 "downloadCert": "Descargar Certificado",
-                "propFirmSim": "Simulación de Prop Firm Challenge (PRO)",
+                "propFirmSim": "Simulación de Prop Firm Challenge (próximamente)",
                 "propFirmSubtitle": "Evalúa si esta estrategia podría sobrevivir a las reglas comunes de las empresas de fondeo.",
                 "compare": "Comparar Estrategias",
                 "publish": "Publicar Estrategia"
@@ -1354,7 +1357,7 @@
         },
         "insights": {
             "title": "Perspectivas de la Estrategia",
-            "proTip": "CONSEJO PRO:",
+            "proTip": "NOTA DE ANÁLISIS:",
             "levels": {
                 "optimal": "Óptimo",
                 "warning": "Advertencia",
@@ -1599,8 +1602,8 @@
             "nameRequired": "Ingresá un nombre para la estrategia.",
             "defaultDesc": "Guardada desde el Analyzer",
             "saveError": "Error al guardar",
-            "proRequired": "Guardar estrategias está disponible en el plan <pro>Pro</pro>.",
-            "upgradeBtn": "Actualizar a Pro",
+            "proRequired": "Este módulo avanzado no está incluido en la beta actual.",
+            "upgradeBtn": "Próximamente",
             "savedSuccess": "¡Estrategia guardada correctamente!",
             "savedSub": "Ya podés verla en tu Dashboard.",
             "saveAction": "Guardar esta estrategia",
@@ -1720,7 +1723,7 @@
             "decisions": "Basado en tus resultados, actualmente estás tomando decisiones de trading sin ver datos críticos.",
             "tooLate": "La mayoría de los traders se dan cuenta de esto demasiado tarde.",
             "hidden": "El riesgo real — y la ventaja real — están ocultos debajo.",
-            "unlock": "Desbloquear Diagnósticos Completos →",
+            "unlock": "Ver reporte de la beta →",
             "title": "Solo ves una parte de la imagen",
             "subtitle": "Un análisis superficial oculta la fragilidad de tu ventaja.",
             "diagnostics": "Diagnósticos de Estrategia",
@@ -1789,7 +1792,7 @@
         },
         "equity": {
             "title": "Curva de Equidad",
-            "proLock": "El gráfico de curva de capital progresivo y drawdowns por trade está reservado para usuarios Pro."
+            "proLock": "Módulo avanzado no disponible durante la beta."
         },
         "journal": {
             "title": "Bitácora de Estrategia",
@@ -1801,7 +1804,7 @@
         },
         "alerts": {
             "title": "Alertas de Edge",
-            "proLock": "Accede a la detección de degradación de ventaja en tiempo real con NodoQuant PRO."
+            "proLock": "Módulo avanzado no disponible durante la beta."
         },
         "reliability": {
             "title": "Advertencia de Confiabilidad Estadística:",

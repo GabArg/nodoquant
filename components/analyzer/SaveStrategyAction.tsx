@@ -70,7 +70,7 @@ export default function SaveStrategyAction({ analysisId }: Props) {
                 <p className="text-sm text-gray-400 mb-3">
                     {t.rich('proRequired', { pro: (chunks) => <span className="text-indigo-400 font-bold">{chunks}</span> })}
                 </p>
-                <button className="btn-primary py-2 px-4 text-xs">
+                <button disabled className="btn-primary py-2 px-4 text-xs opacity-60 cursor-not-allowed">
                     {t("upgradeBtn")}
                 </button>
             </div>

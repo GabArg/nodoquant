@@ -1,8 +1,8 @@
 import { createClient } from "@/lib/auth/server";
-import { getSupabaseServer } from "@/lib/supabase";
 import { calcEdgeScore } from "@/lib/edgeScore";
 import { calcHealthScore, calcQuantScoreSimple } from "@/lib/quantScore";
 import ConversionBanner from "@/components/dashboard/ConversionBanner";
+import { countSavedAnalyses } from "@/lib/dashboardStats";
 import StrategyEvolution from "@/components/analyzer/Dashboard/StrategyEvolution";
 import ScoreEvolutionChart from "@/components/analyzer/Dashboard/ScoreEvolutionChart";
 import EdgeAlerts from "@/components/analyzer/Dashboard/EdgeAlerts";
@@ -24,7 +24,9 @@ export default async function DashboardPage({ params }: { params: { locale: stri
     const authClient = createClient();
     const { data: { user } } = await authClient.auth.getUser();
 
-    const dbClient = getSupabaseServer();
+    // Use the authenticated client so Preview does not depend on a service-role
+    // environment variable and ownership remains enforced by RLS.
+    const dbClient = authClient;
 
     // Check Plan Status
     let isPro = false;
@@ -44,14 +46,14 @@ export default async function DashboardPage({ params }: { params: { locale: stri
             .select("id", { count: "exact" })
             .eq("user_id", user.id);
 
-        const { data: analyses, count: analysesCount } = await dbClient
+        const { data: analyses } = await dbClient
             .from("trade_analysis")
             .select("id, created_at, file_name, winrate, profit_factor, max_drawdown, trades_count, metrics_json", { count: "exact" })
             .eq("user_id", user.id)
             .order("created_at", { ascending: false });
 
         statsList.projects = projectsCount || 0;
-        statsList.analyses = analysesCount || 0;
+        statsList.analyses = countSavedAnalyses(analyses);
 
         if (analyses && analyses.length > 0) {
             recentAnalyses = analyses.slice(0, 5);
@@ -122,7 +124,6 @@ export default async function DashboardPage({ params }: { params: { locale: stri
                 <div>
                     <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
                         {t("greeting")}
-                        {isPro && <span className="text-xs px-2 py-1 bg-indigo-500/20 text-indigo-400 rounded-full uppercase tracking-widest">Pro</span>}
                     </h1>
                     <p className="text-gray-400">{t("subtitle")}</p>
                 </div>

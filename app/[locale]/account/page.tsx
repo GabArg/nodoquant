@@ -1,12 +1,10 @@
 import { createClient } from "@/lib/auth/server";
-import { getUserPlanStatus } from "@/lib/payments/subscription";
 
 export const dynamic = "force-dynamic";
 
 export default async function AccountPage({ params }: { params: { locale: string } }) {
     const authClient = createClient();
     const { data: { user } } = await authClient.auth.getUser();
-    const plan = user ? await getUserPlanStatus(user.id) : null;
     const es = params.locale === "es";
 
     return (
@@ -25,9 +23,9 @@ export default async function AccountPage({ params }: { params: { locale: string
                     <div className="card rounded-2xl p-6 border border-indigo-500/20 bg-indigo-500/5">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-lg font-bold">{es ? "Acceso actual" : "Current access"}</h2>
-                            <span className="px-3 py-1 bg-indigo-500/20 text-indigo-300 text-xs font-bold uppercase tracking-wider rounded-full border border-indigo-500/30">{plan?.isPro ? "PRO" : "BETA"}</span>
+                            <span className="px-3 py-1 bg-indigo-500/20 text-indigo-300 text-xs font-bold uppercase tracking-wider rounded-full border border-indigo-500/30">{es ? "BETA GRATUITA" : "FREE BETA"}</span>
                         </div>
-                        <p className="text-sm text-gray-400 mb-6">{plan?.isPro ? (es ? "Tu acceso Pro histórico continúa activo." : "Your historical Pro access remains active.") : (es ? "La beta gratuita permite hasta 500 trades por análisis y 1 análisis guardado." : "The free beta allows up to 500 trades per analysis and 1 saved analysis.")}</p>
+                        <p className="text-sm text-gray-400 mb-6">{es ? "La beta gratuita permite hasta 500 trades por análisis y 1 análisis guardado." : "The free beta allows up to 500 trades per analysis and 1 saved analysis."}</p>
                         <div className="p-4 rounded-xl bg-black/40 border border-white/5 text-sm text-center text-gray-500">{es ? "No hay planes pagos ni checkout disponibles durante la beta." : "No paid plans or checkout are available during beta."}</div>
                     </div>
                     <form action={`/${params.locale}/auth/signout`} method="POST">

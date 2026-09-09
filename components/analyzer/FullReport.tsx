@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import type { FullMetrics } from "@/lib/analyzer/metrics";
 import EquityChart from "./EquityChart";
@@ -11,6 +10,7 @@ import MonteCarloChart from "./MonteCarloChart";
 import MonteCarloSummary from "./MonteCarloSummary";
 import StrategyEvolution from "./Dashboard/StrategyEvolution";
 import { trackEvent } from "@/lib/trackEvent";
+import { getCanonicalDiagnosis, isNegativeDiagnosis } from "@/lib/analyzer/diagnosis";
 
 interface Props {
     metrics: FullMetrics;
@@ -18,38 +18,13 @@ interface Props {
     isPro?: boolean;
 }
 
-function PrimaryCTA({ reportHref }: { reportHref: string }) {
-    const tFunnel = useTranslations("analyzer.funnel");
-    const locale = useLocale();
-    return (
-        <div className="flex flex-col items-center gap-6 w-full py-8">
-            <Link
-                href={reportHref}
-                className="group relative px-10 py-6 rounded-3xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 text-white text-[15px] font-black uppercase tracking-[0.2em] transition-all shadow-[0_20px_50px_rgba(79,70,229,0.5)] hover:shadow-[0_25px_60px_rgba(79,70,229,0.7)] active:scale-95 border border-white/20 ring-4 ring-indigo-500/10 overflow-hidden"
-            >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-shimmer" />
-                <span className="relative z-10">{locale === "es" ? "Volver al análisis guardado" : "Return to saved analysis"}</span>
-            </Link>
-            <div className="flex flex-col items-center gap-2 text-center">
-                <p className="text-[12px] text-indigo-300 font-black uppercase tracking-[0.15em] drop-shadow-sm">
-                    {locale === "es" ? "Los módulos avanzados no están incluidos en esta beta" : "Advanced modules are not included in this beta"}
-                </p>
-                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.1em] opacity-60">
-                    {tFunnel("basedOnTrades")}
-                </p>
-            </div>
-        </div>
-    );
-}
-
 function StrategyDiagnosis({ metrics, isPro }: { metrics: FullMetrics; isPro?: boolean }) {
     const t = useTranslations("analyzer.report.diagnosis");
     const tSignals = useTranslations("analyzer.report.keySignals");
     const tFunnel = useTranslations("analyzer.funnel");
     
-    // Global noEdge enforcement: force red/risk if verdict is noEdge
-    const isNoEdge = metrics.advanced?.verdict === "noEdge";
-    const verdictKey = isNoEdge ? "noEdge" : (metrics.advanced?.verdict || "unstableEdge");
+    const verdictKey = getCanonicalDiagnosis(metrics, metrics);
+    const isNoEdge = verdictKey === "noEdge";
 
     const config = {
         strongEdge: {
@@ -208,6 +183,7 @@ function SignalCard({ label, value, icon, tooltip, isNoEdge = false }: { label: 
 
 function LockedSection({ title, desc, children, isPro = false, onUnlockClick }: { title: string; desc: string; children: React.ReactNode; isPro?: boolean; onUnlockClick?: () => void }) {
     const t = useTranslations("analyzer.report.pro");
+    const locale = useLocale();
     if (isPro) return <div className="animate-fade-in">{children}</div>;
 
     return (
@@ -224,10 +200,9 @@ function LockedSection({ title, desc, children, isPro = false, onUnlockClick }: 
                         <p className="text-[11px] text-gray-400 font-medium leading-relaxed">{desc}</p>
                     </div>
                     
-                    {/* CTA 2: Over Monte Carlo blur */}
-                    <div className="mt-8">
-                        <PrimaryCTA reportHref="/dashboard" />
-                    </div>
+                    <p className="mt-8 text-xs text-gray-500 font-semibold uppercase tracking-widest">
+                        {locale === "es" ? "Módulo avanzado · Próximamente" : "Advanced module · Coming soon"}
+                    </p>
                 </div>
             </div>
         </div>
@@ -257,10 +232,6 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
         }
     };
 
-    const savedReportHref = analysisId
-        ? `/${locale}/report/${analysisId}`
-        : `/${locale}/dashboard`;
-    
     const copyPublicLink = () => {
         if (!analysisId) return;
         const url = `${window.location.origin}/${locale}/report/${analysisId}`;
@@ -286,6 +257,8 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
     };
     
     const monteCarlo = metrics.monteCarlo;
+    const canonicalVerdict = getCanonicalDiagnosis(metrics, metrics);
+    const showEvidenceWarning = isNegativeDiagnosis(canonicalVerdict);
 
     return (
         <div className="w-full max-w-2xl mx-auto space-y-8 animate-fade-in">
@@ -295,36 +268,22 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
                 <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter">{t("subtitle")}</h2>
             </div>
 
-            {/* PAIN BLOCK (RED WARNING) - Top Priority */}
-            {!isProInternal && (
+            {/* Evidence warning: shown only for a canonical negative diagnosis. */}
+            {showEvidenceWarning && (
                 <div className="bg-red-500/10 border-2 border-red-500/30 rounded-3xl p-8 relative overflow-hidden animate-pulse-subtle">
                     <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent"></div>
                     <div className="relative z-10 space-y-6">
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-2xl bg-red-500/20 flex items-center justify-center text-3xl shadow-inner">⚠️</div>
                             <h3 className="text-2xl font-black text-white italic tracking-tight uppercase leading-tight">
-                                {tFunnel("painTitle")}
+                                {tFunnel("evidenceWarningTitle")}
                                 <br />
-                                <span className="text-red-400">{tFunnel("painSubtitle")}</span>
+                                <span className="text-red-400">{tFunnel("evidenceWarningSubtitle")}</span>
                             </h3>
                         </div>
                         
-                        <div className="grid grid-cols-1 gap-4 pt-4">
-                            <div className="flex items-start gap-3 p-4 rounded-2xl bg-red-500/5 border border-red-500/10">
-                                <span className="text-indigo-400 font-black mt-0.5">▶</span>
-                                <p className="text-sm font-bold text-gray-300 leading-snug">{tFunnel("benefit1")}</p>
-                            </div>
-                            <div className="flex items-start gap-3 p-4 rounded-2xl bg-red-500/5 border border-red-500/10">
-                                <span className="text-indigo-400 font-black mt-0.5">▶</span>
-                                <p className="text-sm font-bold text-gray-300 leading-snug">{tFunnel("benefit2")}</p>
-                            </div>
-                        </div>
-
-                        {/* CTA 1: After Red Warning Block */}
-                        <PrimaryCTA reportHref={savedReportHref} />
-                        
                         <p className="text-[10px] text-red-300/40 font-bold uppercase tracking-widest text-center pt-4 border-t border-red-500/10">
-                            {tFunnel("credibilityFooter")}
+                            {tFunnel("evidenceWarningFooter")}
                         </p>
                     </div>
                 </div>
@@ -334,7 +293,7 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
             <StrategyDiagnosis metrics={metrics} isPro={isProInternal} />
 
             {/* 3. Risk Overview (Blurred for Free Users) */}
-            <div className="relative group">
+            <div className={isProInternal ? "relative group" : "hidden"}>
                 <div className={!isProInternal ? "blur-sm pointer-events-none opacity-60" : ""}>
                     <div className="card rounded-3xl p-8 border border-white/5 bg-white/[0.01] space-y-6">
                         <div className="flex items-center justify-between">
@@ -367,7 +326,7 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
             </div>
 
             {/* 4. Visualizations (Blurred for Free Users) */}
-            <div className="relative group">
+            <div className={isProInternal ? "relative group" : "hidden"}>
                 <div className={!isProInternal ? "blur-sm pointer-events-none opacity-60" : "animate-fade-in"}>
                     <div className="card rounded-3xl p-8 space-y-8 border border-white/5 bg-white/[0.01]">
                         <p className="text-[11px] font-black text-indigo-400 uppercase tracking-[0.3em]">
@@ -387,7 +346,7 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
             </div>
 
             {/* 5. Edge Stability (Evolution + Health) (Blurred for Free Users) */}
-            <div className="relative group">
+            <div className={isProInternal ? "relative group" : "hidden"}>
                 <div className={!isProInternal ? "blur-sm pointer-events-none opacity-60" : "animate-fade-in"}>
                     <div className="space-y-6">
                         <div className="flex items-center gap-3">
@@ -432,7 +391,7 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
             </div>
 
             {/* 6. Monte Carlo (Fully Locked) */}
-            <div className="card rounded-xl p-0 overflow-hidden relative">
+            <div className={isProInternal ? "card rounded-xl p-0 overflow-hidden relative" : "hidden"}>
                 <div className="p-5 border-b border-white/[0.05]">
                     <div className="flex items-center justify-between">
                         <p className="text-xs font-semibold text-indigo-400 uppercase tracking-widest">
@@ -440,7 +399,7 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
                         </p>
                         {!isProInternal && (
                             <span className="text-[10px] font-black px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 uppercase tracking-widest">
-                                PRO
+                                {locale === "es" ? "PRÓXIMAMENTE" : "COMING SOON"}
                             </span>
                         )}
                     </div>
@@ -491,18 +450,6 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
                     </div>
                 </LockedSection>
             </div>
-
-            {/* CTA 3: Before Share Block */}
-            {!isProInternal && (
-                <div className="py-12 border-t border-white/5 space-y-8">
-                    <div className="text-center">
-                        <p className="text-2xl font-black text-white italic uppercase tracking-tighter leading-snug">
-                            {tFunnel("closingLine")}
-                        </p>
-                    </div>
-                    <PrimaryCTA reportHref={savedReportHref} />
-                </div>
-            )}
 
             {/* ── Shareable Card (Absolute Bottom) ── */}
             <div className="card rounded-3xl p-8 border border-white/5 bg-gradient-to-b from-white/[0.02] to-transparent space-y-6">

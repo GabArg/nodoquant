@@ -26,8 +26,8 @@ export default function ReportAccessGuard({ isPro, children, featureName }: Prop
                         <path d="M7 11V7a5 5 0 0110 0v4" />
                     </svg>
                 </div>
-                <h4 className="text-sm font-bold text-white mb-1">{featureName} bloqueado</h4>
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest">Disponible en NodoQuant Pro</p>
+                <h4 className="text-sm font-bold text-white mb-1">{featureName}</h4>
+                <p className="text-[10px] text-gray-500 uppercase tracking-widest">Módulo avanzado · Próximamente</p>
             </div>
         </div>
     );

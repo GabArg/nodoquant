@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import { useLocale } from "next-intl";
 
 interface Props {
@@ -20,24 +19,17 @@ export default function ProLockOverlay({ title, description, isPro, children }: 
 
     return (
         <div className="relative overflow-hidden rounded-2xl group">
-            {/* The blurred content (The "Tease" Effect) */}
-            <div className="filter blur-sm opacity-[0.45] select-none pointer-events-none transition-all duration-500">
-                {children}
-            </div>
-
-            {/* The Lock Overlay (Minimalist Typography-First Style) */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-8 bg-black/5 backdrop-blur-[2px]">
+            <div className="flex min-h-48 flex-col items-center justify-center p-8 bg-white/[0.02] border border-white/5">
                 <div className="max-w-xs text-center">
                     <h3 className="text-lg font-bold text-white mb-3 tracking-tight">
                         {title}
                     </h3>
-                    <p className="text-sm text-gray-400 font-medium leading-relaxed mb-6">
+                    <p className="text-sm text-gray-400 font-medium leading-relaxed mb-3">
                         {description}
                     </p>
-                    <Link href={`/${locale}/dashboard`}
-                        className="inline-flex items-center justify-center px-6 py-2.5 bg-white text-black text-sm font-bold rounded-lg transition-all hover:bg-gray-200 active:scale-95">
-                        {locale === "es" ? "Volver al análisis guardado" : "Return to saved analysis"}
-                    </Link>
+                    <p className="text-xs font-bold uppercase tracking-widest text-indigo-300">
+                        {locale === "es" ? "Módulo avanzado · Próximamente" : "Advanced module · Coming soon"}
+                    </p>
                 </div>
             </div>
         </div>
