@@ -2031,6 +2031,8 @@
         "ctaSubtitle": "WITH THE FREE BETA",
         "ctaWarning": "LIMITED FREE BETA",
         "cta": "Create my beta report",
+        "ownerCta": "Return to saved analysis",
+        "visitorCta": "Analyze my strategy",
         "urgency": "Import up to 500 trades and get a quantitative diagnosis based on your data.",
         "socialProof": "Free beta · No purchase or subscription",
         "poweredBy": "Created with NodoQuant",

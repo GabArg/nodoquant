@@ -58,6 +58,8 @@ describe("public report translations", () => {
             publicReport.ctaTitle,
             publicReport.ctaSubtitle,
             publicReport.ctaWarning,
+            publicReport.ownerCta,
+            publicReport.visitorCta,
             publicReport.urgency,
             publicReport.cta,
             publicReport.socialProof,

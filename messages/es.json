@@ -2083,6 +2083,8 @@
         "ctaSubtitle": "CON LA BETA GRATUITA",
         "ctaWarning": "BETA GRATUITA LIMITADA",
         "cta": "Crear mi reporte de la beta",
+        "ownerCta": "Volver al análisis guardado",
+        "visitorCta": "Analizar mi estrategia",
         "urgency": "Importá hasta 500 operaciones y obtené un diagnóstico cuantitativo basado en tus datos.",
         "socialProof": "Beta gratuita · Sin compra ni suscripción",
         "poweredBy": "Creado con NodoQuant",

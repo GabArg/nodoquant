@@ -3,8 +3,10 @@ import { notFound } from "next/navigation";
 import PublicReportView from "@/components/report/PublicReportView";
 import type { Metadata } from "next";
 import { normalizePublicReportMetrics } from "@/lib/analyzer/publicReportMetrics";
+import { createClient } from "@/lib/auth/server";
 
 export const revalidate = 3600; // Cache for 1 hour
+export const dynamic = "force-dynamic";
 
 interface PageProps {
     params: {
@@ -67,9 +69,13 @@ export default async function PublicReportPage({ params }: PageProps) {
         return notFound();
     }
 
+    const authClient = createClient();
+    const { data: { user } } = await authClient.auth.getUser();
+    const isOwner = Boolean(user && user.id === data.user_id);
+
     return (
         <main className="bg-[#050505]">
-            <PublicReportView report={data} />
+            <PublicReportView report={data} isOwner={isOwner} />
         </main>
     );
 }

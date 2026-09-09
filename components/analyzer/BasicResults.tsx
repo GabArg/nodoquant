@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { BasicMetrics, FullMetrics } from "@/lib/analyzer/metrics";
 import type { Trade } from "@/lib/analyzer/parser";
 import { calcEdgeScore } from "@/lib/edgeScore";
-import { getCanonicalDiagnosis } from "@/lib/analyzer/diagnosis";
+import { getCanonicalDiagnosis, isNegativeDiagnosis } from "@/lib/analyzer/diagnosis";
 import { useLocale, useTranslations } from "next-intl";
 import { trackEvent } from "@/lib/trackEvent";
 
@@ -18,6 +18,7 @@ interface Props {
     onReset?: () => void;
     hideScore?: boolean;
     hideMetrics?: boolean;
+    primaryActionLabel?: string;
 }
 
 
@@ -37,7 +38,7 @@ function computeExpectancyR(trades: Trade[]): number | null {
     return parseFloat(((wr * avgWinR) - (1 - wr) * 1).toFixed(2));
 }
 
-export default function BasicResults({ metrics, fullMetrics, format, fileName, trades = [], onViewFullReport, onReset, hideScore, hideMetrics }: Props) {
+export default function BasicResults({ metrics, fullMetrics, format, fileName, trades = [], onViewFullReport, onReset, hideScore, hideMetrics, primaryActionLabel }: Props) {
     const locale = useLocale();
     const t = useTranslations("analyzer.results");
     const diagT = useTranslations("analyzer.results.diagnosis");
@@ -78,6 +79,7 @@ export default function BasicResults({ metrics, fullMetrics, format, fileName, t
     edgeConfidence = Math.min(100, Math.max(0, edgeConfidence));
 
     const diagState = getCanonicalDiagnosis(metrics, fullMetrics);
+    const hasNegativeDiagnosis = isNegativeDiagnosis(diagState);
     const animatedConfidence = useCountUp(edgeConfidence, 1500, 500);
     
     const copySummary = () => {
@@ -174,7 +176,7 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
                         )}
                     </div>
 
-                    <p className="text-sm text-red-400 font-bold max-w-md italic whitespace-pre-line leading-relaxed bg-red-500/5 py-3 px-6 rounded-2xl border border-red-500/10">
+                    <p className={`text-sm font-bold max-w-md italic whitespace-pre-line leading-relaxed py-3 px-6 rounded-2xl border ${hasNegativeDiagnosis ? "text-red-400 bg-red-500/5 border-red-500/10" : diagState === "strongEdge" ? "text-emerald-300 bg-emerald-500/5 border-emerald-500/10" : "text-gray-300 bg-white/[0.02] border-white/10"}`}>
                         {diagState === "noEdge" 
                             ? tFunnel("painMessage") 
                             : `"${stateInfo.explanation}"`}
@@ -191,7 +193,7 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
                                     if (onViewFullReport) onViewFullReport();
                                 }} 
                                 className="px-12 py-5 rounded-3xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-[13px] font-black uppercase tracking-[0.2em] transition-all shadow-[0_20px_50px_rgba(79,70,229,0.4)] hover:shadow-[0_25px_60px_rgba(79,70,229,0.5)] active:scale-95 border border-white/10 ring-4 ring-indigo-500/10">
-                            {tFunnel("unlockFull")}
+                            {primaryActionLabel ?? tFunnel("unlockFull")}
                         </button>
                         <div className="flex flex-col items-center gap-1.5 text-center">
                             <p className="text-[11px] text-indigo-300 font-black uppercase tracking-[0.15em]">

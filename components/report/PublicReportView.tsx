@@ -33,8 +33,10 @@ interface PublicReportProps {
 
 export default function PublicReportView({
     report,
+    isOwner = false,
 }: {
     report: PublicReportProps;
+    isOwner?: boolean;
 }) {
     const t = useTranslations("publicReport");
     const locale = useLocale();
@@ -82,6 +84,7 @@ export default function PublicReportView({
                         report.file_name || t("defaultFileName")
                     }
                     trades={[]}
+                    primaryActionLabel={t(isOwner ? "ownerCta" : "visitorCta")}
                     onViewFullReport={async () => {
                         await trackEvent(
                             "CTA_CLICK_BASIC_RESULTS",
@@ -91,7 +94,7 @@ export default function PublicReportView({
                                 verdict: reportVerdict,
                             }
                         );
-                        document.getElementById("beta-report-details")?.scrollIntoView({ behavior: "smooth" });
+                        window.location.assign(`/${locale}/${isOwner ? "dashboard" : "analyzer"}`);
                     }}
                 />
 
