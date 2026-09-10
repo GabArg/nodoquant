@@ -176,7 +176,7 @@
             "painSubtitle": "Review the sample and risk before trading real capital.",
             "painMessage": "If you trade like this, you will lose capital.\nIt is not an opinion. It's statistics.",
             "fearMessage": "The current sample presents risks that require review.",
-            "incompleteResult": "Incomplete result",
+            "incompleteResult": "Beta report",
             "partialAnalysisTitle": "This partial analysis doesn't show the real risk. The full analysis reveals:",
             "benefit1": "You will see exactly when your strategy collapses",
             "benefit2": "How much capital you can lose in the worst-case scenario",
@@ -448,6 +448,7 @@
             "diagnosis": {
                 "title": "Strategy Diagnosis",
                 "scoreTitle": "Edge Confidence",
+                "scoreUnavailable": "Not available in this saved analysis",
                 "scoreSubtitle": "Statistical evaluation of your strategy based on trade distribution, profitability metrics, and risk.",
                 "verdict": "Verdict:",
                 "strongEdge": "Strong Edge",

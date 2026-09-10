@@ -20,7 +20,6 @@ interface Props {
 }
 
 function StrategyDiagnosis({ metrics, isPro, edgeConfidence }: { metrics: FullMetrics; isPro?: boolean; edgeConfidence: number | null }) {
-    const locale = useLocale();
     const t = useTranslations("analyzer.report.diagnosis");
     const tSignals = useTranslations("analyzer.report.keySignals");
     const tFunnel = useTranslations("analyzer.funnel");
@@ -67,7 +66,7 @@ function StrategyDiagnosis({ metrics, isPro, edgeConfidence }: { metrics: FullMe
     };
 
     const verdict = config[verdictKey as keyof typeof config] || config.unstableEdge;
-    const scoreDisplay = edgeConfidence === null ? (locale === "es" ? "No disponible" : "Not available") : edgeConfidence.toFixed(0);
+    const scoreDisplay = edgeConfidence?.toFixed(0);
     
     // Credible reinterpretation labels
     const getReinterpretedValue = (label: string, value: string) => {
@@ -81,9 +80,11 @@ function StrategyDiagnosis({ metrics, isPro, edgeConfidence }: { metrics: FullMe
     return (
         <div className="space-y-6">
             <div className={`p-8 rounded-3xl border ${verdict.border} ${verdict.bg} relative overflow-hidden`}>
-                <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
-                    <span className="text-[120px] leading-none font-black italic">{edgeConfidence ?? "—"}</span>
-                </div>
+                {edgeConfidence !== null && (
+                    <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
+                        <span className="text-[120px] leading-none font-black italic">{edgeConfidence}</span>
+                    </div>
+                )}
                 
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 relative z-10">
                     <div className="space-y-4 max-w-xl">
@@ -105,12 +106,18 @@ function StrategyDiagnosis({ metrics, isPro, edgeConfidence }: { metrics: FullMe
 
                     <div className="flex flex-col items-center md:items-end text-center md:text-right">
                         <span className="text-[9px] font-bold uppercase tracking-widest text-gray-600">
-                            {tFunnel(`diagnostic${verdictKey.charAt(0).toUpperCase() + verdictKey.slice(1)}`)}
+                            {t("scoreTitle")}
                         </span>
-                        <div className="flex items-baseline gap-1">
-                            <span className="text-6xl font-black text-white italic tracking-tighter">{scoreDisplay}</span>
-                            {edgeConfidence !== null && <span className="text-xl font-bold text-gray-600">/100</span>}
-                        </div>
+                        {edgeConfidence === null ? (
+                            <span className="mt-1 max-w-[220px] text-xs font-medium text-gray-500">
+                                {t("scoreUnavailable")}
+                            </span>
+                        ) : (
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-6xl font-black text-white italic tracking-tighter">{scoreDisplay}</span>
+                                <span className="text-xl font-bold text-gray-600">/100</span>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -465,13 +472,13 @@ export default function FullReport({ metrics, analysisId, isPro, edgeConfidenceO
                     </div>
                 </div>
                 
-                <div className="bg-black/40 rounded-2xl p-6 grid grid-cols-3 gap-6 border border-white/5 shadow-inner">
-                    <div className="text-center space-y-1">
-                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest block">{t("diagnosis.scoreTitle")}</span>
-                        <span className="text-xl font-black text-indigo-400 italic">
-                            {edgeConfidence === null ? (locale === "es" ? "No disponible" : "Not available") : edgeConfidence.toFixed(0)}
-                        </span>
-                    </div>
+                <div className={`bg-black/40 rounded-2xl p-6 grid ${edgeConfidence === null ? "grid-cols-2" : "grid-cols-3"} gap-6 border border-white/5 shadow-inner`}>
+                    {edgeConfidence !== null && (
+                        <div className="text-center space-y-1">
+                            <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest block">{t("diagnosis.scoreTitle")}</span>
+                            <span className="text-xl font-black text-indigo-400 italic">{edgeConfidence.toFixed(0)}</span>
+                        </div>
+                    )}
                     <div className="text-center space-y-1">
                         <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest block">{t("keySignals.profitFactor")}</span>
                         <span className="text-xl font-black text-white italic">{(metrics.profitFactor || 0).toFixed(2)}</span>

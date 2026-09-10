@@ -694,7 +694,7 @@
             "painSubtitle": "Revisá la muestra y el riesgo antes de operar capital real.",
             "painMessage": "Si operás así, vas a perder capital.\nNo es una opinión. Es estadística.",
             "fearMessage": "La muestra actual presenta riesgos que requieren revisión.",
-            "incompleteResult": "Resultado incompleto",
+            "incompleteResult": "Reporte de la beta",
             "partialAnalysisTitle": "Este análisis parcial no muestra el riesgo real. El análisis completo revela:",
             "benefit1": "Vas a ver exactamente cuándo tu estrategia colapsa",
             "benefit2": "Cuánto capital podés perder en el peor escenario",
@@ -983,6 +983,7 @@
             "diagnosis": {
                 "title": "Diagnóstico de la Estrategia",
                 "scoreTitle": "Confianza del edge",
+                "scoreUnavailable": "No disponible en este análisis guardado",
                 "scoreSubtitle": "Basado en perfil de riesgo y simulación estocástica",
                 "verdict": "Veredicto:",
                 "strongEdge": "Edge Sólido",
