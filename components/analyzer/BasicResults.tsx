@@ -49,6 +49,7 @@ export default function BasicResults({ metrics, fullMetrics, format, fileName, t
     const ttT = useTranslations("analyzer.results.tooltips");
     const wizT = useTranslations("analyzer.wizard");
     const confT = useTranslations("analyzer.edgeConfidence");
+    const reportDiagT = useTranslations("analyzer.report.diagnosis");
     const robustT = useTranslations("analyzer.robustness");
     const tFunnel = useTranslations("analyzer.funnel");
     
@@ -102,7 +103,8 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
         {
             id: "conf",
             label: confT("title"),
-            value: edgeConfidence === null ? (locale === "es" ? "No disponible" : "Not available") : animatedConfidence,
+            value: edgeConfidence === null ? null : animatedConfidence,
+            unavailableText: edgeConfidence === null ? reportDiagT("scoreUnavailable") : null,
             color:
                 edgeConfidence === null
                     ? "#9ca3af"
@@ -124,6 +126,7 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
                       ? "#fb923c"
                       : "#f87171",
             tip: ttT("pf"),
+            unavailableText: null,
         },
         {
             id: "exp",
@@ -131,6 +134,7 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
             value: metrics.expectancy.toFixed(2),
             color: metrics.expectancy > 0 ? "#10b981" : "#f87171",
             tip: ttT("expectancy"),
+            unavailableText: null,
         },
         {
             id: "dd",
@@ -138,6 +142,7 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
             value: `${Math.abs(metrics.maxDrawdown).toFixed(1)}%`,
             color: Math.abs(metrics.maxDrawdown) <= 15 ? "#10b981" : "#fb923c",
             tip: ttT("maxDrawdown"),
+            unavailableText: null,
         },
     ];
 
@@ -232,12 +237,20 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex-1 flex flex-col justify-end">
-                                    <p className="text-3xl md:text-2xl xl:text-4xl font-black tabular-nums transition-transform duration-700 group-hover:scale-105"
-                                       style={{ color: m.color, textShadow: `0 10px 30px ${m.color}20` }}>
-                                        {m.value}
-                                    </p>
-                                </div>
+                                {m.unavailableText ? (
+                                    <div className="flex-1 flex items-start">
+                                        <p className="max-w-[180px] text-xs font-medium leading-relaxed text-gray-500">
+                                            {m.unavailableText}
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="flex-1 flex flex-col justify-end">
+                                        <p className="text-3xl md:text-2xl xl:text-4xl font-black tabular-nums transition-transform duration-700 group-hover:scale-105"
+                                           style={{ color: m.color, textShadow: `0 10px 30px ${m.color}20` }}>
+                                            {m.value}
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>

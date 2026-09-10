@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import es from "../../messages/es.json";
 import en from "../../messages/en.json";
 import { getCanonicalDiagnosis, isNegativeDiagnosis } from "../../lib/analyzer/diagnosis";
@@ -92,5 +93,15 @@ describe("public report translations", () => {
         expect(en.analyzer.funnel.incompleteResult).toBe("Beta report");
         expect(es.analyzer.report.diagnosis.scoreTitle).not.toMatch(/strategy score/i);
         expect(en.analyzer.report.diagnosis.scoreTitle).not.toMatch(/strategy score/i);
+    });
+});
+
+describe("BasicResults missing Edge Confidence presentation", () => {
+    it("renders saved-analysis absence as secondary copy, not as the large metric value", () => {
+        const source = readFileSync("components/analyzer/BasicResults.tsx", "utf8");
+
+        expect(source).toContain("unavailableText: edgeConfidence === null");
+        expect(source).toContain("m.unavailableText ? (");
+        expect(source).not.toContain('value: edgeConfidence === null ? (locale === "es" ? "No disponible"');
     });
 });
