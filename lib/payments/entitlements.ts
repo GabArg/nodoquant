@@ -17,6 +17,44 @@ interface EntitlementDatabaseClient {
     from(table: string): any;
 }
 
+export interface EntitlementUser {
+    id: string;
+    email?: string | null;
+}
+
+interface EntitlementEnvironment {
+    NODE_ENV?: string;
+    VERCEL_ENV?: string;
+    NODOQUANT_TEST_PRO_USER_IDS?: string;
+    NODOQUANT_TEST_PRO_EMAILS?: string;
+}
+
+function allowlistValues(value: string | undefined): Set<string> {
+    return new Set(
+        (value ?? "")
+            .split(",")
+            .map((entry) => entry.trim().toLowerCase())
+            .filter(Boolean)
+    );
+}
+
+export function hasPreviewTestProAccess(
+    user: EntitlementUser,
+    environment: EntitlementEnvironment = process.env
+): boolean {
+    const isProduction = environment.VERCEL_ENV === "production" ||
+        (!environment.VERCEL_ENV && environment.NODE_ENV === "production");
+
+    if (isProduction) return false;
+
+    const userIds = allowlistValues(environment.NODOQUANT_TEST_PRO_USER_IDS);
+    if (userIds.has(user.id.trim().toLowerCase())) return true;
+
+    if (!user.email) return false;
+    const emails = allowlistValues(environment.NODOQUANT_TEST_PRO_EMAILS);
+    return emails.has(user.email.trim().toLowerCase());
+}
+
 export function hasActiveLegacyProAccess(
     value: LegacySubscriptionRow | null | undefined,
     now: Date = new Date()
@@ -60,9 +98,20 @@ export function resolveEntitlement({
  */
 export async function getUserEntitlement(
     client: EntitlementDatabaseClient | null | undefined,
-    userId: string,
-    options: { allowLegacySubscriptionFallback?: boolean } = {}
+    authenticatedUser: string | EntitlementUser,
+    options: {
+        allowLegacySubscriptionFallback?: boolean;
+        environment?: EntitlementEnvironment;
+    } = {}
 ): Promise<UserEntitlement> {
+    const user = typeof authenticatedUser === "string"
+        ? { id: authenticatedUser }
+        : authenticatedUser;
+
+    if (hasPreviewTestProAccess(user, options.environment ?? process.env)) {
+        return { tier: "pro", isPro: true, source: "explicit" };
+    }
+
     if (!client || options.allowLegacySubscriptionFallback !== true) {
         return resolveEntitlement({});
     }
@@ -70,7 +119,7 @@ export async function getUserEntitlement(
     const { data, error } = await client
         .from("subscriptions")
         .select("plan, status, current_period_end")
-        .eq("user_id", userId)
+        .eq("user_id", user.id)
         .maybeSingle();
 
     return resolveEntitlement({

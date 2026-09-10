@@ -1,5 +1,5 @@
 import { getSupabaseServer } from "../supabase";
-import { getUserEntitlement } from "./entitlements";
+import { getUserEntitlement, type EntitlementUser } from "./entitlements";
 
 export const FREE_PLAN_LIMITS = {
     MAX_TRADES_PER_ANALYSIS: 500,
@@ -33,7 +33,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
  * provider-independent entitlements layer.
  */
 export async function getUserPlanStatus(
-    userId: string
+    user: string | EntitlementUser
 ): Promise<UserPlanStatus> {
     const supabase = getSupabaseServer();
     const defaultStatus: UserPlanStatus = {
@@ -47,7 +47,7 @@ export async function getUserPlanStatus(
 
     if (!supabase) return defaultStatus;
 
-    const entitlement = await getUserEntitlement(supabase, userId);
+    const entitlement = await getUserEntitlement(supabase, user);
     const isPro = entitlement.isPro;
 
     return {
@@ -105,9 +105,9 @@ export async function trackTrialExpiration(
  * Compatibility helper (deprecated LS logic)
  */
 export async function getUserSubscription(
-    userId: string
+    user: string | EntitlementUser
 ): Promise<UserSubscription> {
-    const status = await getUserPlanStatus(userId);
+    const status = await getUserPlanStatus(user);
 
     return {
         plan: status.isPro ? "pro" : "free",

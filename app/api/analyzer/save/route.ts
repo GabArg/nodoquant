@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
         const user_id = session.user.id;
         const sessionEmail = session.user.email ?? null;
 
-        const sub = await getUserSubscription(user_id);
+        const sub = await getUserSubscription({ id: user_id, email: sessionEmail });
         const isPro = isProUser(sub);
 
         // 3. Per-analysis plan limit enforcement

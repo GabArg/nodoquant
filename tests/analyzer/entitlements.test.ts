@@ -35,4 +35,42 @@ describe("beta entitlement resolution", () => {
             source: "beta_default",
         });
     });
+
+    it("grants explicit Pro to an allowlisted user in preview and development", async () => {
+        const preview = {
+            NODE_ENV: "production",
+            VERCEL_ENV: "preview",
+            NODOQUANT_TEST_PRO_USER_IDS: "other-id, test-user-id",
+        };
+        const development = {
+            NODE_ENV: "development",
+            NODOQUANT_TEST_PRO_EMAILS: "test@example.com",
+        };
+
+        await expect(getUserEntitlement(null, { id: "test-user-id" }, { environment: preview })).resolves.toEqual({
+            tier: "pro", isPro: true, source: "explicit",
+        });
+        await expect(getUserEntitlement(null, { id: "user-id", email: "TEST@example.com" }, { environment: development })).resolves.toEqual({
+            tier: "pro", isPro: true, source: "explicit",
+        });
+    });
+
+    it("keeps users outside the allowlist on beta access", async () => {
+        await expect(getUserEntitlement(null, { id: "regular-user", email: "regular@example.com" }, {
+            environment: { NODE_ENV: "development", NODOQUANT_TEST_PRO_EMAILS: "test@example.com" },
+        })).resolves.toEqual({ tier: "beta", isPro: false, source: "beta_default" });
+    });
+
+    it("ignores every test allowlist in production", async () => {
+        const production = {
+            NODE_ENV: "production",
+            VERCEL_ENV: "production",
+            NODOQUANT_TEST_PRO_USER_IDS: "test-user-id",
+            NODOQUANT_TEST_PRO_EMAILS: "test@example.com",
+        };
+
+        await expect(getUserEntitlement(null, { id: "test-user-id", email: "test@example.com" }, { environment: production })).resolves.toEqual({
+            tier: "beta", isPro: false, source: "beta_default",
+        });
+    });
 });

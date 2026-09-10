@@ -16,7 +16,10 @@ export async function GET() {
             return NextResponse.json({ plan: "free", isPro: false });
         }
 
-        const entitlement = await getUserEntitlement(getSupabaseServer(), user.id);
+        const entitlement = await getUserEntitlement(getSupabaseServer(), {
+            id: user.id,
+            email: user.email,
+        });
 
         return NextResponse.json({
             ok: true,
