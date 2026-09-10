@@ -426,15 +426,15 @@ export default function FullReport({ metrics, analysisId, isPro, edgeConfidenceO
                         <div className="bg-white/[0.02] border border-red-500/10 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-4 mb-2 pointer-events-none">
                             <div className="text-center space-y-1">
                                 <span className="text-[9px] uppercase text-gray-500 font-black tracking-widest">{tFunnel("ruinProbLabel")}</span>
-                                <div className="text-red-500 font-black text-xl blur-[1px]">??? {tFunnel("mcPlaceholder")}</div>
+                                <div className="text-gray-400 font-semibold text-sm">{tFunnel("advancedUnavailable")}</div>
                             </div>
                             <div className="text-center space-y-1">
                                 <span className="text-[9px] uppercase text-gray-500 font-black tracking-widest">{tFunnel("expectedDdLabel")}</span>
-                                <div className="text-red-500 font-black text-xl blur-[1px]">???%</div>
+                                <div className="text-gray-400 font-semibold text-sm">{tFunnel("advancedUnavailable")}</div>
                             </div>
                             <div className="text-center space-y-1">
                                 <span className="text-[9px] uppercase text-gray-500 font-black tracking-widest">{tFunnel("timeToBreakLabel")}</span>
-                                <div className="text-red-500 font-black text-xl blur-[1px]">??? trades</div>
+                                <div className="text-gray-400 font-semibold text-sm">{tFunnel("advancedUnavailable")}</div>
                             </div>
                         </div>
                     </div>

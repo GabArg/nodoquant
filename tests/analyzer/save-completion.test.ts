@@ -39,4 +39,8 @@ describe("analyzer completion routing", () => {
         expect(completionReportId(outcome)).toBeNull();
         expect(completionReportHref(outcome, "en")).toBeNull();
     });
+
+    it("does not invent a route after a save error", () => {
+        expect(completionReportHref({ status: "error" }, "es")).toBeNull();
+    });
 });

@@ -344,7 +344,7 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
                                                     if (onViewFullReport) onViewFullReport();
                                                 }} 
                                                 className="px-8 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-black uppercase tracking-widest transition-all shadow-xl shadow-indigo-600/30 active:scale-95">
-                                            {wizT("viewReport") || "View beta report"}
+                                            {wizT("viewReport")}
                                         </button>
                                         {onReset && (
                                             <button onClick={onReset}

@@ -158,12 +158,7 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
         headline: mcT(`levels.${(fullMetrics?.monteCarlo?.riskOfRuin || 0) < 5 ? "positive" : (fullMetrics?.monteCarlo?.riskOfRuin || 0) < 15 ? "neutral" : "negative"}`),
         tip: mcT("tooltip"),
         icon: "🎲",
-        value: fullMetrics?.monteCarlo?.riskOfRuin || 0,
-        extra: [
-            { label: tFunnel("ruinProbLabel"), value: `??? ${tFunnel("mcPlaceholder")}` },
-            { label: tFunnel("expectedDdLabel"), value: `???%` },
-            { label: tFunnel("timeToBreakLabel"), value: `??? trades` }
-        ]
+        value: fullMetrics?.monteCarlo?.riskOfRuin || 0
     }
   ];
 

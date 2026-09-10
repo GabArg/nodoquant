@@ -3,15 +3,11 @@
 import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useSearchParams } from "next/navigation";
-import ScoreExplanation from "@/components/analyzer/ScoreExplanation";
-import StrategyDiagnostics from "@/components/analyzer/StrategyDiagnostics";
 import FileUpload from "@/components/analyzer/FileUpload";
 import ImportWizard from "@/components/analyzer/ImportWizard";
-import BasicResults from "@/components/analyzer/BasicResults";
-import EquityChart from "@/components/analyzer/EquityChart";
 import EmailGate from "@/components/analyzer/EmailGate";
 import FullReport from "@/components/analyzer/FullReport";
-import StrategyInsight from "@/components/analyzer/StrategyInsight";
+import AnalyzerResultSummary from "@/components/analyzer/AnalyzerResultSummary";
 import OnboardingPanel from "@/components/analyzer/OnboardingPanel";
 import ImportSourceSelector from "@/components/import/ImportSourceSelector";
 import BinanceImportPanel from "@/components/import/BinanceImportPanel";
@@ -30,11 +26,10 @@ import TradeSummaryPreview from "@/components/import/TradeSummaryPreview";
 import { toTradeArray, buildParseResult, type ImportSource } from "@/lib/import/normalizedTrade";
 import type { NormalizedTrade } from "@/lib/import/normalizedTrade";
 import { trackEvent } from "@/lib/analytics";
-import Link from "next/link";
 import { completionReportHref, type AnalysisSaveOutcome } from "@/lib/analyzer/completion";
 
 
-type Step = "source" | "upload" | "importing" | "confirm" | "basic" | "gate" | "full";
+type Step = "source" | "upload" | "importing" | "confirm" | "saving" | "result" | "report";
 
 interface AnalyzerSessionState {
     step: Step;
@@ -82,8 +77,8 @@ function hydrateState(value: unknown): unknown {
 function getUIStepIndex(s: Step) {
     if (s === "source" || s === "upload") return 0;
     if (s === "importing" || s === "confirm") return 1;
-    if (s === "basic") return 2;
-    return 3; // gate, full
+    if (s === "saving" || s === "result") return 2;
+    return 3;
 }
 
 export default function AnalyzerWizard() {
@@ -99,6 +94,7 @@ export default function AnalyzerWizard() {
     const [loading, setLoading] = useState(false);
     const [isPro, setIsPro] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [authResolved, setAuthResolved] = useState(false);
     const [triggerUnlock, setTriggerUnlock] = useState(0);
     const [analysisId, setAnalysisId] = useState<string | null>(null);
     const [saveOutcome, setSaveOutcome] = useState<AnalysisSaveOutcome | null>(null);
@@ -137,7 +133,10 @@ export default function AnalyzerWizard() {
 
                 const restored = hydrated as Partial<AnalyzerSessionState>;
 
-                if (restored.step) setStep(restored.step);
+                if (restored.step) {
+                    const restoredStep = String(restored.step);
+                    setStep(restoredStep === "basic" || restoredStep === "gate" ? "result" : restoredStep === "full" ? "report" : restored.step);
+                }
                 if (restored.importSource) setImportSource(restored.importSource);
                 if (restored.fileState) setFileState(restored.fileState);
                 if (restored.parseResult) setParseResult(restored.parseResult);
@@ -189,6 +188,8 @@ export default function AnalyzerWizard() {
                 if (data.isPro) setIsPro(true);
             } catch (e) {
                 console.error("Error fetching auth/plan status:", e);
+            } finally {
+                setAuthResolved(true);
             }
         }
         checkPlan();
@@ -196,8 +197,8 @@ export default function AnalyzerWizard() {
 
     const UI_STEPS = useMemo(() => [
         { id: "upload", label: t("steps.upload") },
-        { id: "mapping", label: t("steps.mapping") },
-        { id: "analysis", label: t("steps.analysis") },
+        { id: "review", label: t("steps.review") },
+        { id: "result", label: t("steps.result") },
         { id: "report", label: t("steps.report") },
     ], [t]);
 
@@ -273,7 +274,9 @@ export default function AnalyzerWizard() {
             setParseResult(normalizedResult);
             setBasicMetrics(basic);
             setFullMetrics(full);
-            setStep("basic");
+            setSaveOutcome(null);
+            setStep("saving");
+            setTriggerUnlock(prev => prev + 1);
             trackEvent('analyzer_run', { source, total_trades: basic.totalTrades, win_rate: basic.winrate, profit_factor: basic.profitFactor, removed_duplicates: legacyTrades.length - uniqueTrades.length });
             trackEvent("analysis_completed", { trades: basic.totalTrades, profitFactor: basic.profitFactor, isPro });
         } catch (err: unknown) {
@@ -296,7 +299,9 @@ export default function AnalyzerWizard() {
             setParseResult({ ...result, trades: uniqueTrades });
             setBasicMetrics(basic);
             setFullMetrics(full);
-            setStep("basic");
+            setSaveOutcome(null);
+            setStep("saving");
+            setTriggerUnlock(prev => prev + 1);
             trackEvent('analyzer_run', { source: result.format, total_trades: basic.totalTrades, win_rate: basic.winrate, profit_factor: basic.profitFactor, removed_duplicates: result.trades.length - uniqueTrades.length });
             trackEvent("analysis_completed", { trades: basic.totalTrades, profitFactor: basic.profitFactor, isPro });
         } catch (err: unknown) {
@@ -313,9 +318,9 @@ export default function AnalyzerWizard() {
     function handleAnalysisCompleted(outcome: AnalysisSaveOutcome) {
         if (!parseResult) return;
         setSaveOutcome(outcome);
-        setAnalysisId(outcome.status === "beta_limit" ? null : outcome.reportId);
-        setStep("full");
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        setAnalysisId(outcome.status === "saved" || outcome.status === "duplicated" ? outcome.reportId : null);
+        setStep("result");
+        scrollToAnalyzer();
     }
 
     const resetToSource = () => {
@@ -337,20 +342,26 @@ export default function AnalyzerWizard() {
         setPendingNormalized(null);
     };
 
-    const resetToUpload = () => {
+    const analyzerRef = useRef<HTMLDivElement>(null);
+    const scrollToAnalyzer = () => requestAnimationFrame(() => analyzerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+
+    const resetAndRestart = () => {
         resetToSource();
-        setImportSource("csv");
-        setStep("upload");
+        scrollToAnalyzer();
+    };
+
+    const openReport = () => {
+        setStep("report");
+        scrollToAnalyzer();
     };
 
     const canonicalVerdict = basicMetrics
         ? getCanonicalDiagnosis(basicMetrics, fullMetrics || undefined)
         : null;
-    const isNoEdge = canonicalVerdict === "noEdge";
     const currentIdx = getUIStepIndex(step);
 
     return (
-        <div className="min-h-screen pt-20 pb-24" style={{ background: "var(--bg)" }}>
+        <div ref={analyzerRef} className="min-h-screen pt-20 pb-24 scroll-mt-20" style={{ background: "var(--bg)" }}>
             <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
                 <div className="section-label mt-8">{t("freeTool")}</div>
                 <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-3 leading-tight">{t("heroTitle")}</h1>
@@ -438,75 +449,34 @@ export default function AnalyzerWizard() {
                     </div>
                 )}
 
-                {step === "basic" && basicMetrics && parseResult && fullMetrics && (
-                    <div className="space-y-12 animate-fade-in">
-                        <div className="order-1">
-                            <BasicResults metrics={basicMetrics} fullMetrics={fullMetrics} format={parseResult.format} fileName={parseResult.fileName} trades={parseResult.trades} onReset={resetToSource} onViewFullReport={() => { setStep("gate"); setTriggerUnlock(prev => prev + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
+
+
+
+                {step === "saving" && parseResult && basicMetrics && authResolved && (
+                    <section aria-live="polite" className="min-h-[50vh] flex items-center justify-center">
+                        <div className="w-full max-w-md rounded-2xl border border-white/10 bg-white/[0.025] p-7">
+                            <EmailGate metricsPayload={{ basic: basicMetrics, equity_curve: fullMetrics?.equityCurve, drawdown_curve: fullMetrics?.drawdownCurve, trade_histogram: fullMetrics?.tradeHistogram }} basicMetrics={{ trades_count: basicMetrics.totalTrades, winrate: basicMetrics.winrate, profit_factor: basicMetrics.profitFactor, max_drawdown: basicMetrics.maxDrawdown, sum_profit: basicMetrics.sumProfit }} fileName={parseResult.fileName} dateRangeStart={parseResult.dateRangeStart?.toISOString()} dateRangeEnd={parseResult.dateRangeEnd?.toISOString()} strategyId={""} isAuthenticated={isAuthenticated} onCompleted={handleAnalysisCompleted} triggerUnlock={triggerUnlock} compact />
                         </div>
-                        <div className="order-2 animate-fade-in" style={{ animationDelay: "200ms" }}>
-                            <EquityChart data={fullMetrics.equityCurve} />
-                        </div>
-                        <div className="order-3 animate-fade-in" style={{ animationDelay: "300ms" }}>
-                            <ScoreExplanation />
-                        </div>
-                        <div className="order-4 animate-fade-in" style={{ animationDelay: "400ms" }}>
-                            <StrategyDiagnostics metrics={basicMetrics} fullMetrics={fullMetrics} trades={parseResult.trades} isNoEdge={isNoEdge} isPro={isPro} />
-                        </div>
-                        <div className="order-5 animate-fade-in" style={{ animationDelay: "500ms" }}>
-                            <StrategyInsight profitFactor={basicMetrics.profitFactor} winrate={basicMetrics.winrate} maxDrawdown={basicMetrics.maxDrawdown} totalTrades={basicMetrics.totalTrades} trades={parseResult.trades} isNoEdge={isNoEdge} />
-                        </div>
-                        <div className="order-6 pt-16 border-t border-white/[0.05] animate-fade-in" style={{ animationDelay: "600ms" }}>
-                            <div className="text-center mb-10 space-y-4">
-                                <h3 className="text-3xl font-black text-white mb-2 tracking-tight italic uppercase drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">{t("nextStepsTitle")}</h3>
-                                <p className="text-base text-gray-400 font-bold max-w-lg mx-auto leading-relaxed italic">{(basicMetrics?.profitFactor ?? 0) >= 1.05 ? t("nextStepsDescGood") : t("nextStepsDescBad")}</p>
-                            </div>
-                            <div className="flex flex-col items-center gap-8">
-                                <div className="flex flex-col items-center gap-4 w-full sm:w-auto">
-                                    <button onClick={() => { setStep("gate"); setTriggerUnlock(prev => prev + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="btn-primary px-16 py-6 w-full sm:w-auto text-[13px] font-black uppercase tracking-[0.2em] shadow-[0_20px_50px_rgba(99,102,241,0.5)] group rounded-3xl border border-white/20 active:scale-95 transition-all">
-                                        <span className="flex items-center gap-3">{t("viewReport") || "View beta report"}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" className="group-hover:translate-x-1 transition-transform"><path d="M5 12h14M12 5l7 7-7 7" /></svg></span>
-                                    </button>
-                                    <div className="text-center space-y-2">
-                                        <p className="text-[11px] text-indigo-300 font-black uppercase tracking-[0.2em] drop-shadow-sm">{t("viewReportSubtitle") || "See failure scenarios, risk simulations, and real expectancy."}</p>
-                                        <p className="text-[9px] text-gray-600 font-bold uppercase tracking-[0.1em] opacity-40">Basado en tus trades reales · No es una opinión</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </section>
                 )}
 
-                {step === "gate" && parseResult && basicMetrics && (
-                    <div className="space-y-4">
-                        <BasicResults metrics={basicMetrics} fullMetrics={fullMetrics || undefined} format={parseResult.format} fileName={parseResult.fileName} trades={parseResult.trades} onReset={resetToSource} onViewFullReport={() => { setTriggerUnlock(prev => prev + 1); window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }} />
-                        <EmailGate metricsPayload={{ basic: basicMetrics, equity_curve: fullMetrics?.equityCurve, drawdown_curve: fullMetrics?.drawdownCurve, trade_histogram: fullMetrics?.tradeHistogram }} basicMetrics={{ trades_count: basicMetrics.totalTrades, winrate: basicMetrics.winrate, profit_factor: basicMetrics.profitFactor, max_drawdown: basicMetrics.maxDrawdown, sum_profit: basicMetrics.sumProfit }} fileName={parseResult.fileName} dateRangeStart={parseResult.dateRangeStart?.toISOString()} dateRangeEnd={parseResult.dateRangeEnd?.toISOString()} strategyId={""} isAuthenticated={isAuthenticated} onCompleted={handleAnalysisCompleted} triggerUnlock={triggerUnlock} />
-                    </div>
+                {step === "result" && basicMetrics && fullMetrics && canonicalVerdict && saveOutcome && (
+                    <AnalyzerResultSummary metrics={basicMetrics} fullMetrics={fullMetrics} diagnosis={canonicalVerdict} saveOutcome={saveOutcome} onViewReport={openReport} onViewSavedReport={() => { const href = completionReportHref(saveOutcome, locale); if (href) window.location.assign(href); }} onAnalyzeAnother={resetAndRestart} />
                 )}
 
-                {step === "full" && fullMetrics && parseResult && (
-                    <div className="space-y-10 animate-fade-in">
-                        {saveOutcome && (
-                            <section className="rounded-3xl border border-emerald-500/20 bg-emerald-500/5 p-6 sm:p-8 space-y-6">
-                                <div>
-                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-400">{t("completion.title")}</p>
-                                    <div className="mt-4 grid grid-cols-3 gap-3">
-                                        <div><span className="block text-2xl font-black text-white">{basicMetrics?.totalTrades}</span><span className="text-xs text-gray-500">{t("completion.trades")}</span></div>
-                                        <div><span className="block text-2xl font-black text-white">{basicMetrics?.profitFactor.toFixed(2)}</span><span className="text-xs text-gray-500">{t("completion.profitFactor")}</span></div>
-                                        <div><span className="block text-sm sm:text-base font-black text-emerald-400">{canonicalVerdict ? t(`completion.verdicts.${canonicalVerdict}`) : ""}</span><span className="text-xs text-gray-500">{t("completion.diagnosis")}</span></div>
-                                    </div>
-                                </div>
-                                <p className="text-sm text-gray-300">{t(`completion.status.${saveOutcome.status}`)}</p>
-                                <div className="flex flex-col sm:flex-row gap-3">
-                                    {completionReportHref(saveOutcome, locale) && (
-                                        <Link href={completionReportHref(saveOutcome, locale)!} className="btn-primary justify-center px-6 py-3">
-                                            {t(saveOutcome.status === "beta_limit" ? "completion.viewSaved" : "completion.viewReport")}
-                                        </Link>
-                                    )}
-                                    <button onClick={resetToUpload} className="btn-secondary justify-center px-6 py-3">{t("completion.analyzeAnother")}</button>
-                                </div>
-                            </section>
-                        )}
+                {step === "report" && fullMetrics && parseResult && (
+                    <article aria-labelledby="full-report-title" className="space-y-8 animate-fade-in">
+                        <header className="rounded-2xl border border-white/10 bg-white/[0.025] p-5 sm:p-7">
+                            <p className="text-[10px] font-black uppercase tracking-[0.28em] text-indigo-300">{t("report.eyebrow")}</p>
+                            <h2 id="full-report-title" className="mt-2 text-2xl sm:text-3xl font-black text-white">{t("report.title")}</h2>
+                            <p className="mt-2 text-sm text-gray-400">{t("report.subtitle")}</p>
+                            <nav aria-label={t("report.navigationLabel")} className="mt-5 flex flex-col sm:flex-row gap-3">
+                                <button type="button" onClick={() => { setStep("result"); scrollToAnalyzer(); }} className="btn-secondary w-full sm:w-auto justify-center px-5 py-2.5">{t("report.backToSummary")}</button>
+                                <button type="button" onClick={resetAndRestart} className="btn-secondary w-full sm:w-auto justify-center px-5 py-2.5">{t("completion.analyzeAnother")}</button>
+                            </nav>
+                        </header>
                         <FullReport metrics={fullMetrics} analysisId={analysisId} isPro={isPro} />
-                    </div>
+                    </article>
                 )}
             </div>
         </div>

@@ -89,8 +89,8 @@ describe("public report translations", () => {
         expect(en.analyzer.report.diagnosis.scoreTitle).toBe("Edge Confidence");
         expect(es.analyzer.report.diagnosis.scoreUnavailable).toBe("No disponible en este análisis guardado");
         expect(en.analyzer.report.diagnosis.scoreUnavailable).toBe("Not available in this saved analysis");
-        expect(es.analyzer.funnel.incompleteResult).toBe("Reporte de la beta");
-        expect(en.analyzer.funnel.incompleteResult).toBe("Beta report");
+        expect(es.analyzer.funnel.incompleteResult).toBe("Resultado");
+        expect(en.analyzer.funnel.incompleteResult).toBe("Result");
         expect(es.analyzer.report.diagnosis.scoreTitle).not.toMatch(/strategy score/i);
         expect(en.analyzer.report.diagnosis.scoreTitle).not.toMatch(/strategy score/i);
     });

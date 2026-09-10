@@ -22,6 +22,7 @@ interface Props {
     isAuthenticated: boolean;
     onCompleted: (outcome: AnalysisSaveOutcome) => void;
     triggerUnlock?: number;
+    compact?: boolean;
 }
 
 export default function EmailGate({
@@ -34,6 +35,7 @@ export default function EmailGate({
     isAuthenticated,
     onCompleted,
     triggerUnlock = 0,
+    compact = false,
 }: Props) {
     const t = useTranslations("analyzer.gate");
     const locale = useLocale();
@@ -130,10 +132,21 @@ export default function EmailGate({
                     ? err.message
                     : t("form.errorNetwork")
             );
+            onCompleted({ status: "error" });
         } finally {
             unlockInFlightRef.current = false;
             setSubmitting(false);
         }
+    }
+
+    if (compact) {
+        return (
+            <div className="w-full text-center py-8">
+                <div className="w-8 h-8 mx-auto border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-4" />
+                <p className="text-xs font-bold text-white">{t("form.finalizing")}</p>
+                <p className="mt-2 text-xs text-gray-500">{t("form.finalizingHint")}</p>
+            </div>
+        );
     }
 
     return (
@@ -301,7 +314,7 @@ export default function EmailGate({
                         onClick={() => handleUnlock()}
                         className="btn-primary w-full justify-center text-[12px] py-4 bg-indigo-600 hover:bg-indigo-500 shadow-[0_10px_30px_-10px_rgba(99,102,241,0.5)]"
                     >
-                        {locale === "es" ? "Generar reporte de la beta" : "Generate beta report"}
+                        {locale === "es" ? "Generar reporte completo" : "Generate full report"}
                     </button>
 
                     <button
