@@ -20,12 +20,22 @@ function finiteNumber(value: unknown, fallback = 0): number {
     return typeof value === "number" && Number.isFinite(value) ? value : fallback;
 }
 
+function optionalFiniteNumber(value: unknown): number | null {
+    return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+export interface NormalizedPublicReportMetrics {
+    metrics: FullMetrics;
+    edgeConfidence: number | null;
+    strategyScore: number | null;
+}
+
 function numberArray(value: unknown): number[] {
     return Array.isArray(value) && value.every(item => typeof item === "number" && Number.isFinite(item)) ? value : [];
 }
 
 /** Normalizes historical flat payloads and the current reduced analyzer payload. */
-export function normalizePublicReportMetrics(report: StoredPublicReport): FullMetrics {
+export function normalizePublicReportMetrics(report: StoredPublicReport): NormalizedPublicReportMetrics {
     const json = record(report.metrics_json);
     const savedBasic = record(json.basic);
     const savedAdvanced = record(json.advanced);
@@ -33,7 +43,7 @@ export function normalizePublicReportMetrics(report: StoredPublicReport): FullMe
     const persistedSumProfit = finiteNumber(report.sum_profit, finiteNumber(savedBasic.sumProfit));
     const expectancy = finiteNumber(savedBasic.expectancy, finiteNumber(json.expectancy, totalTrades ? persistedSumProfit / totalTrades : 0));
 
-    return {
+    const metrics = {
         ...json,
         totalTrades,
         winrate: finiteNumber(report.winrate, finiteNumber(savedBasic.winrate)),
@@ -47,9 +57,15 @@ export function normalizePublicReportMetrics(report: StoredPublicReport): FullMe
         tradeHistogram: numberArray(json.tradeHistogram ?? json.trade_histogram),
         advanced: Object.keys(savedAdvanced).length ? savedAdvanced : undefined,
     } as unknown as FullMetrics;
+
+    return {
+        metrics,
+        edgeConfidence: optionalFiniteNumber(savedAdvanced.edgeConfidence),
+        strategyScore: optionalFiniteNumber(json.strategy_score ?? json.quant_score),
+    };
 }
 
 export function getPublicReportDiagnosis(report: StoredPublicReport): DiagnosisVerdict {
-    const metrics = normalizePublicReportMetrics(report);
+    const { metrics } = normalizePublicReportMetrics(report);
     return getCanonicalDiagnosis(metrics, metrics);
 }

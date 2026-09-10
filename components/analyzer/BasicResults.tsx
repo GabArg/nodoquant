@@ -19,6 +19,7 @@ interface Props {
     hideScore?: boolean;
     hideMetrics?: boolean;
     primaryActionLabel?: string;
+    edgeConfidenceOverride?: number | null;
 }
 
 
@@ -38,7 +39,7 @@ function computeExpectancyR(trades: Trade[]): number | null {
     return parseFloat(((wr * avgWinR) - (1 - wr) * 1).toFixed(2));
 }
 
-export default function BasicResults({ metrics, fullMetrics, format, fileName, trades = [], onViewFullReport, onReset, hideScore, hideMetrics, primaryActionLabel }: Props) {
+export default function BasicResults({ metrics, fullMetrics, format, fileName, trades = [], onViewFullReport, onReset, hideScore, hideMetrics, primaryActionLabel, edgeConfidenceOverride }: Props) {
     const locale = useLocale();
     const t = useTranslations("analyzer.results");
     const diagT = useTranslations("analyzer.results.diagnosis");
@@ -56,8 +57,10 @@ export default function BasicResults({ metrics, fullMetrics, format, fileName, t
     // Canonical 0-100 Edge Confidence.
     // Prefer the advanced analyzer value. The legacy edge score is used only
     // as a fallback when full metrics are unavailable.
-    let edgeConfidence = 0;
-    if (fullMetrics?.advanced?.edgeConfidence !== undefined) {
+    let edgeConfidence: number | null;
+    if (edgeConfidenceOverride !== undefined) {
+        edgeConfidence = edgeConfidenceOverride;
+    } else if (fullMetrics?.advanced?.edgeConfidence !== undefined) {
         edgeConfidence = fullMetrics.advanced.edgeConfidence;
     } else {
         const edgeRaw = calcEdgeScore(
@@ -76,11 +79,11 @@ export default function BasicResults({ metrics, fullMetrics, format, fileName, t
         }
     }
 
-    edgeConfidence = Math.min(100, Math.max(0, edgeConfidence));
+    if (edgeConfidence !== null) edgeConfidence = Math.min(100, Math.max(0, edgeConfidence));
 
     const diagState = getCanonicalDiagnosis(metrics, fullMetrics);
     const hasNegativeDiagnosis = isNegativeDiagnosis(diagState);
-    const animatedConfidence = useCountUp(edgeConfidence, 1500, 500);
+    const animatedConfidence = useCountUp(edgeConfidence ?? 0, 1500, 500);
     
     const copySummary = () => {
         const text = `${confT("title")}: ${edgeConfidence}
@@ -99,9 +102,11 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
         {
             id: "conf",
             label: confT("title"),
-            value: animatedConfidence,
+            value: edgeConfidence === null ? (locale === "es" ? "No disponible" : "Not available") : animatedConfidence,
             color:
-                edgeConfidence >= 70
+                edgeConfidence === null
+                    ? "#9ca3af"
+                    : edgeConfidence >= 70
                     ? "#10b981"
                     : edgeConfidence >= 30
                       ? "#fb923c"

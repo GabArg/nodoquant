@@ -16,9 +16,11 @@ interface Props {
     metrics: FullMetrics;
     analysisId?: string | null;
     isPro?: boolean;
+    edgeConfidenceOverride?: number | null;
 }
 
-function StrategyDiagnosis({ metrics, isPro }: { metrics: FullMetrics; isPro?: boolean }) {
+function StrategyDiagnosis({ metrics, isPro, edgeConfidence }: { metrics: FullMetrics; isPro?: boolean; edgeConfidence: number | null }) {
+    const locale = useLocale();
     const t = useTranslations("analyzer.report.diagnosis");
     const tSignals = useTranslations("analyzer.report.keySignals");
     const tFunnel = useTranslations("analyzer.funnel");
@@ -65,7 +67,7 @@ function StrategyDiagnosis({ metrics, isPro }: { metrics: FullMetrics; isPro?: b
     };
 
     const verdict = config[verdictKey as keyof typeof config] || config.unstableEdge;
-    const score = metrics.advanced?.edgeConfidence ?? 0;
+    const scoreDisplay = edgeConfidence === null ? (locale === "es" ? "No disponible" : "Not available") : edgeConfidence.toFixed(0);
     
     // Credible reinterpretation labels
     const getReinterpretedValue = (label: string, value: string) => {
@@ -80,7 +82,7 @@ function StrategyDiagnosis({ metrics, isPro }: { metrics: FullMetrics; isPro?: b
         <div className="space-y-6">
             <div className={`p-8 rounded-3xl border ${verdict.border} ${verdict.bg} relative overflow-hidden`}>
                 <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
-                    <span className="text-[120px] leading-none font-black italic">{score}</span>
+                    <span className="text-[120px] leading-none font-black italic">{edgeConfidence ?? "—"}</span>
                 </div>
                 
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 relative z-10">
@@ -106,8 +108,8 @@ function StrategyDiagnosis({ metrics, isPro }: { metrics: FullMetrics; isPro?: b
                             {tFunnel(`diagnostic${verdictKey.charAt(0).toUpperCase() + verdictKey.slice(1)}`)}
                         </span>
                         <div className="flex items-baseline gap-1">
-                            <span className="text-6xl font-black text-white italic tracking-tighter">{(score || 0).toFixed(0)}</span>
-                            <span className="text-xl font-bold text-gray-600">/100</span>
+                            <span className="text-6xl font-black text-white italic tracking-tighter">{scoreDisplay}</span>
+                            {edgeConfidence !== null && <span className="text-xl font-bold text-gray-600">/100</span>}
                         </div>
                     </div>
                 </div>
@@ -209,7 +211,7 @@ function LockedSection({ title, desc, children, isPro = false, onUnlockClick }: 
     );
 }
 
-export default function FullReport({ metrics, analysisId, isPro }: Props) {
+export default function FullReport({ metrics, analysisId, isPro, edgeConfidenceOverride }: Props) {
     const t = useTranslations("analyzer.report");
     const tFunnel = useTranslations("analyzer.funnel");
     const locale = useLocale();
@@ -259,6 +261,9 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
     const monteCarlo = metrics.monteCarlo;
     const canonicalVerdict = getCanonicalDiagnosis(metrics, metrics);
     const showEvidenceWarning = isNegativeDiagnosis(canonicalVerdict);
+    const edgeConfidence = edgeConfidenceOverride !== undefined
+        ? edgeConfidenceOverride
+        : metrics.advanced?.edgeConfidence ?? null;
 
     return (
         <div className="w-full max-w-2xl mx-auto space-y-8 animate-fade-in">
@@ -290,7 +295,7 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
             )}
 
             {/* 1. Strategy Diagnosis & Key Signals */}
-            <StrategyDiagnosis metrics={metrics} isPro={isProInternal} />
+            <StrategyDiagnosis metrics={metrics} isPro={isProInternal} edgeConfidence={edgeConfidence} />
 
             {/* 3. Risk Overview (Blurred for Free Users) */}
             <div className={isProInternal ? "relative group" : "hidden"}>
@@ -463,7 +468,9 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
                 <div className="bg-black/40 rounded-2xl p-6 grid grid-cols-3 gap-6 border border-white/5 shadow-inner">
                     <div className="text-center space-y-1">
                         <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest block">{t("diagnosis.scoreTitle")}</span>
-                        <span className="text-xl font-black text-indigo-400 italic">{(metrics.advanced?.edgeConfidence ?? 0).toFixed(0)}</span>
+                        <span className="text-xl font-black text-indigo-400 italic">
+                            {edgeConfidence === null ? (locale === "es" ? "No disponible" : "Not available") : edgeConfidence.toFixed(0)}
+                        </span>
                     </div>
                     <div className="text-center space-y-1">
                         <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest block">{t("keySignals.profitFactor")}</span>

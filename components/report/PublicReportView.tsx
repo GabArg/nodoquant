@@ -40,8 +40,9 @@ export default function PublicReportView({
 }) {
     const t = useTranslations("publicReport");
     const locale = useLocale();
-    const normalizedMetrics = normalizePublicReportMetrics(report);
-    const reportScore = normalizedMetrics.advanced?.edgeConfidence ?? report.metrics_json?.score;
+    const normalized = normalizePublicReportMetrics(report);
+    const normalizedMetrics = normalized.metrics;
+    const reportScore = normalized.edgeConfidence;
     const reportVerdict = getCanonicalDiagnosis(normalizedMetrics, normalizedMetrics);
     const showNegativeWarning = isNegativeDiagnosis(reportVerdict);
 
@@ -79,6 +80,7 @@ export default function PublicReportView({
                 <BasicResults
                     metrics={basicMetrics}
                     fullMetrics={normalizedMetrics}
+                    edgeConfidenceOverride={normalized.edgeConfidence}
                     format="ANALYSIS"
                     fileName={
                         report.file_name || t("defaultFileName")
@@ -115,6 +117,7 @@ export default function PublicReportView({
                         metrics={normalizedMetrics}
                         analysisId={report.id}
                         isPro={false}
+                        edgeConfidenceOverride={normalized.edgeConfidence}
                     />
                 </div>
 

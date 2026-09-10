@@ -29,8 +29,10 @@ describe("public report diagnosis", () => {
         const publicVerdict = getPublicReportDiagnosis(strongReport);
 
         expect(publicVerdict).toBe("strongEdge");
-        expect(publicVerdict).toBe(getCanonicalDiagnosis(normalized, normalized));
+        expect(publicVerdict).toBe(getCanonicalDiagnosis(normalized.metrics, normalized.metrics));
         expect(isNegativeDiagnosis(publicVerdict)).toBe(false);
+        expect(normalized.edgeConfidence).toBeNull();
+        expect(normalized.strategyScore).toBeNull();
     });
 
     it.each([
@@ -43,6 +45,17 @@ describe("public report diagnosis", () => {
     it("honors a persisted advanced verdict before the deterministic fallback", () => {
         const report = { ...strongReport, metrics_json: { advanced: { verdict: "weakEdge" } } };
         expect(getPublicReportDiagnosis(report)).toBe("weakEdge");
+    });
+
+    it("uses one persisted Edge Confidence value without substituting Strategy Score", () => {
+        const normalized = normalizePublicReportMetrics({
+            ...strongReport,
+            metrics_json: { advanced: { verdict: "strongEdge", edgeConfidence: 99 } },
+        });
+
+        expect(normalized.edgeConfidence).toBe(99);
+        expect(normalized.strategyScore).toBeNull();
+        expect(normalized.metrics.advanced?.edgeConfidence).toBe(99);
     });
 });
 
