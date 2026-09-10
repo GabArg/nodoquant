@@ -272,6 +272,27 @@
                 "report": "Report"
             },
             "viewReport": "View beta report",
+            "completion": {
+                "title": "Analysis completed",
+                "trades": "Trades",
+                "profitFactor": "Profit Factor",
+                "diagnosis": "Diagnosis",
+                "verdicts": {
+                    "strongEdge": "Strong edge",
+                    "weakEdge": "Weak edge",
+                    "unstableEdge": "Unstable edge",
+                    "noEdge": "No edge",
+                    "insufficientSample": "Insufficient sample"
+                },
+                "status": {
+                    "saved": "Analysis saved successfully.",
+                    "duplicated": "This analysis was already saved. We are showing you the existing report.",
+                    "beta_limit": "Analysis completed. Your beta keeps 1 report, so this analysis was not saved."
+                },
+                "viewReport": "View full report",
+                "viewSaved": "View my saved analysis",
+                "analyzeAnother": "Analyze another file"
+            },
             "importAnother": "Try another file (saved report stays)",
             "freeTool": "Professional Diagnostic Tool",
             "loading": {

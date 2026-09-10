@@ -149,3 +149,11 @@ export async function canCreateStrategy(
 
     return (count || 0) < FREE_PLAN_LIMITS.MAX_SAVED_STRATEGIES;
 }
+
+export function exceedsBetaTradeLimit(isPro: boolean, tradesCount: number): boolean {
+    return !isPro && tradesCount > FREE_PLAN_LIMITS.MAX_TRADES_PER_ANALYSIS;
+}
+
+export function mustCheckBetaSavedAnalysisLimit(isPro: boolean, isNewAnalysis: boolean): boolean {
+    return !isPro && isNewAnalysis;
+}

@@ -82,7 +82,10 @@ export async function middleware(request: NextRequest) {
     let hasProAccess = false;
 
     if (user && (isProtected || isProPath)) {
-        hasProAccess = (await getUserEntitlement(supabase, user.id)).isPro;
+        hasProAccess = (await getUserEntitlement(supabase, {
+            id: user.id,
+            email: user.email,
+        })).isPro;
     }
 
     if (isProtected && !user) {

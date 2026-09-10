@@ -790,6 +790,27 @@
                 "report": "Reporte"
             },
             "viewReport": "Ver reporte de la beta",
+            "completion": {
+                "title": "Análisis completado",
+                "trades": "Trades",
+                "profitFactor": "Profit Factor",
+                "diagnosis": "Diagnóstico",
+                "verdicts": {
+                    "strongEdge": "Edge sólido",
+                    "weakEdge": "Edge débil",
+                    "unstableEdge": "Edge inestable",
+                    "noEdge": "Sin edge",
+                    "insufficientSample": "Muestra insuficiente"
+                },
+                "status": {
+                    "saved": "Análisis guardado correctamente.",
+                    "duplicated": "Este análisis ya estaba guardado. Te mostramos el reporte existente.",
+                    "beta_limit": "Análisis completado. Tu beta permite conservar 1 reporte, por eso este análisis no fue guardado."
+                },
+                "viewReport": "Ver reporte completo",
+                "viewSaved": "Ver mi análisis guardado",
+                "analyzeAnother": "Analizar otro archivo"
+            },
             "importAnother": "Probar otro archivo (no reemplaza el guardado)",
             "freeTool": "Herramienta de Diagnóstico Profesional",
             "loading": {

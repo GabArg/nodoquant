@@ -50,6 +50,7 @@ export async function GET(
                 id,
                 public_id,
                 user_id,
+                user_email,
                 dataset_name,
                 file_name,
                 trades_count,
@@ -81,7 +82,10 @@ export async function GET(
 
         let reportIsPro = false;
         if (data.user_id) {
-            const sub = await getUserSubscription(data.user_id);
+            const sub = await getUserSubscription({
+                id: data.user_id,
+                email: data.user_email,
+            });
             reportIsPro = isProUser(sub);
         }
 

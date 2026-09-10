@@ -5,11 +5,12 @@ import { createClient } from "@/lib/auth/server";
 import { writeFile, readFile } from "fs/promises";
 import path from "path";
 import {
-    getUserSubscription,
-    isProUser,
     canCreateStrategy,
+    exceedsBetaTradeLimit,
     FREE_PLAN_LIMITS,
+    mustCheckBetaSavedAnalysisLimit,
 } from "@/lib/payments/subscription";
+import { getUserEntitlement } from "@/lib/payments/entitlements";
 import { sendStrategyReadyEmail } from "@/lib/email/sendStrategyReadyEmail";
 import { getBaseUrl } from "@/lib/url";
 
@@ -98,13 +99,16 @@ export async function POST(req: NextRequest) {
         const user_id = session.user.id;
         const sessionEmail = session.user.email ?? null;
 
-        const sub = await getUserSubscription({ id: user_id, email: sessionEmail });
-        const isPro = isProUser(sub);
+        const supabase = getSupabaseServer();
+        const entitlement = await getUserEntitlement(supabase, {
+            id: user_id,
+            email: sessionEmail,
+        });
+        const isPro = entitlement.isPro;
 
         // 3. Per-analysis plan limit enforcement
         if (
-            !isPro &&
-            trades_count > FREE_PLAN_LIMITS.MAX_TRADES_PER_ANALYSIS
+            exceedsBetaTradeLimit(isPro, trades_count)
         ) {
             return NextResponse.json(
                 {
@@ -170,8 +174,6 @@ export async function POST(req: NextRequest) {
             email_send_started_at: null,
         };
 
-        const supabase = getSupabaseServer();
-
         if (!supabase) {
             return handleLocalFallback(record);
         }
@@ -207,32 +209,34 @@ export async function POST(req: NextRequest) {
         let analysisForEmail = existingAnalysis;
 
         if (isNewInsert) {
-            // Only a genuinely new analysis consumes a saved-strategy slot.
-            const canSave = await canCreateStrategy(user_id, isPro);
+            if (mustCheckBetaSavedAnalysisLimit(isPro, isNewInsert)) {
+                // Only a genuinely new beta analysis consumes a saved-analysis slot.
+                const canSave = await canCreateStrategy(user_id, isPro);
 
-            if (!canSave) {
-                const { data: savedAnalysis } = await supabase
-                    .from("trade_analysis")
-                    .select("id")
-                    .eq("user_id", user_id)
-                    .order("created_at", { ascending: false })
-                    .limit(1)
-                    .maybeSingle();
+                if (!canSave) {
+                    const { data: savedAnalysis } = await supabase
+                        .from("trade_analysis")
+                        .select("id")
+                        .eq("user_id", user_id)
+                        .order("created_at", { ascending: false })
+                        .limit(1)
+                        .maybeSingle();
 
-                return NextResponse.json(
-                    {
-                        ok: false,
-                        error: wantsSpanish ? "Límite de la beta alcanzado" : "Beta limit reached",
-                        code: "BETA_SAVED_ANALYSIS_LIMIT",
-                        existingReportId: savedAnalysis?.id ?? null,
-                        reason: wantsSpanish
-                            ? `La beta gratuita permite ${FREE_PLAN_LIMITS.MAX_SAVED_STRATEGIES} análisis guardado. Podés volver al que ya guardaste.`
-                            : `The free beta allows ${FREE_PLAN_LIMITS.MAX_SAVED_STRATEGIES} saved analysis. You can return to your existing report.`,
-                    },
-                    {
-                        status: 403,
-                    }
-                );
+                    return NextResponse.json(
+                        {
+                            ok: false,
+                            error: wantsSpanish ? "Límite de la beta alcanzado" : "Beta limit reached",
+                            code: "BETA_SAVED_ANALYSIS_LIMIT",
+                            existingReportId: savedAnalysis?.id ?? null,
+                            reason: wantsSpanish
+                                ? `La beta gratuita permite ${FREE_PLAN_LIMITS.MAX_SAVED_STRATEGIES} análisis guardado. Podés volver al que ya guardaste.`
+                                : `The free beta allows ${FREE_PLAN_LIMITS.MAX_SAVED_STRATEGIES} saved analysis. You can return to your existing report.`,
+                        },
+                        {
+                            status: 403,
+                        }
+                    );
+                }
             }
 
             const { data, error } = await supabase

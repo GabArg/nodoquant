@@ -30,6 +30,8 @@ import TradeSummaryPreview from "@/components/import/TradeSummaryPreview";
 import { toTradeArray, buildParseResult, type ImportSource } from "@/lib/import/normalizedTrade";
 import type { NormalizedTrade } from "@/lib/import/normalizedTrade";
 import { trackEvent } from "@/lib/analytics";
+import Link from "next/link";
+import { completionReportHref, type AnalysisSaveOutcome } from "@/lib/analyzer/completion";
 
 
 type Step = "source" | "upload" | "importing" | "confirm" | "basic" | "gate" | "full";
@@ -42,6 +44,7 @@ interface AnalyzerSessionState {
     basicMetrics: BasicMetrics | null;
     fullMetrics: FullMetrics | null;
     analysisId: string | null;
+    saveOutcome: AnalysisSaveOutcome | null;
     pendingNormalized: {
         trades: NormalizedTrade[];
         source: ImportSource;
@@ -98,6 +101,7 @@ export default function AnalyzerWizard() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [triggerUnlock, setTriggerUnlock] = useState(0);
     const [analysisId, setAnalysisId] = useState<string | null>(null);
+    const [saveOutcome, setSaveOutcome] = useState<AnalysisSaveOutcome | null>(null);
     const [pendingNormalized, setPendingNormalized] = useState<{ trades: NormalizedTrade[]; source: ImportSource } | null>(null);
     const [isHydrated, setIsHydrated] = useState(false);
     const searchParams = useSearchParams();
@@ -140,6 +144,7 @@ export default function AnalyzerWizard() {
                 if (restored.basicMetrics) setBasicMetrics(restored.basicMetrics);
                 if (restored.fullMetrics) setFullMetrics(restored.fullMetrics);
                 if (restored.analysisId) setAnalysisId(restored.analysisId);
+                if (restored.saveOutcome) setSaveOutcome(restored.saveOutcome);
                 if (restored.pendingNormalized) {
                     setPendingNormalized(restored.pendingNormalized);
                 }
@@ -164,13 +169,14 @@ export default function AnalyzerWizard() {
             basicMetrics,
             fullMetrics,
             analysisId,
+            saveOutcome,
             pendingNormalized
         };
         const timer = setTimeout(() => {
             sessionStorage.setItem("nodoquant_analyzer_state", JSON.stringify(stateToSave));
         }, 500);
         return () => clearTimeout(timer);
-    }, [step, importSource, fileState, parseResult, basicMetrics, fullMetrics, analysisId, pendingNormalized, isHydrated]);
+    }, [step, importSource, fileState, parseResult, basicMetrics, fullMetrics, analysisId, saveOutcome, pendingNormalized, isHydrated]);
 
     useEffect(() => {
         async function checkPlan() {
@@ -178,7 +184,7 @@ export default function AnalyzerWizard() {
                 const supabase = (await import("@/lib/auth/client")).createClient();
                 const { data: { user } } = await supabase.auth.getUser();
                 if (user) setIsAuthenticated(true);
-                const res = await fetch(`/${locale}/api/user/plan`);
+                const res = await fetch("/api/user/plan");
                 const data = await res.json();
                 if (data.isPro) setIsPro(true);
             } catch (e) {
@@ -304,10 +310,12 @@ export default function AnalyzerWizard() {
         setStep("upload");
     }, []);
 
-    async function handleEmailUnlocked(id: string) {
+    function handleAnalysisCompleted(outcome: AnalysisSaveOutcome) {
         if (!parseResult) return;
-        setAnalysisId(id);
+        setSaveOutcome(outcome);
+        setAnalysisId(outcome.status === "beta_limit" ? null : outcome.reportId);
         setStep("full");
+        window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     const resetToSource = () => {
@@ -325,7 +333,14 @@ export default function AnalyzerWizard() {
         setLoadingStage("parsing");
         setTriggerUnlock(0);
         setAnalysisId(null);
+        setSaveOutcome(null);
         setPendingNormalized(null);
+    };
+
+    const resetToUpload = () => {
+        resetToSource();
+        setImportSource("csv");
+        setStep("upload");
     };
 
     const canonicalVerdict = basicMetrics
@@ -463,12 +478,33 @@ export default function AnalyzerWizard() {
                 {step === "gate" && parseResult && basicMetrics && (
                     <div className="space-y-4">
                         <BasicResults metrics={basicMetrics} fullMetrics={fullMetrics || undefined} format={parseResult.format} fileName={parseResult.fileName} trades={parseResult.trades} onReset={resetToSource} onViewFullReport={() => { setTriggerUnlock(prev => prev + 1); window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }} />
-                        <EmailGate metricsPayload={{ basic: basicMetrics, equity_curve: fullMetrics?.equityCurve, drawdown_curve: fullMetrics?.drawdownCurve, trade_histogram: fullMetrics?.tradeHistogram }} basicMetrics={{ trades_count: basicMetrics.totalTrades, winrate: basicMetrics.winrate, profit_factor: basicMetrics.profitFactor, max_drawdown: basicMetrics.maxDrawdown, sum_profit: basicMetrics.sumProfit }} fileName={parseResult.fileName} dateRangeStart={parseResult.dateRangeStart?.toISOString()} dateRangeEnd={parseResult.dateRangeEnd?.toISOString()} strategyId={""} isAuthenticated={isAuthenticated} onUnlocked={handleEmailUnlocked} triggerUnlock={triggerUnlock} />
+                        <EmailGate metricsPayload={{ basic: basicMetrics, equity_curve: fullMetrics?.equityCurve, drawdown_curve: fullMetrics?.drawdownCurve, trade_histogram: fullMetrics?.tradeHistogram }} basicMetrics={{ trades_count: basicMetrics.totalTrades, winrate: basicMetrics.winrate, profit_factor: basicMetrics.profitFactor, max_drawdown: basicMetrics.maxDrawdown, sum_profit: basicMetrics.sumProfit }} fileName={parseResult.fileName} dateRangeStart={parseResult.dateRangeStart?.toISOString()} dateRangeEnd={parseResult.dateRangeEnd?.toISOString()} strategyId={""} isAuthenticated={isAuthenticated} onCompleted={handleAnalysisCompleted} triggerUnlock={triggerUnlock} />
                     </div>
                 )}
 
                 {step === "full" && fullMetrics && parseResult && (
                     <div className="space-y-10 animate-fade-in">
+                        {saveOutcome && (
+                            <section className="rounded-3xl border border-emerald-500/20 bg-emerald-500/5 p-6 sm:p-8 space-y-6">
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-400">{t("completion.title")}</p>
+                                    <div className="mt-4 grid grid-cols-3 gap-3">
+                                        <div><span className="block text-2xl font-black text-white">{basicMetrics?.totalTrades}</span><span className="text-xs text-gray-500">{t("completion.trades")}</span></div>
+                                        <div><span className="block text-2xl font-black text-white">{basicMetrics?.profitFactor.toFixed(2)}</span><span className="text-xs text-gray-500">{t("completion.profitFactor")}</span></div>
+                                        <div><span className="block text-sm sm:text-base font-black text-emerald-400">{canonicalVerdict ? t(`completion.verdicts.${canonicalVerdict}`) : ""}</span><span className="text-xs text-gray-500">{t("completion.diagnosis")}</span></div>
+                                    </div>
+                                </div>
+                                <p className="text-sm text-gray-300">{t(`completion.status.${saveOutcome.status}`)}</p>
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                    {completionReportHref(saveOutcome, locale) && (
+                                        <Link href={completionReportHref(saveOutcome, locale)!} className="btn-primary justify-center px-6 py-3">
+                                            {t(saveOutcome.status === "beta_limit" ? "completion.viewSaved" : "completion.viewReport")}
+                                        </Link>
+                                    )}
+                                    <button onClick={resetToUpload} className="btn-secondary justify-center px-6 py-3">{t("completion.analyzeAnother")}</button>
+                                </div>
+                            </section>
+                        )}
                         <FullReport metrics={fullMetrics} analysisId={analysisId} isPro={isPro} />
                     </div>
                 )}

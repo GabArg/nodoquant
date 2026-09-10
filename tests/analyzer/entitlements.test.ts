@@ -73,4 +73,23 @@ describe("beta entitlement resolution", () => {
             tier: "beta", isPro: false, source: "beta_default",
         });
     });
+
+    it("keeps a non-allowlisted Preview user on beta", async () => {
+        await expect(getUserEntitlement(null, { id: "regular-user" }, {
+            environment: {
+                NODE_ENV: "production",
+                VERCEL_ENV: "preview",
+                NODOQUANT_TEST_PRO_USER_IDS: "test-user-id",
+            },
+        })).resolves.toEqual({ tier: "beta", isPro: false, source: "beta_default" });
+    });
+
+    it("grants an allowlisted user Pro in local development by id", async () => {
+        await expect(getUserEntitlement(null, { id: "test-user-id" }, {
+            environment: {
+                NODE_ENV: "development",
+                NODOQUANT_TEST_PRO_USER_IDS: "test-user-id",
+            },
+        })).resolves.toEqual({ tier: "pro", isPro: true, source: "explicit" });
+    });
 });

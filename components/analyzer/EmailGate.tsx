@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import type { AnalysisSaveOutcome } from "@/lib/analyzer/completion";
 
 interface Props {
     metricsPayload: object;
@@ -19,7 +20,7 @@ interface Props {
     dateRangeEnd?: string;
     strategyId?: string;
     isAuthenticated: boolean;
-    onUnlocked: (id: string) => void;
+    onCompleted: (outcome: AnalysisSaveOutcome) => void;
     triggerUnlock?: number;
 }
 
@@ -31,7 +32,7 @@ export default function EmailGate({
     dateRangeEnd,
     strategyId,
     isAuthenticated,
-    onUnlocked,
+    onCompleted,
     triggerUnlock = 0,
 }: Props) {
     const t = useTranslations("analyzer.gate");
@@ -99,6 +100,13 @@ export default function EmailGate({
             const data = await res.json();
 
             if (!data.ok) {
+                if (data.code === "BETA_SAVED_ANALYSIS_LIMIT") {
+                    onCompleted({
+                        status: "beta_limit",
+                        existingReportId: typeof data.existingReportId === "string" ? data.existingReportId : null,
+                    });
+                    return;
+                }
                 setExistingReportId(
                     typeof data.existingReportId === "string"
                         ? data.existingReportId
@@ -112,7 +120,10 @@ export default function EmailGate({
                 throw new Error(errorMsg);
             }
 
-            onUnlocked(data.id);
+            onCompleted({
+                status: data.duplicated ? "duplicated" : "saved",
+                reportId: data.id,
+            });
         } catch (err: unknown) {
             setError(
                 err instanceof Error
