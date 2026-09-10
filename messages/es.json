@@ -982,7 +982,7 @@
             },
             "diagnosis": {
                 "title": "Diagnóstico de la Estrategia",
-                "scoreTitle": "Strategy Score",
+                "scoreTitle": "Confianza del edge",
                 "scoreSubtitle": "Basado en perfil de riesgo y simulación estocástica",
                 "verdict": "Veredicto:",
                 "strongEdge": "Edge Sólido",

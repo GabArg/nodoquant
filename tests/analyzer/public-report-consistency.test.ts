@@ -69,4 +69,11 @@ describe("public report translations", () => {
         expect(visibleValues.every(value => typeof value === "string" && value.length > 0)).toBe(true);
         expect(visibleValues.some(value => value.includes("publicReport."))).toBe(false);
     });
+
+    it("labels advanced edge confidence distinctly from Strategy Score", () => {
+        expect(es.analyzer.report.diagnosis.scoreTitle).toBe("Confianza del edge");
+        expect(en.analyzer.report.diagnosis.scoreTitle).toBe("Edge Confidence");
+        expect(es.analyzer.report.diagnosis.scoreTitle).not.toMatch(/strategy score/i);
+        expect(en.analyzer.report.diagnosis.scoreTitle).not.toMatch(/strategy score/i);
+    });
 });

@@ -27,11 +27,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         if (!data) return { title: "Reporte no encontrado — NodoQuant" };
 
         const metrics = normalizePublicReportMetrics(data);
-        const score = Math.round(metrics?.advanced?.edgeConfidence ?? 0);
+        const edgeConfidence = Math.round(metrics?.advanced?.edgeConfidence ?? 0);
+        const isSpanish = params.locale === "es";
         
         // This dynamic title provokes curiosity and establishes credibility:
-        const metaTitle = `This strategy scores ${score}/100 — Is it actually profitable?`;
-        const metaDesc = `Quantitative analysis of ${data.trades_count} trades. View the full Monte Carlo simulation and Expectancy report.`;
+        const metaTitle = isSpanish
+            ? `Confianza del edge: ${edgeConfidence}/100 — NodoQuant`
+            : `Edge Confidence: ${edgeConfidence}/100 — NodoQuant`;
+        const metaDesc = isSpanish
+            ? `Diagnóstico cuantitativo basado en ${data.trades_count} operaciones.`
+            : `Quantitative diagnosis based on ${data.trades_count} trades.`;
         
         return {
             title: metaTitle,

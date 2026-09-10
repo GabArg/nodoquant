@@ -447,7 +447,7 @@
             "disclaimer": "Analysis results are historical and do not guarantee future performance. Backtesting has inherent limitations. Always trade with capital you can afford to lose.",
             "diagnosis": {
                 "title": "Strategy Diagnosis",
-                "scoreTitle": "Strategy Score",
+                "scoreTitle": "Edge Confidence",
                 "scoreSubtitle": "Statistical evaluation of your strategy based on trade distribution, profitability metrics, and risk.",
                 "verdict": "Verdict:",
                 "strongEdge": "Strong Edge",
