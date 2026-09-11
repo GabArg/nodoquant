@@ -360,8 +360,23 @@ export default function AnalyzerWizard() {
 
     function handleAnalysisCompleted(outcome: AnalysisSaveOutcome) {
         if (!parseResult) return;
+        const completedAnalysisId = outcome.status === "saved" || outcome.status === "duplicated" ? outcome.reportId : null;
+
+        // Persist completion immediately. The regular state snapshot is debounced,
+        // but closing/reloading as soon as Result appears must not restore `saving`.
+        writeAnalyzerState(sessionStorage, sessionUserId, JSON.stringify({
+            step: "result",
+            importSource,
+            fileState,
+            parseResult,
+            basicMetrics,
+            fullMetrics,
+            analysisId: completedAnalysisId,
+            saveOutcome: outcome,
+            pendingNormalized,
+        }));
         setSaveOutcome(outcome);
-        setAnalysisId(outcome.status === "saved" || outcome.status === "duplicated" ? outcome.reportId : null);
+        setAnalysisId(completedAnalysisId);
         setStep("result");
         scrollToAnalyzer();
     }

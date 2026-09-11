@@ -122,6 +122,14 @@ export default function EmailGate({
                 throw new Error(errorMsg);
             }
 
+            if (typeof data.id !== "string" || data.id.length === 0) {
+                throw new Error(t("form.errorSave"));
+            }
+
+            // The insert/dedup lookup has completed. Clear any Dashboard payload
+            // prefetched before this analysis existed so navigation reads fresh data.
+            router.refresh();
+
             onCompleted({
                 status: data.duplicated ? "duplicated" : "saved",
                 reportId: data.id,
