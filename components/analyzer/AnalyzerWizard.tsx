@@ -27,6 +27,7 @@ import { toTradeArray, buildParseResult, type ImportSource } from "@/lib/import/
 import type { NormalizedTrade } from "@/lib/import/normalizedTrade";
 import { trackEvent } from "@/lib/analytics";
 import { completionReportHref, type AnalysisSaveOutcome } from "@/lib/analyzer/completion";
+import { readAnalyzerState, removeAnalyzerState, writeAnalyzerState } from "@/lib/analyzer/sessionState";
 
 
 type Step = "source" | "upload" | "importing" | "confirm" | "saving" | "result" | "report";
@@ -94,6 +95,7 @@ export default function AnalyzerWizard() {
     const [loading, setLoading] = useState(false);
     const [isPro, setIsPro] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [sessionUserId, setSessionUserId] = useState<string | null>(null);
     const [authResolved, setAuthResolved] = useState(false);
     const [triggerUnlock, setTriggerUnlock] = useState(0);
     const [analysisId, setAnalysisId] = useState<string | null>(null);
@@ -102,7 +104,7 @@ export default function AnalyzerWizard() {
     const [isHydrated, setIsHydrated] = useState(false);
     const searchParams = useSearchParams();
     const uploadRef = useRef<HTMLDivElement>(null);
-    const isRestoring = useRef(false);
+    const hydratedIdentityRef = useRef<string | null>(null);
     const loadingTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
     const clearLoadingTimers = useCallback(() => {
@@ -118,10 +120,26 @@ export default function AnalyzerWizard() {
 
 
     useEffect(() => {
-        if (isRestoring.current) return;
-        isRestoring.current = true;
+        if (!authResolved) return;
+        const identity = sessionUserId || "anonymous";
+        if (hydratedIdentityRef.current === identity) return;
 
-        const saved = sessionStorage.getItem("nodoquant_analyzer_state");
+        setIsHydrated(false);
+        clearLoadingTimers();
+        setStep("source");
+        setImportSource(null);
+        setFileState(null);
+        setParseResult(null);
+        setBasicMetrics(null);
+        setFullMetrics(null);
+        setParseError(null);
+        setLoading(false);
+        setTriggerUnlock(0);
+        setAnalysisId(null);
+        setSaveOutcome(null);
+        setPendingNormalized(null);
+
+        const saved = readAnalyzerState(sessionStorage, sessionUserId);
         if (saved) {
             try {
                 const parsed: unknown = JSON.parse(saved);
@@ -148,18 +166,17 @@ export default function AnalyzerWizard() {
                     setPendingNormalized(restored.pendingNormalized);
                 }
 
-                setTimeout(() => setIsHydrated(true), 100);
             } catch (e) {
                 console.error("Failed to restore session", e);
-                setIsHydrated(true); 
             }
-        } else {
-            setIsHydrated(true);
         }
-    }, []);
+        hydratedIdentityRef.current = identity;
+        setIsHydrated(true);
+    }, [authResolved, sessionUserId, clearLoadingTimers]);
 
     useEffect(() => {
         if (!isHydrated) return;
+        if (hydratedIdentityRef.current !== (sessionUserId || "anonymous")) return;
         const stateToSave = {
             step,
             importSource,
@@ -172,27 +189,52 @@ export default function AnalyzerWizard() {
             pendingNormalized
         };
         const timer = setTimeout(() => {
-            sessionStorage.setItem("nodoquant_analyzer_state", JSON.stringify(stateToSave));
+            writeAnalyzerState(sessionStorage, sessionUserId, JSON.stringify(stateToSave));
         }, 500);
         return () => clearTimeout(timer);
-    }, [step, importSource, fileState, parseResult, basicMetrics, fullMetrics, analysisId, saveOutcome, pendingNormalized, isHydrated]);
+    }, [step, importSource, fileState, parseResult, basicMetrics, fullMetrics, analysisId, saveOutcome, pendingNormalized, isHydrated, sessionUserId]);
 
     useEffect(() => {
+        let active = true;
+        let unsubscribe: (() => void) | undefined;
+
         async function checkPlan() {
             try {
                 const supabase = (await import("@/lib/auth/client")).createClient();
+                const refreshPlan = async () => {
+                    const res = await fetch("/api/user/plan");
+                    const data = await res.json();
+                    if (active) setIsPro(Boolean(data.isPro));
+                };
                 const { data: { user } } = await supabase.auth.getUser();
-                if (user) setIsAuthenticated(true);
-                const res = await fetch("/api/user/plan");
-                const data = await res.json();
-                if (data.isPro) setIsPro(true);
+                if (!active) return;
+                setSessionUserId(user?.id || null);
+                setIsAuthenticated(Boolean(user));
+                setAuthResolved(true);
+
+                const { data: authListener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+                    if (!active) return;
+                    const nextUser = nextSession?.user;
+                    setIsHydrated(false);
+                    setSessionUserId(nextUser?.id || null);
+                    setIsAuthenticated(Boolean(nextUser));
+                    setIsPro(false);
+                    void refreshPlan();
+                });
+                unsubscribe = () => authListener.subscription.unsubscribe();
+
+                await refreshPlan();
             } catch (e) {
                 console.error("Error fetching auth/plan status:", e);
             } finally {
-                setAuthResolved(true);
+                if (active) setAuthResolved(true);
             }
         }
         checkPlan();
+        return () => {
+            active = false;
+            unsubscribe?.();
+        };
     }, [locale]);
 
     const UI_STEPS = useMemo(() => [
@@ -240,11 +282,11 @@ export default function AnalyzerWizard() {
 
     useEffect(() => {
         if (!isHydrated) return;
-        const saved = sessionStorage.getItem("nodoquant_analyzer_state");
+        const saved = readAnalyzerState(sessionStorage, sessionUserId);
         if (searchParams.get("sample") === "true" && !saved) {
             handleFile(sampleCsvData, "sample_data.csv");
         }
-    }, [searchParams, isHydrated, handleFile]);
+    }, [searchParams, isHydrated, handleFile, sessionUserId]);
 
 
     const handleNormalizedImport = useCallback((trades: NormalizedTrade[], source: ImportSource) => {
@@ -325,7 +367,7 @@ export default function AnalyzerWizard() {
 
     const resetToSource = () => {
         clearLoadingTimers();
-        sessionStorage.removeItem("nodoquant_analyzer_state");
+        removeAnalyzerState(sessionStorage, sessionUserId);
 
         setStep("source");
         setImportSource(null);
