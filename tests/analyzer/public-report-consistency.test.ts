@@ -74,6 +74,7 @@ describe("public report translations", () => {
             publicReport.ctaWarning,
             publicReport.ownerCta,
             publicReport.visitorCta,
+            publicReport.dashboardCta,
             publicReport.urgency,
             publicReport.cta,
             publicReport.socialProof,

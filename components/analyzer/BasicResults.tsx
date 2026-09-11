@@ -20,6 +20,7 @@ interface Props {
     hideMetrics?: boolean;
     primaryActionLabel?: string;
     edgeConfidenceOverride?: number | null;
+    singleAction?: boolean;
 }
 
 
@@ -39,7 +40,7 @@ function computeExpectancyR(trades: Trade[]): number | null {
     return parseFloat(((wr * avgWinR) - (1 - wr) * 1).toFixed(2));
 }
 
-export default function BasicResults({ metrics, fullMetrics, format, fileName, trades = [], onViewFullReport, onReset, hideScore, hideMetrics, primaryActionLabel, edgeConfidenceOverride }: Props) {
+export default function BasicResults({ metrics, fullMetrics, format, fileName, trades = [], onViewFullReport, onReset, hideScore, hideMetrics, primaryActionLabel, edgeConfidenceOverride, singleAction = false }: Props) {
     const locale = useLocale();
     const t = useTranslations("analyzer.results");
     const diagT = useTranslations("analyzer.results.diagnosis");
@@ -333,7 +334,7 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
                                     </p>
                                 </div>
                                 
-                                <div className="flex flex-col items-center gap-4 w-full">
+                                {!singleAction && <div className="flex flex-col items-center gap-4 w-full">
                                     <div className="flex flex-wrap justify-center gap-4">
                                         <button onClick={() => {
                                                     trackEvent("CTA_CLICK_TOP", {
@@ -356,7 +357,7 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
                                     <p className="text-xs text-indigo-300/80 font-medium">
                                         {wizT("viewReportSubtitle") || "See failure scenarios, risk simulations, and real expectancy."}
                                     </p>
-                                </div>
+                                </div>}
                             </div>
                         </div>
                     </div>

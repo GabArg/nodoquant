@@ -2,7 +2,6 @@
 
 import React, { useEffect } from "react";
 import BasicResults from "@/components/analyzer/BasicResults";
-import FullReport from "@/components/analyzer/FullReport";
 import type {
     BasicMetrics,
     DiagnosisVerdict,
@@ -81,6 +80,7 @@ export default function PublicReportView({
                     metrics={basicMetrics}
                     fullMetrics={normalizedMetrics}
                     edgeConfidenceOverride={normalized.edgeConfidence}
+                    singleAction
                     format="ANALYSIS"
                     fileName={
                         report.file_name || t("defaultFileName")
@@ -96,9 +96,19 @@ export default function PublicReportView({
                                 verdict: reportVerdict,
                             }
                         );
-                        window.location.assign(`/${locale}/${isOwner ? "dashboard" : "analyzer"}`);
+                        window.location.assign(isOwner
+                            ? `/${locale}/analyzer/report/${report.id}`
+                            : `/${locale}/analyzer`);
                     }}
                 />
+
+                {isOwner && (
+                    <div className="-mt-12 text-center">
+                        <Link href={`/${locale}/dashboard`} className="text-sm font-semibold text-gray-400 hover:text-white transition-colors">
+                            {t("dashboardCta")}
+                        </Link>
+                    </div>
+                )}
 
                 <div className={`text-center p-4 rounded-xl relative overflow-hidden -mt-8 border ${showNegativeWarning ? "border-red-500/20 bg-red-500/5" : reportVerdict === "insufficientSample" ? "border-gray-500/20 bg-gray-500/5" : "border-emerald-500/20 bg-emerald-500/5"}`}>
                     <div className={`relative font-medium text-sm md:text-base ${showNegativeWarning ? "text-red-100" : "text-gray-100"}`}>
@@ -112,16 +122,7 @@ export default function PublicReportView({
                     </div>
                 </div>
 
-                <div id="beta-report-details" className="mt-16">
-                    <FullReport
-                        metrics={normalizedMetrics}
-                        analysisId={report.id}
-                        isPro={false}
-                        edgeConfidenceOverride={normalized.edgeConfidence}
-                    />
-                </div>
-
-                <div className="mt-32 pt-16 border-t border-white/5 flex flex-col items-center text-center space-y-6">
+                {!isOwner && <div className="mt-32 pt-16 border-t border-white/5 flex flex-col items-center text-center space-y-6">
                     <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-[0_0_40px_rgba(99,102,241,0.3)] mb-2">
                         <svg
                             width="24"
@@ -152,7 +153,7 @@ export default function PublicReportView({
                             href={`/${locale}/analyzer`}
                             className="px-10 py-5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-black uppercase tracking-[0.2em] shadow-[0_10px_40px_-10px_rgba(99,102,241,0.6)] hover:scale-105 transition-all active:scale-95"
                         >
-                            {t("cta")}
+                            {t("visitorCta")}
                         </Link>
 
                         <div className="flex flex-col items-center mt-6">
@@ -167,7 +168,7 @@ export default function PublicReportView({
                             </Link>
                         </div>
                     </div>
-                </div>
+                </div>}
 
             </div>
         </div>
