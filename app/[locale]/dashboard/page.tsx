@@ -166,6 +166,8 @@ export default async function DashboardPage({ params, searchParams }: { params: 
                 </div>
             </div>
 
+            <PropFirmDashboardSimulator strategies={propFirmStrategies} initialReportId={searchParams?.propFirmReport} />
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">
                     <ScoreEvolutionChart data={chartData} />
@@ -179,8 +181,6 @@ export default async function DashboardPage({ params, searchParams }: { params: 
                     {latestReport && <WeeklySummary latestReport={latestReport} />}
                 </div>
             </div>
-
-            <PropFirmDashboardSimulator strategies={propFirmStrategies} initialReportId={searchParams?.propFirmReport} />
 
             <section>
                 <div className="flex items-center justify-between mb-6">

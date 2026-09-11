@@ -94,6 +94,9 @@ describe("Prop Firm product placement", () => {
     const fullReport = readFileSync("components/analyzer/FullReport.tsx", "utf8");
     const dashboard = readFileSync("app/[locale]/dashboard/page.tsx", "utf8");
     const metricsEngine = readFileSync("lib/analyzer/metrics.ts", "utf8");
+    const simulator = readFileSync("components/dashboard/PropFirmSimulator.tsx", "utf8");
+    const es = JSON.parse(readFileSync("messages/es.json", "utf8"));
+    const en = JSON.parse(readFileSync("messages/en.json", "utf8"));
 
     it("removes the extensive persisted block and keeps a report CTA with the report id", () => {
         expect(report).not.toContain("metrics.propFirm");
@@ -105,5 +108,41 @@ describe("Prop Firm product placement", () => {
         const fullMetricsBuilder = metricsEngine.slice(metricsEngine.indexOf("export function calcFullMetrics"), metricsEngine.indexOf("export function calcEdgeDecay"));
         expect(fullMetricsBuilder).toContain("calcMonteCarloSimulation(trades, 1000)");
         expect(fullMetricsBuilder).not.toContain("calcPropFirmChallenge");
+    });
+
+    it("places Prop Firm before evolution and analysis history", () => {
+        expect(dashboard.indexOf("<PropFirmDashboardSimulator")).toBeLessThan(dashboard.indexOf("<ScoreEvolutionChart"));
+        expect(dashboard.indexOf("<PropFirmDashboardSimulator")).toBeLessThan(dashboard.indexOf('t("history.title")'));
+    });
+
+    it("provides consistent Spanish and English product copy", () => {
+        expect(es.dashboard.propFirm).toMatchObject({
+            strategy: "Estrategia",
+            preset: "Configuración",
+            accountSize: "Tamaño de cuenta",
+            target: "Objetivo",
+            dailyLoss: "Pérdida diaria",
+            maxLoss: "Pérdida máxima",
+            static: "Estático",
+            custom: "Personalizado · No oficial",
+            estimatedPass: "Probabilidad estimada de aprobación",
+        });
+        expect(en.dashboard.propFirm).toMatchObject({
+            strategy: "Strategy",
+            preset: "Configuration",
+            accountSize: "Account size",
+            custom: "Custom · Unofficial",
+            estimatedPass: "Estimated pass probability",
+        });
+        expect(JSON.stringify(es.dashboard.propFirm)).not.toMatch(/Daily Loss|Max Loss|Estimated Duration|Pass Probability|Target no logrado|Static/);
+        expect(simulator).not.toContain("function labels(");
+    });
+
+    it("changes the CTA after a result and derives verdict and guidance from real output", () => {
+        expect(simulator).toContain("result ? copy.recalculate : copy.simulate");
+        expect(simulator).toContain("result.totalPassProbability");
+        expect(simulator).toContain("probability >= 70 ? copy.excellent : probability >= 40 ? copy.moderate : copy.elevated");
+        expect(simulator).toContain("result.primaryFailureCause");
+        expect(simulator).toContain("primaryRisk.${result.primaryFailureCause}");
     });
 });
