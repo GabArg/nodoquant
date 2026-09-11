@@ -678,6 +678,12 @@
             "selectStrategy": "Elegí un análisis guardado",
             "preset": "Configuración",
             "custom": "Personalizado · No oficial",
+            "customShort": "Personalizado",
+            "templates": "PLANTILLAS",
+            "referenceTemplate": "Plantilla de referencia · No corresponde a una firma específica",
+            "updated": "Actualizado",
+            "source": "Fuente",
+            "customizeRules": "Personalizar estas reglas",
             "simulate": "SIMULAR CHALLENGE",
             "recalculate": "RECALCULAR SIMULACIÓN",
             "simulating": "SIMULANDO…",
@@ -713,6 +719,24 @@
             "howFail": "¿Cómo podría fallar?",
             "targetMiss": "Objetivo no alcanzado",
             "histogramNotice": "Simulación basada en la distribución persistida del análisis; no reconstruye secuencias intradía reales.",
+            "simulationQuality": "Calidad de simulación",
+            "quality": {
+                "high": "Alta",
+                "medium": "Media",
+                "limited": "Limitada"
+            },
+            "addComparison": "Añadir a comparación",
+            "comparisonFull": "Comparación completa (máximo 3)",
+            "compareScenarios": "Comparar escenarios",
+            "bestFit": "Mejor encaje",
+            "bestFitNote": "El mejor encaje considera principalmente la probabilidad de aprobación y, en caso de empate, el riesgo de violación de reglas.",
+            "metric": "Métrica",
+            "howCalculated": "Cómo se calcula",
+            "methodology": {
+                "histogramApproximation": "Se remuestrea la distribución histórica reconstruida desde el histograma guardado para generar 1.000 trayectorias Monte Carlo. Es una aproximación: no conserva el orden real de los trades.",
+                "normalizedTradeSequence": "Se remuestrea la secuencia normalizada de trades para generar 1.000 trayectorias Monte Carlo."
+            },
+            "methodologyRules": "En cada trayectoria se aplican los objetivos, límites de pérdida, fases y días configurados. La probabilidad indica la proporción de trayectorias que completó todas las fases. No reconstruye movimientos intradía ni garantiza resultados futuros.",
             "primaryRisk": {
                 "dailyLoss": "El principal riesgo de esta configuración es la pérdida diaria.",
                 "maxLoss": "El principal riesgo de esta configuración es la pérdida máxima.",

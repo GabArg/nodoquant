@@ -1711,6 +1711,12 @@
             "selectStrategy": "Choose a saved analysis",
             "preset": "Configuration",
             "custom": "Custom · Unofficial",
+            "customShort": "Custom",
+            "templates": "TEMPLATES",
+            "referenceTemplate": "Reference template · Not associated with a specific firm",
+            "updated": "Updated",
+            "source": "Source",
+            "customizeRules": "Customize these rules",
             "simulate": "SIMULATE CHALLENGE",
             "recalculate": "RECALCULATE SIMULATION",
             "simulating": "SIMULATING…",
@@ -1746,6 +1752,24 @@
             "howFail": "How could it fail?",
             "targetMiss": "Target not reached",
             "histogramNotice": "Simulation based on the persisted analysis distribution; it does not reconstruct real intraday sequences.",
+            "simulationQuality": "Simulation quality",
+            "quality": {
+                "high": "High",
+                "medium": "Medium",
+                "limited": "Limited"
+            },
+            "addComparison": "Add to comparison",
+            "comparisonFull": "Comparison full (maximum 3)",
+            "compareScenarios": "Compare scenarios",
+            "bestFit": "Best fit",
+            "bestFitNote": "Best fit primarily considers estimated pass probability and, when tied, rule-violation risk.",
+            "metric": "Metric",
+            "howCalculated": "How it is calculated",
+            "methodology": {
+                "histogramApproximation": "The historical distribution reconstructed from the saved histogram is resampled to generate 1,000 Monte Carlo paths. This is an approximation and does not preserve actual trade order.",
+                "normalizedTradeSequence": "The normalized trade sequence is resampled to generate 1,000 Monte Carlo paths."
+            },
+            "methodologyRules": "Each path applies the configured targets, loss limits, phases, and trading days. The probability is the share of paths that completed every phase. It does not reconstruct intraday movements or guarantee future results.",
             "primaryRisk": {
                 "dailyLoss": "The main risk in this configuration is the daily loss limit.",
                 "maxLoss": "The main risk in this configuration is the maximum loss limit.",

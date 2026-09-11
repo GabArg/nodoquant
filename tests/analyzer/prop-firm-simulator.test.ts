@@ -7,11 +7,15 @@ import {
     strategyDataFromMetrics,
     validatePropFirmConfig,
     type PropFirmConfig,
+    type PropFirmSimulationResult,
     type StrategySimulationData,
 } from "../../lib/analyzer/propFirm";
+import { configFromPreset, PROP_FIRM_PRESETS } from "../../lib/analyzer/propFirmPresets";
+import { addComparisonScenario, bestFitScenarioId, type PropFirmScenario } from "../../lib/analyzer/propFirmScenarios";
+import { getSimulationQuality, methodologyKey } from "../../lib/analyzer/propFirmMethodology";
 import { normalizePublicReportMetrics } from "../../lib/analyzer/publicReportMetrics";
 
-const strategy: StrategySimulationData = { outcomes: [-1, 2], source: "exact" };
+const strategy: StrategySimulationData = { outcomes: [-1, 2], source: "normalizedTradeSequence" };
 const config = (overrides: Partial<PropFirmConfig> = {}): PropFirmConfig => ({
     ...CUSTOM_PROP_FIRM_CONFIG,
     phases: [{ id: "p1", name: "Phase 1", profitTargetPct: 10, maxTradingDays: 2 }],
@@ -44,7 +48,7 @@ describe("Prop Firm challenge Monte Carlo", () => {
     });
 
     it("counts target not reached when limits survive but the phase expires", () => {
-        const result = runPropFirmMonteCarlo({ outcomes: [-0.1, 0], source: "exact" }, config({ dailyLossLimitPct: 99, maxLossLimitPct: 99 }), 3, () => 0.99);
+        const result = runPropFirmMonteCarlo({ outcomes: [-0.1, 0], source: "normalizedTradeSequence" }, config({ dailyLossLimitPct: 99, maxLossLimitPct: 99 }), 3, () => 0.99);
         expect(result.failureCounts.targetNotReached).toBe(3);
         expect(result.targetNotReachedProbability).toBe(100);
     });
@@ -60,7 +64,7 @@ describe("Prop Firm challenge Monte Carlo", () => {
 
     it("keeps real zero distinct from unavailable", () => {
         const completed = runPropFirmMonteCarlo(strategy, config({ phases: [{ id: "p1", name: "Phase 1", profitTargetPct: 1, maxTradingDays: 1 }] }), 2, () => 0.99);
-        const unavailable = runPropFirmMonteCarlo({ outcomes: [], source: "exact" }, config(), 2);
+        const unavailable = runPropFirmMonteCarlo({ outcomes: [], source: "normalizedTradeSequence" }, config(), 2);
         expect(completed.dailyLossViolationProbability).toBe(0);
         expect(unavailable.dailyLossViolationProbability).toBeNull();
         expect(unavailable.totalPassProbability).toBeNull();
@@ -77,7 +81,7 @@ describe("Prop Firm challenge Monte Carlo", () => {
     it("selects usable persisted strategy data without changing the saved metrics", () => {
         const metrics = { tradeHistogram: [5, 5], minProfit: -1, maxProfit: 2 } as FullMetrics;
         const data = strategyDataFromMetrics(metrics);
-        expect(data?.source).toBe("persistedHistogram");
+        expect(data?.source).toBe("histogramApproximation");
         expect(data?.outcomes).toHaveLength(10);
         expect(metrics.tradeHistogram).toEqual([5, 5]);
     });
@@ -86,6 +90,64 @@ describe("Prop Firm challenge Monte Carlo", () => {
         const normalized = normalizePublicReportMetrics({ trades_count: 10, winrate: 50, profit_factor: 1.2, max_drawdown: 5, sum_profit: 1, metrics_json: { propFirm: { passProb: 0 } } });
         expect(normalized.availability.propFirm).toBe(true);
         expect(normalized.metrics.propFirm?.passProb).toBe(0);
+    });
+});
+
+describe("versioned Prop Firm presets and comparison", () => {
+    const result = (pass: number, daily = 0, max = 0): PropFirmSimulationResult => ({
+        status: "completed", iterations: 1000, passed: pass * 10, phasePassProbabilities: [pass], totalPassProbability: pass,
+        dailyLossViolationProbability: daily, maxLossViolationProbability: max, targetNotReachedProbability: 0,
+        consistencyViolationProbability: 0, consistencyScore: 90, expectedTradesToPass: 20,
+        durationDays: { p5: 2, p50: 4, p95: 8 }, failureCounts: { dailyLoss: daily * 10, maxLoss: max * 10, targetNotReached: 0, consistency: 0 },
+        primaryFailureCause: daily >= max ? "dailyLoss" : "maxLoss", dataSource: "histogramApproximation",
+    });
+    const scenario = (id: string, strategyId: string, pass: number, daily = 0, max = 0): PropFirmScenario => ({ id, strategyId, label: id, presetId: id, config: config(), result: result(pass, daily, max) });
+
+    it("keeps Custom available and returns preset configs without mutating the catalog", () => {
+        expect(CUSTOM_PROP_FIRM_CONFIG.id).toBe("custom");
+        const preset = PROP_FIRM_PRESETS[0];
+        const copy = configFromPreset(preset);
+        copy.phases[0].profitTargetPct = 99;
+        expect(preset.config.phases[0].profitTargetPct).not.toBe(99);
+    });
+
+    it("preserves version, update date, source and non-official status", () => {
+        for (const preset of PROP_FIRM_PRESETS) {
+            expect(preset.version).toBeTruthy();
+            expect(preset.updatedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+            expect(preset.sourceLabel).toBeTruthy();
+            expect(preset.official).toBe(false);
+        }
+    });
+
+    it("selecting a different preset yields its own rules", () => {
+        const first = configFromPreset(PROP_FIRM_PRESETS[0]);
+        const twoStep = configFromPreset(PROP_FIRM_PRESETS[2]);
+        expect(first.id).not.toBe(twoStep.id);
+        expect(first.phases).toHaveLength(1);
+        expect(twoStep.phases).toHaveLength(2);
+    });
+
+    it("limits comparison to three scenarios and rejects a different strategy", () => {
+        let items: PropFirmScenario[] = [];
+        items = addComparisonScenario(items, scenario("a", "strategy-a", 80));
+        items = addComparisonScenario(items, scenario("b", "strategy-a", 70));
+        items = addComparisonScenario(items, scenario("c", "strategy-a", 60));
+        items = addComparisonScenario(items, scenario("d", "strategy-a", 50));
+        items = addComparisonScenario(items, scenario("foreign", "strategy-b", 99));
+        expect(items.map(item => item.id)).toEqual(["a", "b", "c"]);
+    });
+
+    it("selects best fit by pass probability and rule risk as tie-breaker", () => {
+        expect(bestFitScenarioId([scenario("a", "s", 80, 10, 5), scenario("b", "s", 90, 20, 20)])).toBe("b");
+        expect(bestFitScenarioId([scenario("a", "s", 90, 10, 5), scenario("b", "s", 90, 2, 1)])).toBe("b");
+    });
+
+    it("identifies histogram methodology and never labels it high quality", () => {
+        const histogram: StrategySimulationData = { outcomes: Array(150).fill(1), source: "histogramApproximation" };
+        expect(methodologyKey(histogram)).toBe("histogramApproximation");
+        expect(getSimulationQuality(histogram)).toBe("medium");
+        expect(getSimulationQuality({ outcomes: Array(100).fill(1), source: "normalizedTradeSequence" })).toBe("high");
     });
 });
 
@@ -144,5 +206,12 @@ describe("Prop Firm product placement", () => {
         expect(simulator).toContain("probability >= 70 ? copy.excellent : probability >= 40 ? copy.moderate : copy.elevated");
         expect(simulator).toContain("result.primaryFailureCause");
         expect(simulator).toContain("primaryRisk.${result.primaryFailureCause}");
+    });
+
+    it("updates rules from presets and clears comparisons when strategy changes", () => {
+        expect(simulator).toContain("configFromPreset(getPropFirmPreset(nextId)!)");
+        expect(simulator).toContain("setScenarios([])");
+        expect(simulator).toContain("setPresetId(\"custom\")");
+        expect(simulator).toContain("structuredClone(current)");
     });
 });

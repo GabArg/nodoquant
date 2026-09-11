@@ -31,7 +31,7 @@ export interface PropFirmConfig {
 
 export interface StrategySimulationData {
     outcomes: number[];
-    source: "exact" | "persistedHistogram";
+    source: "normalizedTradeSequence" | "histogramApproximation";
 }
 
 export type PropFirmFailureCause = "dailyLoss" | "maxLoss" | "targetNotReached" | "consistency";
@@ -99,7 +99,7 @@ export function strategyDataFromMetrics(metrics: FullMetrics): StrategySimulatio
         const midpoint = width === 0 ? metrics.minProfit : metrics.minProfit + width * (index + 0.5);
         return Array.from({ length: safeCount }, () => midpoint);
     });
-    return outcomes.length >= 10 ? { outcomes, source: "persistedHistogram" } : null;
+    return outcomes.length >= 10 ? { outcomes, source: "histogramApproximation" } : null;
 }
 
 export function runPropFirmMonteCarlo(

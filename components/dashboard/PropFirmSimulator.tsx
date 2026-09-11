@@ -11,6 +11,9 @@ import {
     type PropFirmSimulationResult,
 } from "@/lib/analyzer/propFirm";
 import type { FullMetrics } from "@/lib/analyzer/metrics";
+import { PROP_FIRM_PRESETS, configFromPreset, getPropFirmPreset } from "@/lib/analyzer/propFirmPresets";
+import { addComparisonScenario, bestFitScenarioId, MAX_PROP_FIRM_SCENARIOS, type PropFirmScenario } from "@/lib/analyzer/propFirmScenarios";
+import { getSimulationQuality, methodologyKey } from "@/lib/analyzer/propFirmMethodology";
 
 export interface PropFirmStrategyOption {
     reportId: string;
@@ -25,9 +28,12 @@ export default function PropFirmDashboardSimulator({ strategies, initialReportId
     const copy = new Proxy({} as Record<string, string>, { get: (_, key) => translate(String(key)) });
     const [strategyId, setStrategyId] = useState(initialReportId && strategies.some(item => item.reportId === initialReportId) ? initialReportId : "");
     const [config, setConfig] = useState<PropFirmConfig>(() => structuredClone(CUSTOM_PROP_FIRM_CONFIG));
+    const [presetId, setPresetId] = useState("custom");
     const [editing, setEditing] = useState(false);
     const [running, setRunning] = useState(false);
     const [result, setResult] = useState<PropFirmSimulationResult | null>(null);
+    const [simulatedConfig, setSimulatedConfig] = useState<PropFirmConfig | null>(null);
+    const [scenarios, setScenarios] = useState<PropFirmScenario[]>([]);
     const selected = strategies.find(item => item.reportId === strategyId);
     const strategyData = useMemo(() => selected ? strategyDataFromMetrics(selected.metrics) : null, [selected]);
     const validationErrors = validatePropFirmConfig(config);
@@ -38,8 +44,39 @@ export default function PropFirmDashboardSimulator({ strategies, initialReportId
         setResult(null);
         window.setTimeout(() => {
             setResult(runPropFirmMonteCarlo(strategyData, config, 1000));
+            setSimulatedConfig(structuredClone(config));
             setRunning(false);
         }, 20);
+    }
+
+    function selectPreset(nextId: string) {
+        setPresetId(nextId);
+        setEditing(false);
+        setResult(null);
+        setSimulatedConfig(null);
+        setConfig(nextId === "custom" ? structuredClone(CUSTOM_PROP_FIRM_CONFIG) : configFromPreset(getPropFirmPreset(nextId)!));
+    }
+
+    function customizePreset() {
+        setConfig(current => ({ ...structuredClone(current), id: "custom", name: copy.customShort, provider: undefined, version: undefined, sourceUpdatedAt: undefined }));
+        setPresetId("custom");
+        setEditing(true);
+        setResult(null);
+        setSimulatedConfig(null);
+    }
+
+    function addToComparison() {
+        if (!result || !simulatedConfig || !strategyId) return;
+        const preset = getPropFirmPreset(presetId);
+        const scenario: PropFirmScenario = {
+            id: `${strategyId}-${presetId}-${Date.now()}`,
+            strategyId,
+            presetId,
+            label: preset?.name ?? copy.customShort,
+            config: simulatedConfig,
+            result,
+        };
+        setScenarios(current => addComparisonScenario(current, scenario));
     }
 
     function setPhaseCount(count: number) {
@@ -57,18 +94,30 @@ export default function PropFirmDashboardSimulator({ strategies, initialReportId
 
                 <div className="mt-7 grid gap-3 lg:grid-cols-[1fr_1fr_auto] lg:items-end">
                     <Field label={copy.strategy}>
-                        <select className="form-input" value={strategyId} onChange={event => { setStrategyId(event.target.value); setResult(null); }}>
+                        <select className="form-input" value={strategyId} onChange={event => { setStrategyId(event.target.value); setResult(null); setSimulatedConfig(null); setScenarios([]); }}>
                             <option value="">{copy.selectStrategy}</option>
                             {strategies.map(strategy => <option key={strategy.reportId} value={strategy.reportId}>{strategy.name}</option>)}
                         </select>
                     </Field>
                     <Field label={copy.preset}>
-                        <select className="form-input" value="custom" disabled><option value="custom">{copy.custom}</option></select>
+                        <select className="form-input" value={presetId} onChange={event => selectPreset(event.target.value)}>
+                            <option value="custom">{copy.custom}</option>
+                            <optgroup label={copy.templates}>{PROP_FIRM_PRESETS.map(preset => <option key={preset.id} value={preset.id}>{preset.name}</option>)}</optgroup>
+                        </select>
                     </Field>
                     <button type="button" onClick={simulate} disabled={!strategyData || running || validationErrors.length > 0} className="btn-primary min-h-11 justify-center px-6 disabled:cursor-not-allowed disabled:opacity-40">
                         {running ? copy.simulating : result ? copy.recalculate : copy.simulate}
                     </button>
                 </div>
+
+                {presetId !== "custom" && (() => {
+                    const preset = getPropFirmPreset(presetId)!;
+                    return <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-500">
+                        <span>{copy.referenceTemplate}</span>
+                        <span>{copy.updated}: {new Intl.DateTimeFormat(locale).format(new Date(`${preset.updatedAt}T00:00:00Z`))}</span>
+                        {preset.sourceUrl ? <a href={preset.sourceUrl} target="_blank" rel="noreferrer" className="text-indigo-300 hover:text-indigo-200">{copy.source}: {preset.sourceLabel}</a> : <span>{copy.source}: {preset.sourceLabel}</span>}
+                    </div>;
+                })()}
 
                 {!strategyId && <StateMessage>{copy.noStrategy}</StateMessage>}
                 {strategyId && !strategyData && <StateMessage>{copy.insufficient}</StateMessage>}
@@ -82,8 +131,8 @@ export default function PropFirmDashboardSimulator({ strategies, initialReportId
                     <Rule label={copy.drawdown} value={config.drawdownType === "static" ? copy.static : copy.trailing} />
                 </div>
 
-                <button type="button" onClick={() => setEditing(value => !value)} aria-expanded={editing} className="mt-4 text-sm font-bold text-indigo-300 hover:text-indigo-200">
-                    {editing ? copy.closeRules : copy.editRules}
+                <button type="button" onClick={presetId === "custom" ? () => setEditing(value => !value) : customizePreset} aria-expanded={editing} className="mt-4 text-sm font-bold text-indigo-300 hover:text-indigo-200">
+                    {presetId !== "custom" ? copy.customizeRules : editing ? copy.closeRules : copy.editRules}
                 </button>
 
                 {editing && (
@@ -115,15 +164,17 @@ export default function PropFirmDashboardSimulator({ strategies, initialReportId
                 )}
 
                 <div aria-live="polite" aria-busy={running}>
-                    {result?.status === "completed" && <SimulationResult result={result} copy={copy} />}
+                    {result?.status === "completed" && <SimulationResult result={result} copy={copy} quality={strategyData ? getSimulationQuality(strategyData) : "limited"} onAdd={addToComparison} canAdd={scenarios.length < MAX_PROP_FIRM_SCENARIOS} />}
                     {result?.status === "insufficientData" && <StateMessage>{copy.insufficient}</StateMessage>}
                 </div>
+                {strategyData && <details className="mt-5 rounded-xl border border-white/5 bg-black/15 p-4 text-sm text-gray-400"><summary className="cursor-pointer font-bold text-indigo-300">{copy.howCalculated}</summary><p className="mt-3 leading-relaxed">{copy[`methodology.${methodologyKey(strategyData)}`]}</p><p className="mt-2 leading-relaxed">{copy.methodologyRules}</p></details>}
+                {scenarios.length >= 2 && <ScenarioComparison scenarios={scenarios} copy={copy} />}
             </div>
         </section>
     );
 }
 
-function SimulationResult({ result, copy }: { result: PropFirmSimulationResult; copy: Record<string, string> }) {
+function SimulationResult({ result, copy, quality, onAdd, canAdd }: { result: PropFirmSimulationResult; copy: Record<string, string>; quality: "high" | "medium" | "limited"; onAdd: () => void; canAdd: boolean }) {
     const probability = result.totalPassProbability;
     const verdict = probability == null ? copy.insufficient : probability >= 70 ? copy.excellent : probability >= 40 ? copy.moderate : copy.elevated;
     const primaryRisk = result.primaryFailureCause ? copy[`primaryRisk.${result.primaryFailureCause}`] : copy["primaryRisk.none"];
@@ -134,6 +185,8 @@ function SimulationResult({ result, copy }: { result: PropFirmSimulationResult; 
             <p className="mt-2 text-[10px] font-black uppercase tracking-[0.22em] text-indigo-300">{copy.estimatedPass}</p>
             <p className="mt-5 text-sm font-semibold leading-relaxed text-gray-200">{primaryRisk}</p>
             <p className="mt-2 text-xs text-gray-500">{copy.estimateDisclaimer}</p>
+            <div className="mt-5"><span className="text-[9px] font-black uppercase tracking-wider text-gray-500">{copy.simulationQuality}</span><p className="mt-1 text-sm font-bold text-indigo-200">{copy[`quality.${quality}`]}</p></div>
+            <button type="button" onClick={onAdd} disabled={!canAdd} className="btn-secondary mt-5 w-full justify-center disabled:opacity-40">{canAdd ? copy.addComparison : copy.comparisonFull}</button>
         </div>
         <div>
             <dl className="grid grid-cols-2 gap-3">
@@ -154,6 +207,24 @@ function SimulationResult({ result, copy }: { result: PropFirmSimulationResult; 
             <p className="mt-4 text-[11px] text-gray-500">{copy.histogramNotice}</p>
         </div>
     </div>;
+}
+
+function ScenarioComparison({ scenarios, copy }: { scenarios: PropFirmScenario[]; copy: Record<string, string> }) {
+    const bestId = bestFitScenarioId(scenarios);
+    const rows = [
+        [copy.estimatedPass, (item: PropFirmScenario) => formatPct(item.result.totalPassProbability)],
+        [copy.dailyRisk, (item: PropFirmScenario) => formatPct(item.result.dailyLossViolationProbability)],
+        [copy.maxRisk, (item: PropFirmScenario) => formatPct(item.result.maxLossViolationProbability)],
+        [copy.duration, (item: PropFirmScenario) => item.result.durationDays ? `${item.result.durationDays.p50} ${copy.days}` : "—"],
+        [copy.consistency, (item: PropFirmScenario) => formatPct(item.result.consistencyScore)],
+    ] as const;
+    return <section className="mt-8 overflow-x-auto rounded-2xl border border-white/10 bg-black/20 p-4 sm:p-6">
+        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white">{copy.compareScenarios}</h3>
+        <table className="mt-4 w-full min-w-[560px] text-sm"><thead><tr><th className="p-3 text-left text-gray-500">{copy.metric}</th>{scenarios.map(item => <th key={item.id} className="p-3 text-center text-white">{item.id === bestId && <span className="mb-1 block text-[9px] uppercase tracking-wider text-emerald-300">{copy.bestFit}</span>}{item.label}</th>)}</tr></thead>
+            <tbody>{rows.map(([label, value]) => <tr key={label} className="border-t border-white/5"><th className="p-3 text-left font-medium text-gray-400">{label}</th>{scenarios.map(item => <td key={item.id} className="p-3 text-center font-bold tabular-nums text-white">{value(item)}</td>)}</tr>)}</tbody>
+        </table>
+        <p className="mt-4 text-xs text-gray-500">{copy.bestFitNote}</p>
+    </section>;
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) { return <label className="block"><span className="form-label">{label}</span>{children}</label>; }
