@@ -428,12 +428,6 @@ export function calcFullMetrics(trades: Trade[]): FullMetrics {
             last30: trades.length >= 30 ? calcBasicMetrics(trades.slice(-30)) : undefined,
         },
         advanced: calcAdvancedRobustness(trades, basic, monteCarlo),
-        propFirm: calcPropFirmChallenge(trades, {
-            balance: 100000,
-            targetPct: 10,
-            dailyDrawdownPct: 5,
-            maxDrawdownPct: 10
-        }),
         edgeDecay: calcEdgeDecay(trades),
         rHistogram: calcRHistogram(trades)
     };

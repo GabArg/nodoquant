@@ -11,18 +11,6 @@ export default function PersistedAdvancedSections({ metrics, availability }: { m
     return (
         <div className="space-y-8">
             <section className="rounded-3xl border border-white/5 bg-white/[0.01] p-6 sm:p-8">
-                <h2 className="text-xs font-black uppercase tracking-[0.25em] text-indigo-400">{t("propFirmTitle")}</h2>
-                {availability.propFirm && metrics.propFirm ? (
-                    <dl className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
-                        <Metric label={t("passProbability")} value={formatPercent(metrics.propFirm.passProb, unavailable)} />
-                        <Metric label={t("dailyRisk")} value={formatPercent(metrics.propFirm.failDailyDDProb, unavailable)} />
-                        <Metric label={t("maxRisk")} value={formatPercent(metrics.propFirm.failMaxDDProb, unavailable)} />
-                        <Metric label={t("consistency")} value={formatPercent(metrics.propFirm.consistencyScore, unavailable)} />
-                    </dl>
-                ) : <p className="mt-4 text-sm text-gray-400">{unavailable}</p>}
-            </section>
-
-            <section className="rounded-3xl border border-white/5 bg-white/[0.01] p-6 sm:p-8">
                 <h2 className="text-xs font-black uppercase tracking-[0.25em] text-indigo-400">{t("intelligenceTitle")}</h2>
                 {availability.intelligence && metrics.advanced ? (
                     <dl className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">

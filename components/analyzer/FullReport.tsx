@@ -475,6 +475,17 @@ export default function FullReport({ metrics, analysisId, isPro, edgeConfidenceO
                 )}
             </div>
 
+            {analysisId && (
+                <div className="rounded-3xl border border-indigo-400/20 bg-indigo-500/[0.07] p-6 sm:p-8">
+                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-indigo-300">PROP FIRM SIMULATOR</p>
+                    <h3 className="mt-2 text-xl font-black text-white">{locale === "es" ? "Probá esta estrategia contra reglas de evaluación" : "Test this strategy against evaluation rules"}</h3>
+                    <p className="mt-2 text-sm text-gray-400">{locale === "es" ? "Estimá su probabilidad de superar un challenge con reglas personalizadas." : "Estimate its probability of completing a challenge with custom rules."}</p>
+                    <a href={`/${locale}/dashboard?propFirmReport=${encodeURIComponent(analysisId)}#prop-firm-simulator`} className="btn-primary mt-5 inline-flex justify-center px-6 py-3">
+                        {locale === "es" ? "Simular esta estrategia" : "Simulate this strategy"}
+                    </a>
+                </div>
+            )}
+
             {/* ── Shareable Card (Absolute Bottom) ── */}
             <div className="card rounded-3xl p-8 border border-white/5 bg-gradient-to-b from-white/[0.02] to-transparent space-y-6">
                 <div className="flex items-center justify-between">

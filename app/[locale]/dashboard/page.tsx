@@ -9,6 +9,8 @@ import EdgeAlerts from "@/components/analyzer/Dashboard/EdgeAlerts";
 import WeeklySummary from "@/components/analyzer/Dashboard/WeeklySummary";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import PropFirmDashboardSimulator from "@/components/dashboard/PropFirmSimulator";
+import { normalizePublicReportMetrics } from "@/lib/analyzer/publicReportMetrics";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +21,7 @@ function computeQuantScore100(winrate: number, pf: number, dd: number, trades: n
     return Math.round(quant * 10); // 0–100
 }
 
-export default async function DashboardPage({ params }: { params: { locale: string } }) {
+export default async function DashboardPage({ params, searchParams }: { params: { locale: string }; searchParams?: { propFirmReport?: string } }) {
     const t = await getTranslations({ locale: params.locale, namespace: "dashboard" });
     const authClient = createClient();
     const { data: { user } } = await authClient.auth.getUser();
@@ -39,6 +41,7 @@ export default async function DashboardPage({ params }: { params: { locale: stri
 
     let statsList = { projects: 0, analyses: 0, winrateAvg: 0, strategies: 0, bestPF: 0, bestPFName: '' };
     let recentAnalyses: any[] = [];
+    let availableAnalyses: any[] = [];
 
     if (dbClient && user) {
         const { count: projectsCount } = await dbClient
@@ -48,12 +51,13 @@ export default async function DashboardPage({ params }: { params: { locale: stri
 
         const { data: analyses } = await dbClient
             .from("trade_analysis")
-            .select("id, created_at, file_name, winrate, profit_factor, max_drawdown, trades_count, metrics_json", { count: "exact" })
+            .select("id, created_at, file_name, winrate, profit_factor, max_drawdown, trades_count, sum_profit, metrics_json", { count: "exact" })
             .eq("user_id", user.id)
             .order("created_at", { ascending: false });
 
         statsList.projects = projectsCount || 0;
         statsList.analyses = countSavedAnalyses(analyses);
+        availableAnalyses = analyses ?? [];
 
         if (analyses && analyses.length > 0) {
             recentAnalyses = analyses.slice(0, 5);
@@ -117,6 +121,11 @@ export default async function DashboardPage({ params }: { params: { locale: stri
     const primaryAnalysisLabel = betaSaveLimitReached
         ? (params.locale === "es" ? "Ver análisis guardado" : "View saved analysis")
         : t("history.analyzeNew");
+    const propFirmStrategies = availableAnalyses.map(analysis => ({
+        reportId: String(analysis.id),
+        name: analysis.file_name || t("history.analysis"),
+        metrics: normalizePublicReportMetrics(analysis).metrics,
+    }));
 
     return (
         <div className="space-y-8">
@@ -170,6 +179,8 @@ export default async function DashboardPage({ params }: { params: { locale: stri
                     {latestReport && <WeeklySummary latestReport={latestReport} />}
                 </div>
             </div>
+
+            <PropFirmDashboardSimulator strategies={propFirmStrategies} initialReportId={searchParams?.propFirmReport} />
 
             <section>
                 <div className="flex items-center justify-between mb-6">

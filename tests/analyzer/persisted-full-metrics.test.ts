@@ -91,9 +91,12 @@ describe("rich persisted FullMetrics", () => {
         expect(source).not.toContain("(metrics.riskOfRuin || 0).toFixed");
     });
 
-    it("renders persisted Prop Firm and Intelligence without zero fallbacks", () => {
+    it("keeps legacy Prop Firm data normalized while rendering Intelligence without zero fallbacks", () => {
         const source = readFileSync("components/report/PersistedAdvancedSections.tsx", "utf8");
-        expect(source).toContain("availability.propFirm && metrics.propFirm");
+        const normalized = normalizePublicReportMetrics(report(serializeFullMetrics(fullMetrics)));
+        expect(normalized.metrics.propFirm?.passProb).toBe(74);
+        expect(normalized.availability.propFirm).toBe(true);
+        expect(source).not.toContain("metrics.propFirm");
         expect(source).toContain("availability.intelligence && metrics.advanced");
         expect(source).not.toContain("|| 0");
     });
