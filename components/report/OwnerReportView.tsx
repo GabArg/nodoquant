@@ -4,15 +4,18 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import FullReport from "@/components/analyzer/FullReport";
 import type { FullMetrics } from "@/lib/analyzer/metrics";
+import type { ReportMetricAvailability } from "@/lib/analyzer/publicReportMetrics";
+import PersistedAdvancedSections from "@/components/report/PersistedAdvancedSections";
 
 interface Props {
     reportId: string;
     metrics: FullMetrics;
     edgeConfidence: number | null;
     isPro: boolean;
+    availability: ReportMetricAvailability;
 }
 
-export default function OwnerReportView({ reportId, metrics, edgeConfidence, isPro }: Props) {
+export default function OwnerReportView({ reportId, metrics, edgeConfidence, isPro, availability }: Props) {
     const locale = useLocale();
     const t = useTranslations("analyzer.wizard");
 
@@ -32,7 +35,8 @@ export default function OwnerReportView({ reportId, metrics, edgeConfidence, isP
                         </Link>
                     </nav>
                 </header>
-                <FullReport metrics={metrics} analysisId={reportId} isPro={isPro} edgeConfidenceOverride={edgeConfidence} />
+                <FullReport metrics={metrics} analysisId={reportId} isPro={isPro} edgeConfidenceOverride={edgeConfidence} savedDataAvailability={availability} />
+                {isPro && <PersistedAdvancedSections metrics={metrics} availability={availability} />}
             </article>
         </main>
     );

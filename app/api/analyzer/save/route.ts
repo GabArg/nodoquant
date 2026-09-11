@@ -13,6 +13,7 @@ import {
 import { getUserEntitlement } from "@/lib/payments/entitlements";
 import { sendStrategyReadyEmail } from "@/lib/email/sendStrategyReadyEmail";
 import { getBaseUrl } from "@/lib/url";
+import { metricsFingerprintProjection } from "@/lib/analyzer/persistedMetrics";
 
 /**
  * PRODUCTION-GRADE Save Analysis System
@@ -146,7 +147,7 @@ export async function POST(req: NextRequest) {
             sum_profit: sum_profit ?? null,
             date_range_start: date_range_start ?? null,
             date_range_end: date_range_end ?? null,
-            metrics_json: normalizedMetrics,
+            metrics_json: metricsFingerprintProjection(normalizedMetrics),
         };
 
         const analysisFingerprint = createHash("sha256")

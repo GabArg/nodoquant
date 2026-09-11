@@ -34,6 +34,7 @@ export default async function OwnerReportPage({ params }: PageProps) {
             reportId={report.id}
             metrics={normalized.metrics}
             edgeConfidence={normalized.edgeConfidence}
+            availability={normalized.availability}
             isPro={entitlement.isPro}
         />
     );

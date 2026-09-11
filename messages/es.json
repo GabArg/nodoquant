@@ -980,6 +980,18 @@
         "report": {
             "title": "Reporte Completo",
             "subtitle": "Análisis cuantitativo",
+            "savedUnavailable": "No disponible en este análisis guardado",
+            "persisted": {
+                "unavailable": "No disponible en este análisis guardado",
+                "propFirmTitle": "Prop Firm",
+                "intelligenceTitle": "Intelligence Layer",
+                "passProbability": "Probabilidad de aprobación",
+                "dailyRisk": "Riesgo de límite diario",
+                "maxRisk": "Riesgo de drawdown máximo",
+                "consistency": "Consistencia",
+                "robustness": "Robustez",
+                "edgeHealth": "Salud del edge"
+            },
             "sentTo": "Reporte enviado a",
             "share": {
                 "title": "Análisis de Estrategia NodoQuant",
@@ -1081,6 +1093,7 @@
             },
             "monteCarlo": {
                 "title": "Monte Carlo (1,000 simulaciones)",
+                "savedUnavailable": "Monte Carlo no está disponible en este análisis guardado.",
                 "worstCase": "Peor caso (percentil 5)",
                 "averageCase": "Caso promedio (mediana)",
                 "bestCase": "Mejor caso (percentil 95)",

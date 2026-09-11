@@ -28,6 +28,7 @@ import type { NormalizedTrade } from "@/lib/import/normalizedTrade";
 import { trackEvent } from "@/lib/analytics";
 import { completionReportHref, type AnalysisSaveOutcome } from "@/lib/analyzer/completion";
 import { readAnalyzerState, removeAnalyzerState, writeAnalyzerState } from "@/lib/analyzer/sessionState";
+import { serializeFullMetrics } from "@/lib/analyzer/persistedMetrics";
 
 
 type Step = "source" | "upload" | "importing" | "confirm" | "saving" | "result" | "report";
@@ -497,7 +498,7 @@ export default function AnalyzerWizard() {
                 {step === "saving" && parseResult && basicMetrics && authResolved && (
                     <section aria-live="polite" className="min-h-[50vh] flex items-center justify-center">
                         <div className="w-full max-w-md rounded-2xl border border-white/10 bg-white/[0.025] p-7">
-                            <EmailGate metricsPayload={{ basic: basicMetrics, equity_curve: fullMetrics?.equityCurve, drawdown_curve: fullMetrics?.drawdownCurve, trade_histogram: fullMetrics?.tradeHistogram }} basicMetrics={{ trades_count: basicMetrics.totalTrades, winrate: basicMetrics.winrate, profit_factor: basicMetrics.profitFactor, max_drawdown: basicMetrics.maxDrawdown, sum_profit: basicMetrics.sumProfit }} fileName={parseResult.fileName} dateRangeStart={parseResult.dateRangeStart?.toISOString()} dateRangeEnd={parseResult.dateRangeEnd?.toISOString()} strategyId={""} isAuthenticated={isAuthenticated} onCompleted={handleAnalysisCompleted} triggerUnlock={triggerUnlock} compact />
+                            <EmailGate metricsPayload={fullMetrics ? serializeFullMetrics(fullMetrics) : {}} basicMetrics={{ trades_count: basicMetrics.totalTrades, winrate: basicMetrics.winrate, profit_factor: basicMetrics.profitFactor, max_drawdown: basicMetrics.maxDrawdown, sum_profit: basicMetrics.sumProfit }} fileName={parseResult.fileName} dateRangeStart={parseResult.dateRangeStart?.toISOString()} dateRangeEnd={parseResult.dateRangeEnd?.toISOString()} strategyId={""} isAuthenticated={isAuthenticated} onCompleted={handleAnalysisCompleted} triggerUnlock={triggerUnlock} compact />
                         </div>
                     </section>
                 )}

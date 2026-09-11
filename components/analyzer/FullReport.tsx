@@ -3,6 +3,7 @@
 import React from "react";
 import { useTranslations, useLocale } from "next-intl";
 import type { FullMetrics } from "@/lib/analyzer/metrics";
+import type { ReportMetricAvailability } from "@/lib/analyzer/publicReportMetrics";
 import EquityChart from "./EquityChart";
 import DrawdownChart from "./DrawdownChart";
 import TradeHistogram from "./TradeHistogram";
@@ -17,6 +18,7 @@ interface Props {
     analysisId?: string | null;
     isPro?: boolean;
     edgeConfidenceOverride?: number | null;
+    savedDataAvailability?: ReportMetricAvailability;
 }
 
 function StrategyDiagnosis({ metrics, isPro, edgeConfidence }: { metrics: FullMetrics; isPro?: boolean; edgeConfidence: number | null }) {
@@ -218,7 +220,7 @@ function LockedSection({ title, desc, children, isPro = false, onUnlockClick }: 
     );
 }
 
-export default function FullReport({ metrics, analysisId, isPro, edgeConfidenceOverride }: Props) {
+export default function FullReport({ metrics, analysisId, isPro, edgeConfidenceOverride, savedDataAvailability }: Props) {
     const t = useTranslations("analyzer.report");
     const tFunnel = useTranslations("analyzer.funnel");
     const locale = useLocale();
@@ -266,6 +268,12 @@ export default function FullReport({ metrics, analysisId, isPro, edgeConfidenceO
     };
     
     const monteCarlo = metrics.monteCarlo;
+    const hasRiskAnalysis = savedDataAvailability?.riskAnalysis ?? Boolean(metrics.riskAnalysis);
+    const hasRiskOfRuin = savedDataAvailability?.riskOfRuin ?? metrics.riskOfRuin != null;
+    const hasStability = savedDataAvailability?.stability ?? metrics.stabilityScore != null;
+    const hasEvolution = savedDataAvailability?.evolution ?? Boolean(metrics.evolution);
+    const hasMonteCarlo = savedDataAvailability?.monteCarlo ?? Boolean(monteCarlo);
+    const unavailable = t("savedUnavailable");
     const canonicalVerdict = getCanonicalDiagnosis(metrics, metrics);
     const showEvidenceWarning = isNegativeDiagnosis(canonicalVerdict);
     const edgeConfidence = edgeConfidenceOverride !== undefined
@@ -318,19 +326,19 @@ export default function FullReport({ metrics, analysisId, isPro, edgeConfidenceO
                             </div>
                             <div className="space-y-1">
                                 <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block">{t("riskOverview.sharpe")}</span>
-                                <span className="text-2xl font-black text-white italic">{(metrics.riskAnalysis?.sharpeRatio || 0).toFixed(2)}</span>
+                                <span className="text-2xl font-black text-white italic">{hasRiskAnalysis && metrics.riskAnalysis?.sharpeRatio != null ? metrics.riskAnalysis.sharpeRatio.toFixed(2) : unavailable}</span>
                             </div>
                             <div className="space-y-1">
                                 <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block">{t("riskOverview.riskOfRuin")}</span>
-                                <span className="text-2xl font-black text-white italic">{(metrics.riskOfRuin || 0).toFixed(1)}%</span>
+                                <span className="text-2xl font-black text-white italic">{hasRiskOfRuin && metrics.riskOfRuin != null ? `${metrics.riskOfRuin.toFixed(1)}%` : unavailable}</span>
                             </div>
                             <div className="space-y-1">
                                 <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block">{t("riskOverview.skewness")}</span>
-                                <span className="text-2xl font-black text-white italic">{(metrics.riskAnalysis?.skewness || 0).toFixed(2)}</span>
+                                <span className="text-2xl font-black text-white italic">{hasRiskAnalysis && metrics.riskAnalysis?.skewness != null ? metrics.riskAnalysis.skewness.toFixed(2) : unavailable}</span>
                             </div>
                             <div className="space-y-1">
                                 <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block">{t("riskOverview.recoveryFactor")}</span>
-                                <span className="text-2xl font-black text-white italic">{(metrics.riskAnalysis?.recoveryFactor || 0).toFixed(2)}</span>
+                                <span className="text-2xl font-black text-white italic">{hasRiskAnalysis && metrics.riskAnalysis?.recoveryFactor != null ? metrics.riskAnalysis.recoveryFactor.toFixed(2) : unavailable}</span>
                             </div>
                         </div>
                     </div>
@@ -367,9 +375,9 @@ export default function FullReport({ metrics, analysisId, isPro, edgeConfidenceO
                             <div className="h-px flex-1 bg-white/5"></div>
                         </div>
                         
-                        <StrategyEvolution evolution={metrics.evolution || {}} />
+                        {hasEvolution && metrics.evolution ? <StrategyEvolution evolution={metrics.evolution} savedReportView={Boolean(savedDataAvailability)} /> : <p className="rounded-xl border border-white/10 bg-white/[0.02] p-4 text-sm text-gray-400">{unavailable}</p>}
 
-                        <div className="card rounded-3xl p-8 border border-white/5 bg-white/[0.01]">
+                        {hasStability ? <div className="card rounded-3xl p-8 border border-white/5 bg-white/[0.01]">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <h4 className="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-1">{t("health.title")}</h4>
@@ -394,10 +402,10 @@ export default function FullReport({ metrics, analysisId, isPro, edgeConfidenceO
                                 </div>
                                 <div className="text-right">
                                     <span className="text-[10px] font-black text-gray-600 block mb-1 uppercase tracking-widest">{t("health.score")}</span>
-                                    <span className="text-3xl font-black text-white italic tracking-tighter">{Math.round(metrics.stabilityScore || 0)}%</span>
+                                    <span className="text-3xl font-black text-white italic tracking-tighter">{Math.round(metrics.stabilityScore)}%</span>
                                 </div>
                             </div>
-                        </div>
+                        </div> : <p className="rounded-xl border border-white/10 bg-white/[0.02] p-4 text-sm text-gray-400">{unavailable}</p>}
                     </div>
                 </div>
             </div>
@@ -440,6 +448,9 @@ export default function FullReport({ metrics, analysisId, isPro, edgeConfidenceO
                     </div>
                 )}
 
+                {!hasMonteCarlo ? (
+                    <p className="m-5 rounded-xl border border-white/10 bg-white/[0.02] p-4 text-sm text-gray-400">{t("monteCarlo.savedUnavailable")}</p>
+                ) : (
                 <LockedSection title={t("monteCarlo.title")} desc={t("monteCarlo.desc")} isPro={isProInternal} onUnlockClick={() => handleUnlockClick("MID")}>
                     <div className="p-5 space-y-6">
                         <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.05]">
@@ -461,6 +472,7 @@ export default function FullReport({ metrics, analysisId, isPro, edgeConfidenceO
                         )}
                     </div>
                 </LockedSection>
+                )}
             </div>
 
             {/* ── Shareable Card (Absolute Bottom) ── */}

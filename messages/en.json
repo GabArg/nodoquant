@@ -462,6 +462,18 @@
         "report": {
             "title": "Full Report",
             "subtitle": "Quantitative analysis",
+            "savedUnavailable": "Not available in this saved analysis",
+            "persisted": {
+                "unavailable": "Not available in this saved analysis",
+                "propFirmTitle": "Prop Firm",
+                "intelligenceTitle": "Intelligence Layer",
+                "passProbability": "Pass probability",
+                "dailyRisk": "Daily-limit risk",
+                "maxRisk": "Maximum-drawdown risk",
+                "consistency": "Consistency",
+                "robustness": "Robustness",
+                "edgeHealth": "Edge health"
+            },
             "sentTo": "Report sent to",
             "share": {
                 "title": "NodoQuant Strategy Analysis",
@@ -536,6 +548,7 @@
             },
             "monteCarlo": {
                 "title": "Advanced Risk Analysis (coming soon)",
+                "savedUnavailable": "Monte Carlo is not available in this saved analysis.",
                 "worstCase": "Worst Case (P5)",
                 "averageCase": "Average Case (Median)",
                 "bestCase": "Best Case (P95)",
