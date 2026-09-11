@@ -56,7 +56,7 @@ export default async function RootLayout({
                                         <Link href="/strategies" className="text-gray-400 hover:text-white transition-colors font-medium">{t("library")}</Link>
                                         <Link href="/leaderboard" className="text-gray-400 hover:text-white transition-colors font-medium">{t("leaderboard")}</Link>
                                         <span className="text-white/20">|</span>
-                                        <Link href="/dashboard" className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium">{t("dashboard")}</Link>
+                                        <a href={`/${locale}/dashboard`} className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium">{t("dashboard")}</a>
                                         <Link href="/account" className="text-gray-400 hover:text-white transition-colors font-medium">{t("account")}</Link>
                                     </>
                                 ) : (
@@ -86,13 +86,13 @@ export default async function RootLayout({
                             <div className="flex sm:hidden items-center gap-3">
                                 <LanguageSwitcher />
                                 {user ? (
-                                    <Link
-                                        href="/dashboard"
+                                    <a
+                                        href={`/${locale}/dashboard`}
                                         className="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-tight text-white transition-all hover:scale-105 active:scale-95"
                                         style={{ background: "#6366f1" }}
                                     >
                                         {t("dashboard")}
-                                    </Link>
+                                    </a>
                                 ) : (
                                     <Link
                                         href="/analyzer"

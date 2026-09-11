@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 const wizard = readFileSync("components/analyzer/AnalyzerWizard.tsx", "utf8");
 const emailGate = readFileSync("components/analyzer/EmailGate.tsx", "utf8");
 const saveRoute = readFileSync("app/api/analyzer/save/route.ts", "utf8");
+const rootLayout = readFileSync("app/[locale]/layout.tsx", "utf8");
 const summary = readFileSync("components/analyzer/AnalyzerResultSummary.tsx", "utf8");
 const reportSources = ["components/analyzer/FullReport.tsx", "components/analyzer/StrategyDiagnostics.tsx"].map((path) => readFileSync(path, "utf8")).join("\n");
 const es = JSON.parse(readFileSync("messages/es.json", "utf8"));
@@ -44,10 +45,10 @@ describe("guided analyzer flow", () => {
         expect(openReport).not.toMatch(/fetch|save|EmailGate|handleAnalysisCompleted/);
     });
 
-    it("invalidates prefetched Dashboard data only after the save response has a report id", () => {
-        const successfulSave = emailGate.slice(emailGate.indexOf('if (typeof data.id !== "string"'), emailGate.indexOf("} catch (err: unknown)"));
-        expect(successfulSave.indexOf('typeof data.id !== "string"')).toBeLessThan(successfulSave.indexOf("router.refresh()"));
-        expect(successfulSave.indexOf("router.refresh()")).toBeLessThan(successfulSave.indexOf("onCompleted({"));
+    it("uses a fresh document request for Dashboard instead of a prefetched RSC payload", () => {
+        expect(rootLayout.match(/<a\s+[\s\S]*?href=\{`\/\$\{locale\}\/dashboard`\}/g)).toHaveLength(2);
+        expect(rootLayout).not.toContain('<Link href="/dashboard"');
+        expect(emailGate).not.toContain("router.refresh()");
     });
 
     it("has one primary current-report action and secondary restart action", () => {
