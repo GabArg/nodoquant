@@ -1,4 +1,5 @@
 import type { PropFirmConfig, PropFirmSimulationResult } from "./propFirm";
+import { UTC_DAILY_RESET } from "./propFirmTime";
 
 export const MAX_PROP_FIRM_SCENARIOS = 3;
 
@@ -25,6 +26,7 @@ export function propFirmConfigComparisonKey(config: PropFirmConfig): string {
         maxLossLimitPct: config.maxLossLimitPct,
         drawdownType: config.drawdownType,
         dailyLossCalculation: config.dailyLossCalculation,
+        dailyReset: config.dailyReset ?? UTC_DAILY_RESET,
         tradesPerDayEstimate: config.tradesPerDayEstimate,
         consistencyRulePct: config.consistencyRulePct ?? null,
     });

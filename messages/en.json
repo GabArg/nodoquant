@@ -1725,6 +1725,7 @@
             "verifiedRules": "Verified rules",
             "verified": "Verified",
             "officialSource": "Official source",
+            "dailyReset": "Daily reset",
             "basedOnModified": "Based on {name} · Modified",
             "partialRulesWarning": "This evaluation includes rules that NodoQuant approximates with the available data.",
             "trademarkDisclaimer": "Trademarks belong to their respective owners. NodoQuant is not affiliated with these firms.",
@@ -1793,7 +1794,9 @@
             "methodologyData": "The current simulation uses a reconstruction from the persisted historical distribution.",
             "normalizedDataUsed": "Real sequence of {count} closed trades, preserved in its original order.",
             "histogramDataUsed": "Approximate reconstruction of {count} outcomes from the persisted histogram.",
-            "methodologyLimitations": "It does not reconstruct real intraday equity. A verified official rule does not make the result official.",
+            "evaluationDayGrouping": "Evaluation days are grouped using the firm's reset schedule.",
+            "syntheticDayGrouping": "Without complete timestamps, synthetic daily grouping is used and no pseudo-real timezone is applied.",
+            "methodologyLimitations": "It does not reconstruct real intraday equity. Some imports may contain local times without their source offset. A verified official rule does not make the result official.",
             "ruleFidelity": "Fidelity by rule",
             "fidelity": {
                 "exact": "Exact",
@@ -1804,6 +1807,7 @@
                 "dailyLoss": "Daily loss",
                 "maxLoss": "Maximum loss",
                 "phases": "Phases and targets",
+                "tradingDays": "Evaluation days",
                 "consistency": "Consistency",
                 "intradayEquity": "Intraday equity",
                 "specialRules": "Special rules"

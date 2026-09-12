@@ -1,5 +1,6 @@
 import type { FullMetrics } from "./metrics";
-import { deserializeNormalizedTradeSequence, groupNormalizedTradesByUtcDay, type NormalizedSimulationTrade } from "./normalizedTradeSequence";
+import { deserializeNormalizedTradeSequence, type NormalizedSimulationTrade } from "./normalizedTradeSequence";
+import { groupTradesByEvaluationDay, UTC_DAILY_RESET, validateDailyResetConfig, type DailyResetConfig } from "./propFirmTime";
 
 export type DrawdownType = "static" | "trailing";
 export type DailyLossCalculation = "balance" | "equity" | "balanceOrEquity";
@@ -24,6 +25,8 @@ export interface PropFirmConfig {
     maxLossLimitPct: number;
     drawdownType: DrawdownType;
     dailyLossCalculation: DailyLossCalculation;
+    /** Optional only for backwards compatibility; missing legacy configs use the internal UTC reset. */
+    dailyReset?: DailyResetConfig;
     tradesPerDayEstimate: number;
     consistencyRulePct?: number;
     version?: string;
@@ -74,6 +77,7 @@ export const CUSTOM_PROP_FIRM_CONFIG: PropFirmConfig = {
     maxLossLimitPct: 10,
     drawdownType: "static",
     dailyLossCalculation: "balanceOrEquity",
+    dailyReset: UTC_DAILY_RESET,
     tradesPerDayEstimate: 5,
 };
 
@@ -83,6 +87,7 @@ export function validatePropFirmConfig(config: PropFirmConfig): string[] {
     if (!Number.isFinite(config.dailyLossLimitPct) || config.dailyLossLimitPct <= 0 || config.dailyLossLimitPct >= 100) errors.push("dailyLossLimitPct");
     if (!Number.isFinite(config.maxLossLimitPct) || config.maxLossLimitPct <= 0 || config.maxLossLimitPct >= 100) errors.push("maxLossLimitPct");
     if (!Number.isInteger(config.tradesPerDayEstimate) || config.tradesPerDayEstimate <= 0) errors.push("tradesPerDayEstimate");
+    if (config.dailyReset && !validateDailyResetConfig(config.dailyReset)) errors.push("dailyReset");
     if (!Array.isArray(config.phases) || config.phases.length === 0) errors.push("phases");
     config.phases.forEach((phase, index) => {
         if (!Number.isFinite(phase.profitTargetPct) || phase.profitTargetPct <= 0) errors.push(`phases.${index}.profitTargetPct`);
@@ -96,12 +101,12 @@ export function validatePropFirmConfig(config: PropFirmConfig): string[] {
 export function strategySimulationDataFromPersistedMetrics(metrics: FullMetrics): StrategySimulationData | null {
     const normalized = deserializeNormalizedTradeSequence(metrics.simulationData);
     if (normalized && normalized.length >= 10) {
-        const dayGroups = groupNormalizedTradesByUtcDay(normalized);
+        const hasTimestamps = normalized.every(trade => trade.closedAt != null && Number.isFinite(Date.parse(trade.closedAt)));
         return {
             outcomes: normalized.map(trade => trade.profit),
             source: "normalizedTradeSequence",
             trades: normalized,
-            hasTimestamps: dayGroups.length > 0,
+            hasTimestamps,
         };
     }
     const counts = metrics.tradeHistogram;
@@ -133,7 +138,7 @@ export function runPropFirmMonteCarlo(
     if (!Number.isFinite(averageLoss) || averageLoss === 0) return emptyResult(iterations, strategy.source);
     const normalizedR = strategy.outcomes.map(value => value / averageLoss);
     const temporalDayGroups = strategy.trades && strategy.hasTimestamps
-        ? groupNormalizedTradesByUtcDay(strategy.trades).map(group => group.map(trade => trade.profit / averageLoss))
+        ? groupTradesByEvaluationDay(strategy.trades, config.dailyReset ?? UTC_DAILY_RESET).map(group => group.map(trade => trade.profit / averageLoss))
         : [];
     const phasePassCounts = config.phases.map(() => 0);
     const failures: Record<PropFirmFailureCause, number> = { dailyLoss: 0, maxLoss: 0, targetNotReached: 0, consistency: 0 };

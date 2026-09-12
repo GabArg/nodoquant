@@ -692,6 +692,7 @@
             "verifiedRules": "Reglas verificadas",
             "verified": "Verificado",
             "officialSource": "Fuente oficial",
+            "dailyReset": "Reset diario",
             "basedOnModified": "Basada en {name} · Modificada",
             "partialRulesWarning": "Esta evaluación incluye reglas que NodoQuant aproxima con los datos disponibles.",
             "trademarkDisclaimer": "Las marcas pertenecen a sus respectivos propietarios. NodoQuant no está afiliado a estas firmas.",
@@ -760,7 +761,9 @@
             "methodologyData": "La simulación actual usa una reconstrucción desde la distribución histórica persistida.",
             "normalizedDataUsed": "Secuencia real de {count} trades cerrados, conservada en su orden original.",
             "histogramDataUsed": "Reconstrucción aproximada de {count} resultados desde el histograma persistido.",
-            "methodologyLimitations": "No reconstruye equity intradía real. Una regla oficial verificada no convierte el resultado en un resultado oficial.",
+            "evaluationDayGrouping": "Los días de evaluación se agrupan según el horario de reset de la firma.",
+            "syntheticDayGrouping": "Sin timestamps completos se usa una agrupación diaria sintética; no se aplica un timezone pseudo-real.",
+            "methodologyLimitations": "No reconstruye equity intradía real. Algunos imports pueden traer horas locales sin offset de origen. Una regla oficial verificada no convierte el resultado en un resultado oficial.",
             "ruleFidelity": "Fidelidad por regla",
             "fidelity": {
                 "exact": "Exacta",
@@ -771,6 +774,7 @@
                 "dailyLoss": "Pérdida diaria",
                 "maxLoss": "Pérdida máxima",
                 "phases": "Fases y objetivos",
+                "tradingDays": "Días de evaluación",
                 "consistency": "Consistencia",
                 "intradayEquity": "Equity intradía",
                 "specialRules": "Reglas especiales"

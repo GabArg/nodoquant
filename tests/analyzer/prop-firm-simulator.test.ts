@@ -280,5 +280,8 @@ describe("Prop Firm product placement", () => {
         expect(en.dashboard.propFirm.verifiedRules).toBe("Verified rules");
         expect(es.dashboard.propFirm.partialRulesWarning).toContain("NodoQuant aproxima");
         expect(en.dashboard.propFirm.partialRulesWarning).toContain("NodoQuant approximates");
+        expect(es.dashboard.propFirm.dailyReset).toBe("Reset diario");
+        expect(en.dashboard.propFirm.dailyReset).toBe("Daily reset");
+        expect(simulator).toContain("dailyResetLabel");
     });
 });

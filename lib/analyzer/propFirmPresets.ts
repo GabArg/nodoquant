@@ -1,4 +1,5 @@
 import type { PropFirmConfig } from "./propFirm";
+import { UTC_DAILY_RESET } from "./propFirmTime";
 
 export type PropFirmRuleFidelity = "exact" | "approximated" | "unsupported";
 export type PropFirmOverallFidelity = "high" | "medium" | "limited";
@@ -14,6 +15,7 @@ export interface PropFirmPresetFidelity {
     dailyLoss: PropFirmRuleFidelity;
     maxLoss: PropFirmRuleFidelity;
     phases: PropFirmRuleFidelity;
+    tradingDays: PropFirmRuleFidelity;
     consistency: PropFirmRuleFidelity;
     intradayEquity: PropFirmRuleFidelity;
     specialRules: PropFirmRuleFidelity;
@@ -56,7 +58,7 @@ export const PROP_FIRM_PRESETS: readonly PropFirmPreset[] = [
         config: {
             id: "reference-1-step-conservative", name: "1-Step Conservative", provider: "NodoQuant", accountSize: 100000,
             phases: [{ id: "phase-1", name: "Phase 1", profitTargetPct: 8, minTradingDays: 5, maxTradingDays: 30 }],
-            dailyLossLimitPct: 4, maxLossLimitPct: 8, drawdownType: "static", dailyLossCalculation: "balanceOrEquity", tradesPerDayEstimate: 5,
+            dailyLossLimitPct: 4, maxLossLimitPct: 8, drawdownType: "static", dailyLossCalculation: "balanceOrEquity", dailyReset: UTC_DAILY_RESET, tradesPerDayEstimate: 5,
             version: "reference-1.0", sourceUpdatedAt: "2026-09-11",
         },
     }),
@@ -67,7 +69,7 @@ export const PROP_FIRM_PRESETS: readonly PropFirmPreset[] = [
         config: {
             id: "reference-1-step-standard", name: "1-Step Standard", provider: "NodoQuant", accountSize: 100000,
             phases: [{ id: "phase-1", name: "Phase 1", profitTargetPct: 10, maxTradingDays: 30 }],
-            dailyLossLimitPct: 5, maxLossLimitPct: 10, drawdownType: "static", dailyLossCalculation: "balanceOrEquity", tradesPerDayEstimate: 5,
+            dailyLossLimitPct: 5, maxLossLimitPct: 10, drawdownType: "static", dailyLossCalculation: "balanceOrEquity", dailyReset: UTC_DAILY_RESET, tradesPerDayEstimate: 5,
             version: "reference-1.0", sourceUpdatedAt: "2026-09-11",
         },
     }),
@@ -81,7 +83,7 @@ export const PROP_FIRM_PRESETS: readonly PropFirmPreset[] = [
                 { id: "phase-1", name: "Phase 1", profitTargetPct: 10, maxTradingDays: 30 },
                 { id: "phase-2", name: "Phase 2", profitTargetPct: 5, maxTradingDays: 30 },
             ],
-            dailyLossLimitPct: 5, maxLossLimitPct: 10, drawdownType: "static", dailyLossCalculation: "balanceOrEquity", tradesPerDayEstimate: 5,
+            dailyLossLimitPct: 5, maxLossLimitPct: 10, drawdownType: "static", dailyLossCalculation: "balanceOrEquity", dailyReset: UTC_DAILY_RESET, tradesPerDayEstimate: 5,
             version: "reference-1.0", sourceUpdatedAt: "2026-09-11",
         },
     }),
@@ -98,10 +100,10 @@ export const PROP_FIRM_PRESETS: readonly PropFirmPreset[] = [
                 { id: "phase-1", name: "FTMO Challenge", profitTargetPct: 10, minTradingDays: 4 },
                 { id: "phase-2", name: "Verification", profitTargetPct: 5, minTradingDays: 4 },
             ],
-            dailyLossLimitPct: 5, maxLossLimitPct: 10, drawdownType: "static", dailyLossCalculation: "balance", tradesPerDayEstimate: 5,
+            dailyLossLimitPct: 5, maxLossLimitPct: 10, drawdownType: "static", dailyLossCalculation: "balance", dailyReset: { timeZone: { kind: "iana", name: "Europe/Prague" }, hour: 0, minute: 0, semantics: "evaluationDayStart" }, tradesPerDayEstimate: 5,
             version: VERIFIED_AT, sourceUpdatedAt: VERIFIED_AT,
         },
-        fidelity: { overall: "medium", dailyLoss: "approximated", maxLoss: "approximated", phases: "exact", consistency: "exact", intradayEquity: "unsupported", specialRules: "unsupported" },
+        fidelity: { overall: "medium", dailyLoss: "approximated", maxLoss: "approximated", phases: "exact", tradingDays: "approximated", consistency: "exact", intradayEquity: "unsupported", specialRules: "unsupported" },
         notes: ["Daily loss resets at 00:00 CE(S)T from the balance recorded at that time; NodoQuant has no real intraday equity path.", "The unlimited official trading period is represented with NodoQuant's finite simulation horizon."],
     },
     {
@@ -117,10 +119,10 @@ export const PROP_FIRM_PRESETS: readonly PropFirmPreset[] = [
                 { id: "phase-1", name: "Phase 1", profitTargetPct: 8, minTradingDays: 3 },
                 { id: "phase-2", name: "Phase 2", profitTargetPct: 5, minTradingDays: 3 },
             ],
-            dailyLossLimitPct: 5, maxLossLimitPct: 10, drawdownType: "static", dailyLossCalculation: "balanceOrEquity", tradesPerDayEstimate: 5,
+            dailyLossLimitPct: 5, maxLossLimitPct: 10, drawdownType: "static", dailyLossCalculation: "balanceOrEquity", dailyReset: { timeZone: { kind: "fixedOffset", offsetMinutes: 180, name: "UTC+03:00" }, hour: 0, minute: 0, semantics: "evaluationDayStart" }, tradesPerDayEstimate: 5,
             version: VERIFIED_AT, sourceUpdatedAt: VERIFIED_AT,
         },
-        fidelity: { overall: "medium", dailyLoss: "approximated", maxLoss: "approximated", phases: "exact", consistency: "exact", intradayEquity: "unsupported", specialRules: "unsupported" },
+        fidelity: { overall: "medium", dailyLoss: "approximated", maxLoss: "approximated", phases: "exact", tradingDays: "approximated", consistency: "exact", intradayEquity: "unsupported", specialRules: "unsupported" },
         notes: ["Daily loss uses the higher of opening balance or opening equity at 00:00 platform time (UTC+3), including floating P/L.", "Inactivity and conduct policies are not modeled."],
     },
 ] as const;

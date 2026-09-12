@@ -4,7 +4,8 @@ import { calcFullMetrics } from "../../lib/analyzer/metrics";
 import { serializeFullMetrics } from "../../lib/analyzer/persistedMetrics";
 import type { Trade } from "../../lib/analyzer/parser";
 import { CUSTOM_PROP_FIRM_CONFIG, runPropFirmMonteCarlo, strategySimulationDataFromPersistedMetrics, type PropFirmConfig } from "../../lib/analyzer/propFirm";
-import { deserializeNormalizedTradeSequence, groupNormalizedTradesByUtcDay, normalizedTradeSequenceFromTrades, serializeNormalizedTradeSequence } from "../../lib/analyzer/normalizedTradeSequence";
+import { deserializeNormalizedTradeSequence, normalizedTradeSequenceFromTrades, serializeNormalizedTradeSequence } from "../../lib/analyzer/normalizedTradeSequence";
+import { groupTradesByEvaluationDay, UTC_DAILY_RESET } from "../../lib/analyzer/propFirmTime";
 
 const metricShell = (simulationData?: FullMetrics["simulationData"]): FullMetrics => ({
     totalTrades: 10, winrate: 50, profitFactor: 1, maxDrawdown: 1, maxDrawdownAbs: 1, expectancy: 0, sumProfit: 0,
@@ -57,13 +58,13 @@ describe("normalized trade sequence", () => {
     });
 
     it("groups closed trades into real UTC trading days", () => {
-        const groups = groupNormalizedTradesByUtcDay([
+        const groups = groupTradesByEvaluationDay([
             { index: 0, profit: 1, closedAt: "2026-01-01T10:00:00.000Z" },
             { index: 1, profit: -1, closedAt: "2026-01-01T15:00:00.000Z" },
             { index: 2, profit: 2, closedAt: "2026-01-03T10:00:00.000Z" },
         ]);
         expect(groups.map(group => group.map(trade => trade.index))).toEqual([[0, 1], [2]]);
-        expect(groupNormalizedTradesByUtcDay([{ index: 0, profit: 1 }])).toEqual([]);
+        expect(groupTradesByEvaluationDay([{ index: 0, profit: 1 }], UTC_DAILY_RESET)).toEqual([]);
     });
 
     it("uses observed day blocks for minimum trading days and duration", () => {

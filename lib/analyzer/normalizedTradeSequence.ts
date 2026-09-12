@@ -78,15 +78,3 @@ export function deserializeNormalizedTradeSequence(value: unknown): NormalizedSi
     }
     return trades;
 }
-
-export function groupNormalizedTradesByUtcDay(trades: readonly NormalizedSimulationTrade[]): NormalizedSimulationTrade[][] {
-    const groups = new Map<string, NormalizedSimulationTrade[]>();
-    for (const trade of trades) {
-        if (!trade.closedAt || !Number.isFinite(Date.parse(trade.closedAt))) return [];
-        const day = trade.closedAt.slice(0, 10);
-        const group = groups.get(day) ?? [];
-        group.push(trade);
-        groups.set(day, group);
-    }
-    return [...groups.values()];
-}

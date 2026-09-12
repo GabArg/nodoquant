@@ -14,6 +14,7 @@ import type { FullMetrics } from "@/lib/analyzer/metrics";
 import { REFERENCE_PROP_FIRM_PRESETS, VERIFIED_PROP_FIRM_PRESETS, customConfigFromPreset, configFromPreset, getPropFirmPreset, presetHasPartialRules, type PropFirmPreset } from "@/lib/analyzer/propFirmPresets";
 import { addComparisonScenario, bestFitScenarioId, hasEquivalentScenario, MAX_PROP_FIRM_SCENARIOS, type PropFirmScenario } from "@/lib/analyzer/propFirmScenarios";
 import { getPresetSimulationQuality, methodologyKey } from "@/lib/analyzer/propFirmMethodology";
+import { dailyResetLabel } from "@/lib/analyzer/propFirmTime";
 
 export interface PropFirmStrategyOption {
     reportId: string;
@@ -180,7 +181,7 @@ export default function PropFirmDashboardSimulator({ strategies, initialReportId
                     {result?.status === "insufficientData" && <StateMessage>{copy.insufficient}</StateMessage>}
                     {comparisonMessage && <p role="status" className="mt-3 text-sm font-medium text-amber-200">{comparisonMessage}</p>}
                 </div>
-                {strategyData && <details className="mt-5 rounded-xl border border-white/5 bg-black/15 p-4 text-sm text-gray-400"><summary className="cursor-pointer font-bold text-indigo-300">{copy.howCalculated}</summary>{selectedPreset?.officialRules && <p className="mt-3 leading-relaxed"><strong className="text-gray-200">{copy.rulesHeading}:</strong> {copy.verifiedMethodologyRules}</p>}<p className="mt-2 leading-relaxed"><strong className="text-gray-200">{copy.simulationHeading}:</strong> {copy[`methodology.${methodologyKey(strategyData)}`]}</p><p className="mt-2 leading-relaxed"><strong className="text-gray-200">{copy.dataHeading}:</strong> {(strategyData.source === "normalizedTradeSequence" ? copy.normalizedDataUsed : copy.histogramDataUsed).replace("{count}", String(strategyData.outcomes.length))}</p><p className="mt-2 leading-relaxed"><strong className="text-gray-200">{copy.limitationsHeading}:</strong> {copy.methodologyLimitations}</p>{(selectedPreset ?? originPreset)?.fidelity && <FidelityDetails preset={(selectedPreset ?? originPreset)!} copy={copy} />}</details>}
+                {strategyData && <details className="mt-5 rounded-xl border border-white/5 bg-black/15 p-4 text-sm text-gray-400"><summary className="cursor-pointer font-bold text-indigo-300">{copy.howCalculated}</summary>{selectedPreset?.officialRules && <p className="mt-3 leading-relaxed"><strong className="text-gray-200">{copy.rulesHeading}:</strong> {copy.verifiedMethodologyRules}</p>}<p className="mt-2 leading-relaxed"><strong className="text-gray-200">{copy.simulationHeading}:</strong> {copy[`methodology.${methodologyKey(strategyData)}`]}</p><p className="mt-2 leading-relaxed"><strong className="text-gray-200">{copy.dataHeading}:</strong> {(strategyData.source === "normalizedTradeSequence" ? copy.normalizedDataUsed : copy.histogramDataUsed).replace("{count}", String(strategyData.outcomes.length))}</p><p className="mt-2 leading-relaxed">{strategyData.hasTimestamps ? copy.evaluationDayGrouping : copy.syntheticDayGrouping}</p><p className="mt-2 leading-relaxed"><strong className="text-gray-200">{copy.limitationsHeading}:</strong> {copy.methodologyLimitations}</p>{(selectedPreset ?? originPreset)?.fidelity && <FidelityDetails preset={(selectedPreset ?? originPreset)!} copy={copy} />}</details>}
                 {scenarios.length >= 2 && <ScenarioComparison scenarios={scenarios} copy={copy} />}
                 {VERIFIED_PROP_FIRM_PRESETS.length > 0 && <p className="mt-5 text-[11px] text-gray-600">{copy.trademarkDisclaimer}</p>}
             </div>
@@ -195,6 +196,7 @@ function PresetTraceability({ preset, locale, copy }: { preset: PropFirmPreset; 
         <p className="mt-1 font-bold text-white">{preset.displayName}</p>
         <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-gray-500">
             <span>{copy.verified}: {new Intl.DateTimeFormat(locale, { timeZone: "UTC" }).format(new Date(`${preset.verifiedAt}T00:00:00Z`))}</span>
+            {preset.config.dailyReset && <span>{copy.dailyReset}: {dailyResetLabel(preset.config.dailyReset)}</span>}
             {preset.sources.map(source => <a key={source.url} href={source.url} target="_blank" rel="noopener noreferrer" className="text-indigo-300 hover:text-indigo-200">{copy.officialSource}: {source.label}</a>)}
         </div>
         {presetHasPartialRules(preset) && <p className="mt-2 text-amber-200">{copy.partialRulesWarning}</p>}
@@ -203,7 +205,7 @@ function PresetTraceability({ preset, locale, copy }: { preset: PropFirmPreset; 
 
 function FidelityDetails({ preset, copy }: { preset: PropFirmPreset; copy: Record<string, string> }) {
     if (!preset.fidelity) return null;
-    const rules = ["dailyLoss", "maxLoss", "phases", "consistency", "intradayEquity", "specialRules"] as const;
+    const rules = ["dailyLoss", "maxLoss", "phases", "tradingDays", "consistency", "intradayEquity", "specialRules"] as const;
     return <div className="mt-4 border-t border-white/5 pt-3"><p className="font-bold text-gray-300">{copy.ruleFidelity}</p><ul className="mt-2 grid gap-1 sm:grid-cols-2">{rules.map(rule => <li key={rule}>{copy[`fidelityRules.${rule}`]}: <span className="text-gray-200">{copy[`fidelity.${preset.fidelity![rule]}`]}</span></li>)}</ul></div>;
 }
 
