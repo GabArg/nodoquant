@@ -194,8 +194,12 @@ export async function fetchBinanceTrades(
     const data = parseSuccessResponse(json);
 
     return {
-        trades: data.trades.map(
-            (trade): NormalizedTrade => ({
+        trades: data.trades.flatMap(
+            (trade): NormalizedTrade[] => {
+                const closeTime = trade.close_time ? new Date(trade.close_time) : null;
+                if (!closeTime || !Number.isFinite(closeTime.getTime())) return [];
+                const openTime = trade.open_time ? new Date(trade.open_time) : null;
+                return [{
                 trade_id: String(trade.trade_id ?? ""),
                 symbol: trade.symbol ?? "",
                 market_type: "crypto",
@@ -205,18 +209,15 @@ export async function fetchBinanceTrades(
                 stop_loss: null,
                 take_profit: null,
                 position_size: trade.position_size ?? null,
-                open_time: trade.open_time
-                    ? new Date(trade.open_time)
-                    : null,
-                close_time: trade.close_time
-                    ? new Date(trade.close_time)
-                    : new Date(),
+                open_time: openTime && Number.isFinite(openTime.getTime()) ? openTime : null,
+                close_time: closeTime,
                 commission: trade.commission ?? 0,
                 swap: 0,
                 profit_loss: trade.profit_loss ?? 0,
                 risk_multiple: null,
                 source: trade.source ?? "binance-spot",
-            })
+                }];
+            }
         ),
         spotCount: data.spotCount,
         futuresCount: data.futuresCount,

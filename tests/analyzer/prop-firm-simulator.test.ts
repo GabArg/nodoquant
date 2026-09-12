@@ -186,7 +186,8 @@ describe("versioned Prop Firm presets and comparison", () => {
         const histogram: StrategySimulationData = { outcomes: Array(150).fill(1), source: "histogramApproximation" };
         expect(methodologyKey(histogram)).toBe("histogramApproximation");
         expect(getSimulationQuality(histogram)).toBe("medium");
-        expect(getSimulationQuality({ outcomes: Array(100).fill(1), source: "normalizedTradeSequence" })).toBe("high");
+        expect(getSimulationQuality({ outcomes: Array(100).fill(1), source: "normalizedTradeSequence" })).toBe("medium");
+        expect(getSimulationQuality({ outcomes: Array(100).fill(1), source: "normalizedTradeSequence", hasTimestamps: true })).toBe("high");
     });
 });
 

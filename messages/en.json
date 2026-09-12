@@ -1791,6 +1791,8 @@
             "limitationsHeading": "LIMITATIONS",
             "verifiedMethodologyRules": "The challenge rules were verified against the listed sources.",
             "methodologyData": "The current simulation uses a reconstruction from the persisted historical distribution.",
+            "normalizedDataUsed": "Real sequence of {count} closed trades, preserved in its original order.",
+            "histogramDataUsed": "Approximate reconstruction of {count} outcomes from the persisted histogram.",
             "methodologyLimitations": "It does not reconstruct real intraday equity. A verified official rule does not make the result official.",
             "ruleFidelity": "Fidelity by rule",
             "fidelity": {

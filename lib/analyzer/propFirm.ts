@@ -1,4 +1,5 @@
 import type { FullMetrics } from "./metrics";
+import { deserializeNormalizedTradeSequence, groupNormalizedTradesByUtcDay, type NormalizedSimulationTrade } from "./normalizedTradeSequence";
 
 export type DrawdownType = "static" | "trailing";
 export type DailyLossCalculation = "balance" | "equity" | "balanceOrEquity";
@@ -32,6 +33,8 @@ export interface PropFirmConfig {
 export interface StrategySimulationData {
     outcomes: number[];
     source: "normalizedTradeSequence" | "histogramApproximation";
+    trades?: NormalizedSimulationTrade[];
+    hasTimestamps?: boolean;
 }
 
 export type PropFirmFailureCause = "dailyLoss" | "maxLoss" | "targetNotReached" | "consistency";
@@ -90,7 +93,17 @@ export function validatePropFirmConfig(config: PropFirmConfig): string[] {
     return errors;
 }
 
-export function strategyDataFromMetrics(metrics: FullMetrics): StrategySimulationData | null {
+export function strategySimulationDataFromPersistedMetrics(metrics: FullMetrics): StrategySimulationData | null {
+    const normalized = deserializeNormalizedTradeSequence(metrics.simulationData);
+    if (normalized && normalized.length >= 10) {
+        const dayGroups = groupNormalizedTradesByUtcDay(normalized);
+        return {
+            outcomes: normalized.map(trade => trade.profit),
+            source: "normalizedTradeSequence",
+            trades: normalized,
+            hasTimestamps: dayGroups.length > 0,
+        };
+    }
     const counts = metrics.tradeHistogram;
     if (!Array.isArray(counts) || counts.length === 0 || !Number.isFinite(metrics.minProfit) || !Number.isFinite(metrics.maxProfit)) return null;
     const width = metrics.maxProfit === metrics.minProfit ? 0 : (metrics.maxProfit - metrics.minProfit) / counts.length;
@@ -99,8 +112,11 @@ export function strategyDataFromMetrics(metrics: FullMetrics): StrategySimulatio
         const midpoint = width === 0 ? metrics.minProfit : metrics.minProfit + width * (index + 0.5);
         return Array.from({ length: safeCount }, () => midpoint);
     });
-    return outcomes.length >= 10 ? { outcomes, source: "histogramApproximation" } : null;
+    return outcomes.length >= 10 ? { outcomes, source: "histogramApproximation", hasTimestamps: false } : null;
 }
+
+/** Backwards-compatible name used by existing consumers. */
+export const strategyDataFromMetrics = strategySimulationDataFromPersistedMetrics;
 
 export function runPropFirmMonteCarlo(
     strategy: StrategySimulationData,
@@ -116,18 +132,22 @@ export function runPropFirmMonteCarlo(
     const averageLoss = Math.abs(losses.reduce((sum, value) => sum + value, 0) / losses.length);
     if (!Number.isFinite(averageLoss) || averageLoss === 0) return emptyResult(iterations, strategy.source);
     const normalizedR = strategy.outcomes.map(value => value / averageLoss);
+    const temporalDayGroups = strategy.trades && strategy.hasTimestamps
+        ? groupNormalizedTradesByUtcDay(strategy.trades).map(group => group.map(trade => trade.profit / averageLoss))
+        : [];
     const phasePassCounts = config.phases.map(() => 0);
     const failures: Record<PropFirmFailureCause, number> = { dailyLoss: 0, maxLoss: 0, targetNotReached: 0, consistency: 0 };
     const passDurations: number[] = [];
+    const passDurationDays: number[] = [];
     let passed = 0;
 
     for (let iteration = 0; iteration < iterations; iteration++) {
         let totalTrades = 0;
+        let totalDays = 0;
         let failed: PropFirmFailureCause | null = null;
         for (let phaseIndex = 0; phaseIndex < config.phases.length; phaseIndex++) {
             const phase = config.phases[phaseIndex];
-            const maxDays = phase.maxTradingDays ?? Math.max(20, Math.ceil(strategy.outcomes.length / config.tradesPerDayEstimate));
-            const maxTrades = maxDays * config.tradesPerDayEstimate;
+            const maxDays = phase.maxTradingDays ?? Math.max(20, temporalDayGroups.length || Math.ceil(strategy.outcomes.length / config.tradesPerDayEstimate));
             const dailyLimit = phase.dailyLossLimitPct ?? config.dailyLossLimitPct;
             const maxLimit = phase.maxLossLimitPct ?? config.maxLossLimitPct;
             let equity = 100;
@@ -138,26 +158,28 @@ export function runPropFirmMonteCarlo(
             let totalProfit = 0;
             let phasePassed = false;
 
-            for (let tradeIndex = 0; tradeIndex < maxTrades; tradeIndex++) {
-                if (tradeIndex > 0 && tradeIndex % config.tradesPerDayEstimate === 0) {
-                    dayStartBalance = equity;
-                    dayStartEquity = equity;
-                }
-                const outcomePct = normalizedR[Math.min(normalizedR.length - 1, Math.floor(random() * normalizedR.length))];
-                equity += outcomePct;
-                totalTrades++;
-                peak = Math.max(peak, equity);
-                totalProfit += Math.max(0, outcomePct);
-                largestWinningDay = Math.max(largestWinningDay, Math.max(0, equity - dayStartBalance));
-                const dailyBaseline = config.dailyLossCalculation === "balance" ? dayStartBalance : config.dailyLossCalculation === "equity" ? dayStartEquity : Math.max(dayStartBalance, dayStartEquity);
-                if (dailyBaseline - equity >= dailyLimit) { failed = "dailyLoss"; break; }
-                const maxBaseline = config.drawdownType === "trailing" ? peak : 100;
-                if (maxBaseline - equity >= maxLimit) { failed = "maxLoss"; break; }
-                const days = Math.ceil((tradeIndex + 1) / config.tradesPerDayEstimate);
-                if (equity - 100 >= phase.profitTargetPct && days >= (phase.minTradingDays ?? 0)) {
-                    if (config.consistencyRulePct != null && totalProfit > 0 && largestWinningDay / totalProfit * 100 > config.consistencyRulePct) failed = "consistency";
-                    else phasePassed = true;
-                    break;
+            for (let dayIndex = 0; dayIndex < maxDays && !phasePassed && !failed; dayIndex++) {
+                dayStartBalance = equity;
+                dayStartEquity = equity;
+                totalDays++;
+                const dailyOutcomes = temporalDayGroups.length
+                    ? temporalDayGroups[Math.min(temporalDayGroups.length - 1, Math.floor(random() * temporalDayGroups.length))]
+                    : Array.from({ length: config.tradesPerDayEstimate }, () => normalizedR[Math.min(normalizedR.length - 1, Math.floor(random() * normalizedR.length))]);
+                for (const outcomePct of dailyOutcomes) {
+                    equity += outcomePct;
+                    totalTrades++;
+                    peak = Math.max(peak, equity);
+                    totalProfit += Math.max(0, outcomePct);
+                    largestWinningDay = Math.max(largestWinningDay, Math.max(0, equity - dayStartBalance));
+                    const dailyBaseline = config.dailyLossCalculation === "balance" ? dayStartBalance : config.dailyLossCalculation === "equity" ? dayStartEquity : Math.max(dayStartBalance, dayStartEquity);
+                    if (dailyBaseline - equity >= dailyLimit) { failed = "dailyLoss"; break; }
+                    const maxBaseline = config.drawdownType === "trailing" ? peak : 100;
+                    if (maxBaseline - equity >= maxLimit) { failed = "maxLoss"; break; }
+                    if (equity - 100 >= phase.profitTargetPct && dayIndex + 1 >= (phase.minTradingDays ?? 0)) {
+                        if (config.consistencyRulePct != null && totalProfit > 0 && largestWinningDay / totalProfit * 100 > config.consistencyRulePct) failed = "consistency";
+                        else phasePassed = true;
+                        break;
+                    }
                 }
             }
             if (!phasePassed) {
@@ -167,7 +189,7 @@ export function runPropFirmMonteCarlo(
             phasePassCounts[phaseIndex]++;
         }
         if (failed) failures[failed]++;
-        else { passed++; passDurations.push(totalTrades); }
+        else { passed++; passDurations.push(totalTrades); passDurationDays.push(totalDays); }
     }
 
     const failureEntries = Object.entries(failures) as Array<[PropFirmFailureCause, number]>;
@@ -183,7 +205,7 @@ export function runPropFirmMonteCarlo(
         consistencyViolationProbability: roundPct(failures.consistency / iterations * 100),
         consistencyScore,
         expectedTradesToPass: passDurations.length ? Math.round(passDurations.reduce((a, b) => a + b, 0) / passDurations.length) : null,
-        durationDays: passDurations.length ? percentileDays(passDurations, config.tradesPerDayEstimate) : null,
+        durationDays: passDurations.length ? (temporalDayGroups.length ? percentileValues(passDurationDays) : percentileDays(passDurations, config.tradesPerDayEstimate)) : null,
         failureCounts: failures,
         primaryFailureCause: primaryFailureCause && primaryFailureCause[1] > 0 ? primaryFailureCause[0] : null,
         dataSource: strategy.source,
@@ -206,6 +228,12 @@ function calculateConsistencyScore(values: number[]): number {
 function percentileDays(trades: number[], tradesPerDay: number) {
     const sorted = [...trades].sort((a, b) => a - b);
     const at = (pct: number) => Math.ceil(sorted[Math.min(sorted.length - 1, Math.floor((sorted.length - 1) * pct))] / tradesPerDay);
+    return { p5: at(0.05), p50: at(0.5), p95: at(0.95) };
+}
+
+function percentileValues(values: number[]) {
+    const sorted = [...values].sort((a, b) => a - b);
+    const at = (pct: number) => sorted[Math.min(sorted.length - 1, Math.floor((sorted.length - 1) * pct))];
     return { p5: at(0.05), p50: at(0.5), p95: at(0.95) };
 }
 

@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
         if (metrics_json && typeof metrics_json === "object") {
             try {
                 const stringified = JSON.stringify(metrics_json);
-                if (stringified.length > 51200) { // 50KB
+                if (stringified.length > 102400) { // 100 KiB: supports the existing v2 payload plus 500 compact simulation trades
                     console.warn(`[Analyzer Anonymous] Rejected: metrics_json too large (${stringified.length} bytes) from IP: ${ip}`);
                     return NextResponse.json({ ok: false, error: "El objeto de métricas excede el tamaño máximo permitido." }, { status: 400 });
                 }

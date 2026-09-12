@@ -4,6 +4,7 @@
  */
 
 import type { Trade } from "./parser";
+import { normalizedTradeSequenceFromTrades, serializeNormalizedTradeSequence, type PersistedSimulationData } from "./normalizedTradeSequence";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -40,6 +41,7 @@ export interface FullMetrics extends BasicMetrics {
     propFirm?: PropFirmResult;
     edgeDecay?: EdgeDecay;
     rHistogram?: { counts: number[]; min: number; max: number };
+    simulationData?: PersistedSimulationData;
 }
 
 export interface EdgeDecay {
@@ -429,7 +431,8 @@ export function calcFullMetrics(trades: Trade[]): FullMetrics {
         },
         advanced: calcAdvancedRobustness(trades, basic, monteCarlo),
         edgeDecay: calcEdgeDecay(trades),
-        rHistogram: calcRHistogram(trades)
+        rHistogram: calcRHistogram(trades),
+        simulationData: serializeNormalizedTradeSequence(normalizedTradeSequenceFromTrades(trades)),
     };
 }
 

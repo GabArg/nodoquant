@@ -132,6 +132,7 @@ export function toTrade(n: TradeConversionInput): Trade {
         datetime: closeDate,
         exit_time: closeDate,
         entry_time: openDate,
+        timestamp_valid: toDate(rawClose) !== undefined,
         profit: n.profit_loss ?? n.profit ?? 0,
         symbol: n.symbol || undefined,
         direction: n.direction === "unknown" ? undefined : n.direction,

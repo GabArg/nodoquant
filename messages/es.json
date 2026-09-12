@@ -758,6 +758,8 @@
             "limitationsHeading": "LIMITACIONES",
             "verifiedMethodologyRules": "Las reglas del challenge fueron verificadas contra las fuentes indicadas.",
             "methodologyData": "La simulación actual usa una reconstrucción desde la distribución histórica persistida.",
+            "normalizedDataUsed": "Secuencia real de {count} trades cerrados, conservada en su orden original.",
+            "histogramDataUsed": "Reconstrucción aproximada de {count} resultados desde el histograma persistido.",
             "methodologyLimitations": "No reconstruye equity intradía real. Una regla oficial verificada no convierte el resultado en un resultado oficial.",
             "ruleFidelity": "Fidelidad por regla",
             "fidelity": {

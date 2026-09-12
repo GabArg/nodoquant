@@ -22,6 +22,8 @@ export interface Trade {
     duration_minutes?: number;
     ticket?: string;
     account_id?: string;
+    /** False only when a parser had to synthesize the required legacy datetime. */
+    timestamp_valid?: boolean;
 }
 
 export type FormatType = "mt5" | "csv-generic" | "unknown";
@@ -189,6 +191,7 @@ function parseMT5(normHeaders: string[], dataLines: string[], fileName?: string)
         trades.push({
             datetime,
             profit,
+            timestamp_valid: true,
             symbol: symbolIdx >= 0 ? cols[symbolIdx] || undefined : undefined,
             volume: volumeIdx >= 0 ? parseFloat(cols[volumeIdx] ?? "") || undefined : undefined,
             ticket: dealIdx >= 0 ? cols[dealIdx] : (ticketIdx >= 0 ? cols[ticketIdx] : undefined),
@@ -253,6 +256,7 @@ export function parseGenericCSV(dataLines: string[], cols: ColIndexes): ParseRes
         if (isNaN(profit)) continue; // Must have valid profit
 
         let datetime = parseDateTime(parts[dateIdx] ?? "");
+        const timestampValid = datetime !== null;
         if (!datetime) {
             datetime = new Date();
         }
@@ -260,6 +264,7 @@ export function parseGenericCSV(dataLines: string[], cols: ColIndexes): ParseRes
         const trade: Trade = {
             datetime,
             exit_time: datetime,
+            timestamp_valid: timestampValid,
             profit,
             symbol: symbolIdx !== undefined && symbolIdx >= 0 ? parts[symbolIdx] : undefined,
             volume: volumeIdx !== undefined && volumeIdx >= 0 ? parseFloat(parts[volumeIdx]?.replace(",", ".") ?? "") || undefined : undefined,
