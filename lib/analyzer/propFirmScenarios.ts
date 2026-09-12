@@ -11,8 +11,33 @@ export interface PropFirmScenario {
     result: PropFirmSimulationResult;
 }
 
+export function propFirmConfigComparisonKey(config: PropFirmConfig): string {
+    return JSON.stringify({
+        accountSize: config.accountSize,
+        phases: config.phases.map(phase => ({
+            profitTargetPct: phase.profitTargetPct,
+            dailyLossLimitPct: phase.dailyLossLimitPct ?? null,
+            maxLossLimitPct: phase.maxLossLimitPct ?? null,
+            minTradingDays: phase.minTradingDays ?? null,
+            maxTradingDays: phase.maxTradingDays ?? null,
+        })),
+        dailyLossLimitPct: config.dailyLossLimitPct,
+        maxLossLimitPct: config.maxLossLimitPct,
+        drawdownType: config.drawdownType,
+        dailyLossCalculation: config.dailyLossCalculation,
+        tradesPerDayEstimate: config.tradesPerDayEstimate,
+        consistencyRulePct: config.consistencyRulePct ?? null,
+    });
+}
+
+export function hasEquivalentScenario(current: readonly PropFirmScenario[], strategyId: string, config: PropFirmConfig): boolean {
+    const key = propFirmConfigComparisonKey(config);
+    return current.some(item => item.strategyId === strategyId && propFirmConfigComparisonKey(item.config) === key);
+}
+
 export function addComparisonScenario(current: readonly PropFirmScenario[], scenario: PropFirmScenario): PropFirmScenario[] {
     if (current.length && current[0].strategyId !== scenario.strategyId) return [...current];
+    if (hasEquivalentScenario(current, scenario.strategyId, scenario.config)) return [...current];
     if (current.length >= MAX_PROP_FIRM_SCENARIOS) return [...current];
     return [...current, structuredClone(scenario)];
 }

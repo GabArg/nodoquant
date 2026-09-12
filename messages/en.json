@@ -1712,6 +1712,12 @@
             "preset": "Configuration",
             "custom": "Custom · Unofficial",
             "customShort": "Custom",
+            "customSuffix": "Custom",
+            "presetNames": {
+                "reference-1-step-conservative": "1-Step Conservative",
+                "reference-1-step-standard": "1-Step Standard",
+                "reference-2-step-standard": "2-Step Standard"
+            },
             "templates": "TEMPLATES",
             "referenceTemplate": "Reference template · Not associated with a specific firm",
             "updated": "Updated",
@@ -1760,6 +1766,7 @@
             },
             "addComparison": "Add to comparison",
             "comparisonFull": "Comparison full (maximum 3)",
+            "duplicateComparison": "This configuration is already in the comparison.",
             "compareScenarios": "Compare scenarios",
             "bestFit": "Best fit",
             "bestFitNote": "Best fit primarily considers estimated pass probability and, when tied, rule-violation risk.",

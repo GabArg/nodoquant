@@ -11,7 +11,7 @@ import {
     type StrategySimulationData,
 } from "../../lib/analyzer/propFirm";
 import { configFromPreset, PROP_FIRM_PRESETS } from "../../lib/analyzer/propFirmPresets";
-import { addComparisonScenario, bestFitScenarioId, type PropFirmScenario } from "../../lib/analyzer/propFirmScenarios";
+import { addComparisonScenario, bestFitScenarioId, propFirmConfigComparisonKey, type PropFirmScenario } from "../../lib/analyzer/propFirmScenarios";
 import { getSimulationQuality, methodologyKey } from "../../lib/analyzer/propFirmMethodology";
 import { normalizePublicReportMetrics } from "../../lib/analyzer/publicReportMetrics";
 
@@ -101,7 +101,7 @@ describe("versioned Prop Firm presets and comparison", () => {
         durationDays: { p5: 2, p50: 4, p95: 8 }, failureCounts: { dailyLoss: daily * 10, maxLoss: max * 10, targetNotReached: 0, consistency: 0 },
         primaryFailureCause: daily >= max ? "dailyLoss" : "maxLoss", dataSource: "histogramApproximation",
     });
-    const scenario = (id: string, strategyId: string, pass: number, daily = 0, max = 0): PropFirmScenario => ({ id, strategyId, label: id, presetId: id, config: config(), result: result(pass, daily, max) });
+    const scenario = (id: string, strategyId: string, pass: number, daily = 0, max = 0, effectiveConfig = config()): PropFirmScenario => ({ id, strategyId, label: id, presetId: id, config: effectiveConfig, result: result(pass, daily, max) });
 
     it("keeps Custom available and returns preset configs without mutating the catalog", () => {
         expect(CUSTOM_PROP_FIRM_CONFIG.id).toBe("custom");
@@ -130,12 +130,23 @@ describe("versioned Prop Firm presets and comparison", () => {
 
     it("limits comparison to three scenarios and rejects a different strategy", () => {
         let items: PropFirmScenario[] = [];
-        items = addComparisonScenario(items, scenario("a", "strategy-a", 80));
-        items = addComparisonScenario(items, scenario("b", "strategy-a", 70));
-        items = addComparisonScenario(items, scenario("c", "strategy-a", 60));
-        items = addComparisonScenario(items, scenario("d", "strategy-a", 50));
-        items = addComparisonScenario(items, scenario("foreign", "strategy-b", 99));
+        items = addComparisonScenario(items, scenario("a", "strategy-a", 80, 0, 0, config({ accountSize: 10000 })));
+        items = addComparisonScenario(items, scenario("b", "strategy-a", 70, 0, 0, config({ accountSize: 20000 })));
+        items = addComparisonScenario(items, scenario("c", "strategy-a", 60, 0, 0, config({ accountSize: 30000 })));
+        items = addComparisonScenario(items, scenario("d", "strategy-a", 50, 0, 0, config({ accountSize: 40000 })));
+        items = addComparisonScenario(items, scenario("foreign", "strategy-b", 99, 0, 0, config({ accountSize: 50000 })));
         expect(items.map(item => item.id)).toEqual(["a", "b", "c"]);
+    });
+
+    it("does not add the same effective config twice or consume a slot", () => {
+        const original = config();
+        const metadataOnlyDifference = { ...config(), id: "other-id", name: "Other label", provider: "Other", version: "v9", sourceUpdatedAt: "2099-01-01" };
+        let items = addComparisonScenario([], scenario("a", "strategy-a", 80, 0, 0, original));
+        items = addComparisonScenario(items, scenario("duplicate", "strategy-a", 80, 0, 0, metadataOnlyDifference));
+        expect(items).toHaveLength(1);
+        expect(propFirmConfigComparisonKey(original)).toBe(propFirmConfigComparisonKey(metadataOnlyDifference));
+        items = addComparisonScenario(items, scenario("different", "strategy-a", 80, 0, 0, config({ maxLossLimitPct: 11 })));
+        expect(items.map(item => item.id)).toEqual(["a", "different"]);
     });
 
     it("selects best fit by pass probability and rule risk as tie-breaker", () => {
@@ -198,6 +209,16 @@ describe("Prop Firm product placement", () => {
         });
         expect(JSON.stringify(es.dashboard.propFirm)).not.toMatch(/Daily Loss|Max Loss|Estimated Duration|Pass Probability|Target no logrado|Static/);
         expect(simulator).not.toContain("function labels(");
+        expect(es.dashboard.propFirm.presetNames).toEqual({
+            "reference-1-step-conservative": "1 Paso · Conservadora",
+            "reference-1-step-standard": "1 Paso · Estándar",
+            "reference-2-step-standard": "2 Pasos · Estándar",
+        });
+        expect(en.dashboard.propFirm.presetNames).toEqual({
+            "reference-1-step-conservative": "1-Step Conservative",
+            "reference-1-step-standard": "1-Step Standard",
+            "reference-2-step-standard": "2-Step Standard",
+        });
     });
 
     it("changes the CTA after a result and derives verdict and guidance from real output", () => {
@@ -206,6 +227,9 @@ describe("Prop Firm product placement", () => {
         expect(simulator).toContain("probability >= 70 ? copy.excellent : probability >= 40 ? copy.moderate : copy.elevated");
         expect(simulator).toContain("result.primaryFailureCause");
         expect(simulator).toContain("primaryRisk.${result.primaryFailureCause}");
+        expect(simulator.indexOf("hasEquivalentScenario(scenarios")).toBeLessThan(simulator.indexOf("scenarios.length >= MAX_PROP_FIRM_SCENARIOS"));
+        expect(es.dashboard.propFirm.duplicateComparison).toBe("Esta configuración ya está en la comparación.");
+        expect(en.dashboard.propFirm.duplicateComparison).toBe("This configuration is already in the comparison.");
     });
 
     it("updates rules from presets and clears comparisons when strategy changes", () => {
@@ -213,5 +237,9 @@ describe("Prop Firm product placement", () => {
         expect(simulator).toContain("setScenarios([])");
         expect(simulator).toContain("setPresetId(\"custom\")");
         expect(simulator).toContain("structuredClone(current)");
+        expect(simulator).toContain("setCustomOriginPresetId(presetId)");
+        expect(simulator).toContain("originPreset ? `${presetDisplayName(originPreset.id, copy)} · ${copy.customSuffix}` : copy.customShort");
+        expect(es.dashboard.propFirm.customShort).toBe("Personalizado");
+        expect(en.dashboard.propFirm.customShort).toBe("Custom");
     });
 });

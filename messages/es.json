@@ -679,6 +679,12 @@
             "preset": "Configuración",
             "custom": "Personalizado · No oficial",
             "customShort": "Personalizado",
+            "customSuffix": "Personalizada",
+            "presetNames": {
+                "reference-1-step-conservative": "1 Paso · Conservadora",
+                "reference-1-step-standard": "1 Paso · Estándar",
+                "reference-2-step-standard": "2 Pasos · Estándar"
+            },
             "templates": "PLANTILLAS",
             "referenceTemplate": "Plantilla de referencia · No corresponde a una firma específica",
             "updated": "Actualizado",
@@ -727,6 +733,7 @@
             },
             "addComparison": "Añadir a comparación",
             "comparisonFull": "Comparación completa (máximo 3)",
+            "duplicateComparison": "Esta configuración ya está en la comparación.",
             "compareScenarios": "Comparar escenarios",
             "bestFit": "Mejor encaje",
             "bestFitNote": "El mejor encaje considera principalmente la probabilidad de aprobación y, en caso de empate, el riesgo de violación de reglas.",
