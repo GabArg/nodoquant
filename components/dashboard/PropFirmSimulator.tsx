@@ -11,9 +11,9 @@ import {
     type PropFirmSimulationResult,
 } from "@/lib/analyzer/propFirm";
 import type { FullMetrics } from "@/lib/analyzer/metrics";
-import { PROP_FIRM_PRESETS, configFromPreset, getPropFirmPreset } from "@/lib/analyzer/propFirmPresets";
+import { REFERENCE_PROP_FIRM_PRESETS, VERIFIED_PROP_FIRM_PRESETS, customConfigFromPreset, configFromPreset, getPropFirmPreset, presetHasPartialRules, type PropFirmPreset } from "@/lib/analyzer/propFirmPresets";
 import { addComparisonScenario, bestFitScenarioId, hasEquivalentScenario, MAX_PROP_FIRM_SCENARIOS, type PropFirmScenario } from "@/lib/analyzer/propFirmScenarios";
-import { getSimulationQuality, methodologyKey } from "@/lib/analyzer/propFirmMethodology";
+import { getPresetSimulationQuality, methodologyKey } from "@/lib/analyzer/propFirmMethodology";
 
 export interface PropFirmStrategyOption {
     reportId: string;
@@ -39,6 +39,8 @@ export default function PropFirmDashboardSimulator({ strategies, initialReportId
     const selected = strategies.find(item => item.reportId === strategyId);
     const strategyData = useMemo(() => selected ? strategyDataFromMetrics(selected.metrics) : null, [selected]);
     const validationErrors = validatePropFirmConfig(config);
+    const selectedPreset = getPropFirmPreset(presetId);
+    const originPreset = customOriginPresetId ? getPropFirmPreset(customOriginPresetId) : undefined;
 
     function simulate() {
         if (!strategyData || validationErrors.length) return;
@@ -63,7 +65,7 @@ export default function PropFirmDashboardSimulator({ strategies, initialReportId
 
     function customizePreset() {
         setCustomOriginPresetId(presetId);
-        setConfig(current => ({ ...structuredClone(current), id: "custom", name: copy.customShort, provider: undefined, version: undefined, sourceUpdatedAt: undefined }));
+        setConfig(customConfigFromPreset(getPropFirmPreset(presetId)!, copy.customShort));
         setPresetId("custom");
         setEditing(true);
         setResult(null);
@@ -117,7 +119,8 @@ export default function PropFirmDashboardSimulator({ strategies, initialReportId
                     <Field label={copy.preset}>
                         <select className="form-input" value={presetId} onChange={event => selectPreset(event.target.value)}>
                             <option value="custom">{copy.custom}</option>
-                            <optgroup label={copy.templates}>{PROP_FIRM_PRESETS.map(preset => <option key={preset.id} value={preset.id}>{presetDisplayName(preset.id, copy)}</option>)}</optgroup>
+                            <optgroup label={copy.referenceTemplates}>{REFERENCE_PROP_FIRM_PRESETS.map(preset => <option key={preset.id} value={preset.id}>{presetDisplayName(preset.id, copy)}</option>)}</optgroup>
+                            {VERIFIED_PROP_FIRM_PRESETS.length > 0 && <optgroup label={copy.verifiedFirms}>{VERIFIED_PROP_FIRM_PRESETS.map(preset => <option key={preset.id} value={preset.id}>{preset.displayName}</option>)}</optgroup>}
                         </select>
                     </Field>
                     <button type="button" onClick={simulate} disabled={!strategyData || running || validationErrors.length > 0} className="btn-primary min-h-11 justify-center px-6 disabled:cursor-not-allowed disabled:opacity-40">
@@ -125,14 +128,8 @@ export default function PropFirmDashboardSimulator({ strategies, initialReportId
                     </button>
                 </div>
 
-                {presetId !== "custom" && (() => {
-                    const preset = getPropFirmPreset(presetId)!;
-                    return <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-500">
-                        <span>{copy.referenceTemplate}</span>
-                        <span>{copy.updated}: {new Intl.DateTimeFormat(locale).format(new Date(`${preset.updatedAt}T00:00:00Z`))}</span>
-                        {preset.sourceUrl ? <a href={preset.sourceUrl} target="_blank" rel="noreferrer" className="text-indigo-300 hover:text-indigo-200">{copy.source}: {preset.sourceLabel}</a> : <span>{copy.source}: {preset.sourceLabel}</span>}
-                    </div>;
-                })()}
+                {selectedPreset && <PresetTraceability preset={selectedPreset} locale={locale} copy={copy} />}
+                {presetId === "custom" && originPreset?.officialRules && <div className="mt-3 text-xs text-amber-200">{copy.basedOnModified.replace("{name}", originPreset.displayName)}</div>}
 
                 {!strategyId && <StateMessage>{copy.noStrategy}</StateMessage>}
                 {strategyId && !strategyData && <StateMessage>{copy.insufficient}</StateMessage>}
@@ -179,15 +176,35 @@ export default function PropFirmDashboardSimulator({ strategies, initialReportId
                 )}
 
                 <div aria-live="polite" aria-busy={running}>
-                    {result?.status === "completed" && <SimulationResult result={result} copy={copy} quality={strategyData ? getSimulationQuality(strategyData) : "limited"} onAdd={addToComparison} comparisonFull={scenarios.length >= MAX_PROP_FIRM_SCENARIOS} />}
+                    {result?.status === "completed" && <SimulationResult result={result} copy={copy} quality={strategyData ? getPresetSimulationQuality(strategyData, selectedPreset ?? originPreset) : "limited"} onAdd={addToComparison} comparisonFull={scenarios.length >= MAX_PROP_FIRM_SCENARIOS} />}
                     {result?.status === "insufficientData" && <StateMessage>{copy.insufficient}</StateMessage>}
                     {comparisonMessage && <p role="status" className="mt-3 text-sm font-medium text-amber-200">{comparisonMessage}</p>}
                 </div>
-                {strategyData && <details className="mt-5 rounded-xl border border-white/5 bg-black/15 p-4 text-sm text-gray-400"><summary className="cursor-pointer font-bold text-indigo-300">{copy.howCalculated}</summary><p className="mt-3 leading-relaxed">{copy[`methodology.${methodologyKey(strategyData)}`]}</p><p className="mt-2 leading-relaxed">{copy.methodologyRules}</p></details>}
+                {strategyData && <details className="mt-5 rounded-xl border border-white/5 bg-black/15 p-4 text-sm text-gray-400"><summary className="cursor-pointer font-bold text-indigo-300">{copy.howCalculated}</summary>{selectedPreset?.officialRules && <p className="mt-3 leading-relaxed"><strong className="text-gray-200">{copy.rulesHeading}:</strong> {copy.verifiedMethodologyRules}</p>}<p className="mt-2 leading-relaxed"><strong className="text-gray-200">{copy.simulationHeading}:</strong> {copy[`methodology.${methodologyKey(strategyData)}`]}</p><p className="mt-2 leading-relaxed"><strong className="text-gray-200">{copy.dataHeading}:</strong> {copy.methodologyData}</p><p className="mt-2 leading-relaxed"><strong className="text-gray-200">{copy.limitationsHeading}:</strong> {copy.methodologyLimitations}</p>{(selectedPreset ?? originPreset)?.fidelity && <FidelityDetails preset={(selectedPreset ?? originPreset)!} copy={copy} />}</details>}
                 {scenarios.length >= 2 && <ScenarioComparison scenarios={scenarios} copy={copy} />}
+                {VERIFIED_PROP_FIRM_PRESETS.length > 0 && <p className="mt-5 text-[11px] text-gray-600">{copy.trademarkDisclaimer}</p>}
             </div>
         </section>
     );
+}
+
+function PresetTraceability({ preset, locale, copy }: { preset: PropFirmPreset; locale: string; copy: Record<string, string> }) {
+    if (!preset.officialRules) return <div className="mt-3 text-xs text-gray-500">{copy.referenceTemplate}</div>;
+    return <div className="mt-3 rounded-xl border border-emerald-400/15 bg-emerald-400/[0.04] p-3 text-xs">
+        <p className="font-black uppercase tracking-[0.16em] text-emerald-300">{copy.verifiedRules}</p>
+        <p className="mt-1 font-bold text-white">{preset.displayName}</p>
+        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-gray-500">
+            <span>{copy.verified}: {new Intl.DateTimeFormat(locale, { timeZone: "UTC" }).format(new Date(`${preset.verifiedAt}T00:00:00Z`))}</span>
+            {preset.sources.map(source => <a key={source.url} href={source.url} target="_blank" rel="noopener noreferrer" className="text-indigo-300 hover:text-indigo-200">{copy.officialSource}: {source.label}</a>)}
+        </div>
+        {presetHasPartialRules(preset) && <p className="mt-2 text-amber-200">{copy.partialRulesWarning}</p>}
+    </div>;
+}
+
+function FidelityDetails({ preset, copy }: { preset: PropFirmPreset; copy: Record<string, string> }) {
+    if (!preset.fidelity) return null;
+    const rules = ["dailyLoss", "maxLoss", "phases", "consistency", "intradayEquity", "specialRules"] as const;
+    return <div className="mt-4 border-t border-white/5 pt-3"><p className="font-bold text-gray-300">{copy.ruleFidelity}</p><ul className="mt-2 grid gap-1 sm:grid-cols-2">{rules.map(rule => <li key={rule}>{copy[`fidelityRules.${rule}`]}: <span className="text-gray-200">{copy[`fidelity.${preset.fidelity![rule]}`]}</span></li>)}</ul></div>;
 }
 
 function SimulationResult({ result, copy, quality, onAdd, comparisonFull }: { result: PropFirmSimulationResult; copy: Record<string, string>; quality: "high" | "medium" | "limited"; onAdd: () => void; comparisonFull: boolean }) {
@@ -251,4 +268,7 @@ function Failure({ label, count, total }: { label: string; count: number; total:
 function StateMessage({ children }: { children: React.ReactNode }) { return <p className="mt-5 rounded-xl border border-white/10 bg-white/[0.025] p-4 text-sm text-gray-400">{children}</p>; }
 function formatPct(value: number | null) { return value == null ? "—" : `${value.toFixed(1)}%`; }
 function currency(value: number, locale: string) { return new Intl.NumberFormat(locale, { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value); }
-function presetDisplayName(id: string, copy: Record<string, string>) { return copy[`presetNames.${id}`]; }
+function presetDisplayName(id: string, copy: Record<string, string>) {
+    const preset = getPropFirmPreset(id);
+    return preset?.officialRules ? preset.displayName : copy[`presetNames.${id}`];
+}

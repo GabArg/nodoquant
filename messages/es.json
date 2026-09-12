@@ -686,7 +686,15 @@
                 "reference-2-step-standard": "2 Pasos · Estándar"
             },
             "templates": "PLANTILLAS",
+            "referenceTemplates": "PLANTILLAS DE REFERENCIA",
+            "verifiedFirms": "FIRMAS · REGLAS VERIFICADAS",
             "referenceTemplate": "Plantilla de referencia · No corresponde a una firma específica",
+            "verifiedRules": "Reglas verificadas",
+            "verified": "Verificado",
+            "officialSource": "Fuente oficial",
+            "basedOnModified": "Basada en {name} · Modificada",
+            "partialRulesWarning": "Esta evaluación incluye reglas que NodoQuant aproxima con los datos disponibles.",
+            "trademarkDisclaimer": "Las marcas pertenecen a sus respectivos propietarios. NodoQuant no está afiliado a estas firmas.",
             "updated": "Actualizado",
             "source": "Fuente",
             "customizeRules": "Personalizar estas reglas",
@@ -744,6 +752,27 @@
                 "normalizedTradeSequence": "Se remuestrea la secuencia normalizada de trades para generar 1.000 trayectorias Monte Carlo."
             },
             "methodologyRules": "En cada trayectoria se aplican los objetivos, límites de pérdida, fases y días configurados. La probabilidad indica la proporción de trayectorias que completó todas las fases. No reconstruye movimientos intradía ni garantiza resultados futuros.",
+            "rulesHeading": "REGLAS",
+            "simulationHeading": "SIMULACIÓN",
+            "dataHeading": "DATOS",
+            "limitationsHeading": "LIMITACIONES",
+            "verifiedMethodologyRules": "Las reglas del challenge fueron verificadas contra las fuentes indicadas.",
+            "methodologyData": "La simulación actual usa una reconstrucción desde la distribución histórica persistida.",
+            "methodologyLimitations": "No reconstruye equity intradía real. Una regla oficial verificada no convierte el resultado en un resultado oficial.",
+            "ruleFidelity": "Fidelidad por regla",
+            "fidelity": {
+                "exact": "Exacta",
+                "approximated": "Aproximada",
+                "unsupported": "No soportada"
+            },
+            "fidelityRules": {
+                "dailyLoss": "Pérdida diaria",
+                "maxLoss": "Pérdida máxima",
+                "phases": "Fases y objetivos",
+                "consistency": "Consistencia",
+                "intradayEquity": "Equity intradía",
+                "specialRules": "Reglas especiales"
+            },
             "primaryRisk": {
                 "dailyLoss": "El principal riesgo de esta configuración es la pérdida diaria.",
                 "maxLoss": "El principal riesgo de esta configuración es la pérdida máxima.",

@@ -10,7 +10,7 @@ import {
     type PropFirmSimulationResult,
     type StrategySimulationData,
 } from "../../lib/analyzer/propFirm";
-import { configFromPreset, PROP_FIRM_PRESETS } from "../../lib/analyzer/propFirmPresets";
+import { configFromPreset, customConfigFromPreset, PROP_FIRM_PRESETS, REFERENCE_PROP_FIRM_PRESETS, VERIFIED_PROP_FIRM_PRESETS } from "../../lib/analyzer/propFirmPresets";
 import { addComparisonScenario, bestFitScenarioId, propFirmConfigComparisonKey, type PropFirmScenario } from "../../lib/analyzer/propFirmScenarios";
 import { getSimulationQuality, methodologyKey } from "../../lib/analyzer/propFirmMethodology";
 import { normalizePublicReportMetrics } from "../../lib/analyzer/publicReportMetrics";
@@ -111,13 +111,41 @@ describe("versioned Prop Firm presets and comparison", () => {
         expect(preset.config.phases[0].profitTargetPct).not.toBe(99);
     });
 
-    it("preserves version, update date, source and non-official status", () => {
-        for (const preset of PROP_FIRM_PRESETS) {
+    it("keeps reference templates explicitly non-official", () => {
+        for (const preset of REFERENCE_PROP_FIRM_PRESETS) {
             expect(preset.version).toBeTruthy();
-            expect(preset.updatedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-            expect(preset.sourceLabel).toBeTruthy();
-            expect(preset.official).toBe(false);
+            expect(preset.officialRules).toBe(false);
+            expect(preset.verifiedAt).toBeUndefined();
         }
+    });
+
+    it("requires versioned, dated, valid official sources on every verified preset", () => {
+        expect(VERIFIED_PROP_FIRM_PRESETS.map(item => item.id)).toEqual(["ftmo-2-step", "fundingpips-2-step-standard"]);
+        for (const preset of VERIFIED_PROP_FIRM_PRESETS) {
+            expect(preset.officialRules).toBe(true);
+            expect(preset.version).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+            expect(preset.verifiedAt).toBe(preset.version);
+            expect(preset.sources.length).toBeGreaterThan(0);
+            for (const source of preset.sources) {
+                expect(new URL(source.url).protocol).toBe("https:");
+                expect(source.checkedAt).toBe(preset.verifiedAt);
+            }
+        }
+    });
+
+    it("marks unsupported rules as metadata, never as numeric zero", () => {
+        for (const preset of VERIFIED_PROP_FIRM_PRESETS) {
+            expect(preset.fidelity).toMatchObject({ dailyLoss: "approximated", maxLoss: "approximated", intradayEquity: "unsupported", specialRules: "unsupported" });
+            expect(Object.values(preset.fidelity!)).not.toContain(0);
+        }
+    });
+
+    it("turns a verified preset into a defensive unofficial custom config", () => {
+        const preset = VERIFIED_PROP_FIRM_PRESETS[0];
+        const custom = customConfigFromPreset(preset, "Custom");
+        custom.phases[0].profitTargetPct = 99;
+        expect(custom).toMatchObject({ id: "custom", name: "Custom", provider: undefined, version: undefined, sourceUpdatedAt: undefined });
+        expect(preset.config.phases[0].profitTargetPct).toBe(10);
     });
 
     it("selecting a different preset yields its own rules", () => {
@@ -236,10 +264,20 @@ describe("Prop Firm product placement", () => {
         expect(simulator).toContain("configFromPreset(getPropFirmPreset(nextId)!)");
         expect(simulator).toContain("setScenarios([])");
         expect(simulator).toContain("setPresetId(\"custom\")");
-        expect(simulator).toContain("structuredClone(current)");
         expect(simulator).toContain("setCustomOriginPresetId(presetId)");
+        expect(simulator).toContain("customConfigFromPreset(getPropFirmPreset(presetId)!");
         expect(simulator).toContain("originPreset ? `${presetDisplayName(originPreset.id, copy)} · ${copy.customSuffix}` : copy.customShort");
         expect(es.dashboard.propFirm.customShort).toBe("Personalizado");
         expect(en.dashboard.propFirm.customShort).toBe("Custom");
+    });
+
+    it("groups reference and verified presets and keeps safe official links", () => {
+        expect(simulator).toContain("REFERENCE_PROP_FIRM_PRESETS.map");
+        expect(simulator).toContain("VERIFIED_PROP_FIRM_PRESETS.map");
+        expect(simulator).toContain('rel="noopener noreferrer"');
+        expect(es.dashboard.propFirm.verifiedRules).toBe("Reglas verificadas");
+        expect(en.dashboard.propFirm.verifiedRules).toBe("Verified rules");
+        expect(es.dashboard.propFirm.partialRulesWarning).toContain("NodoQuant aproxima");
+        expect(en.dashboard.propFirm.partialRulesWarning).toContain("NodoQuant approximates");
     });
 });

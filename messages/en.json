@@ -1719,7 +1719,15 @@
                 "reference-2-step-standard": "2-Step Standard"
             },
             "templates": "TEMPLATES",
+            "referenceTemplates": "REFERENCE TEMPLATES",
+            "verifiedFirms": "FIRMS · VERIFIED RULES",
             "referenceTemplate": "Reference template · Not associated with a specific firm",
+            "verifiedRules": "Verified rules",
+            "verified": "Verified",
+            "officialSource": "Official source",
+            "basedOnModified": "Based on {name} · Modified",
+            "partialRulesWarning": "This evaluation includes rules that NodoQuant approximates with the available data.",
+            "trademarkDisclaimer": "Trademarks belong to their respective owners. NodoQuant is not affiliated with these firms.",
             "updated": "Updated",
             "source": "Source",
             "customizeRules": "Customize these rules",
@@ -1777,6 +1785,27 @@
                 "normalizedTradeSequence": "The normalized trade sequence is resampled to generate 1,000 Monte Carlo paths."
             },
             "methodologyRules": "Each path applies the configured targets, loss limits, phases, and trading days. The probability is the share of paths that completed every phase. It does not reconstruct intraday movements or guarantee future results.",
+            "rulesHeading": "RULES",
+            "simulationHeading": "SIMULATION",
+            "dataHeading": "DATA",
+            "limitationsHeading": "LIMITATIONS",
+            "verifiedMethodologyRules": "The challenge rules were verified against the listed sources.",
+            "methodologyData": "The current simulation uses a reconstruction from the persisted historical distribution.",
+            "methodologyLimitations": "It does not reconstruct real intraday equity. A verified official rule does not make the result official.",
+            "ruleFidelity": "Fidelity by rule",
+            "fidelity": {
+                "exact": "Exact",
+                "approximated": "Approximated",
+                "unsupported": "Unsupported"
+            },
+            "fidelityRules": {
+                "dailyLoss": "Daily loss",
+                "maxLoss": "Maximum loss",
+                "phases": "Phases and targets",
+                "consistency": "Consistency",
+                "intradayEquity": "Intraday equity",
+                "specialRules": "Special rules"
+            },
             "primaryRisk": {
                 "dailyLoss": "The main risk in this configuration is the daily loss limit.",
                 "maxLoss": "The main risk in this configuration is the maximum loss limit.",

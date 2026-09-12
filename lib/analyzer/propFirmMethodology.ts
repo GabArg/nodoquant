@@ -1,4 +1,5 @@
 import type { StrategySimulationData } from "./propFirm";
+import type { PropFirmOverallFidelity, PropFirmPreset } from "./propFirmPresets";
 
 export type SimulationQuality = "high" | "medium" | "limited";
 
@@ -14,4 +15,14 @@ export function getSimulationQuality(data: StrategySimulationData): SimulationQu
 
 export function methodologyKey(data: StrategySimulationData): "normalizedTradeSequence" | "histogramApproximation" {
     return data.source;
+}
+
+const qualityRank: Record<SimulationQuality, number> = { limited: 0, medium: 1, high: 2 };
+
+/** A verified ruleset never raises the quality supported by the available strategy data. */
+export function getPresetSimulationQuality(data: StrategySimulationData, preset?: PropFirmPreset): SimulationQuality {
+    const dataQuality = getSimulationQuality(data);
+    const presetQuality = preset?.fidelity?.overall as PropFirmOverallFidelity | undefined;
+    if (!presetQuality) return dataQuality;
+    return qualityRank[dataQuality] <= qualityRank[presetQuality] ? dataQuality : presetQuality;
 }
