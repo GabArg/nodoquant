@@ -13,8 +13,8 @@ export async function GET(
         }
 
         const authClient = createClient();
-        const { data: { session } } = await authClient.auth.getSession();
-        const userId = session?.user?.id;
+        const { data: { user } } = await authClient.auth.getUser();
+        const userId = user?.id;
 
         const supabase = getSupabaseServer();
         if (!supabase) {

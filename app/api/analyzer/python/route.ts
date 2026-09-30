@@ -37,8 +37,8 @@ export async function POST(req: NextRequest) {
         // 2. Save results to Supabase Strategy Reports (Phase 1 Data Model)
         // Check active session
         const authClient = createClient();
-        const { data: { session } } = await authClient.auth.getSession();
-        const user_id = session?.user?.id ?? null;
+        const { data: { user } } = await authClient.auth.getUser();
+        const user_id = user?.id ?? null;
 
         const supabase = getSupabaseServer();
         let reportId = null;

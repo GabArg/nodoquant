@@ -1,5 +1,4 @@
-import { createClient } from "./auth/client";
-import { getSupabaseServer } from "./supabase";
+import { trackEvent as sendTrackEvent } from "./trackEvent";
 
 export type AnalyticsEvent =
     | "certificate_view"
@@ -17,8 +16,8 @@ export type AnalyticsEvent =
 export type EventProperties = Record<string, unknown>;
 
 /**
- * Tracks an analytics event.
- * Works on both client and server.
+ * Tracks an analytics event cleanly via HTTP /api/track.
+ * Decouples the client bundle from database credentials and server-only modules.
  */
 export async function trackEvent(
     name: AnalyticsEvent,
@@ -26,27 +25,20 @@ export async function trackEvent(
     userId?: string
 ): Promise<void> {
     try {
-        const isServer = typeof window === "undefined";
-        const supabase = isServer ? getSupabaseServer() : createClient();
+        const payload: Record<string, unknown> = {
+            ...properties,
+            user_id: userId,
+        };
 
-        if (!supabase) return;
-
-        const { error } = await supabase
-            .from("analytics_events")
-            .insert({
-                event_name: name,
-                properties,
-                user_id: userId,
-                url: isServer ? undefined : window.location.href,
-                // Add simple session/fingerprint if available
-                session_id: isServer
-                    ? "server"
-                    : localStorage.getItem("nq_session_id") || undefined,
-            });
-
-        if (error) {
-            console.error("Analytics tracking error:", error);
+        if (typeof window !== "undefined") {
+            payload.url = window.location.href;
+            const sessionId = localStorage.getItem("nq_session_id");
+            if (sessionId) {
+                payload.session_id = sessionId;
+            }
         }
+
+        await sendTrackEvent(name, payload);
     } catch (error: unknown) {
         console.error("Analytics tracking exception:", error);
     }

@@ -2,6 +2,7 @@ import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { notFound } from "next/navigation";
 import PublicReportView from "@/components/report/PublicReportView";
 import type { Metadata } from "next";
+import { createClient } from "@/lib/auth/server";
 
 export const revalidate = 3600; // Cache for 1 hour
 
@@ -63,6 +64,15 @@ export default async function PublicReportPage({ params }: PageProps) {
 
     if (error || !data) {
         console.warn(`[Public Report] Failed to find id ${params.report_id}:`, error?.message);
+        return notFound();
+    }
+
+    const authClient = createClient();
+    const { data: { user } } = await authClient.auth.getUser();
+    const isOwner = Boolean(user && user.id === data.user_id);
+
+    // Si el análisis no es público y el usuario actual no es el dueño, denegar acceso
+    if (!data.is_public && !isOwner) {
         return notFound();
     }
 

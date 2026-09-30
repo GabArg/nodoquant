@@ -1,4 +1,6 @@
 import { getSupabaseServer } from "@/lib/supabase";
+import { createClient } from "@/lib/auth/server";
+import { isUserAdmin } from "@/lib/auth/admin";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 
@@ -7,20 +9,15 @@ import Link from "next/link";
  * Displays high-level stats of the viral loop and user activity.
  */
 export default async function AdminMetricsPage({ params }: { params: { locale: string } }) {
+    const authClient = createClient();
+    const { data: { user } } = await authClient.auth.getUser();
+
+    if (!user || !isUserAdmin(user)) {
+        notFound();
+    }
+
     const supabase = getSupabaseServer();
     if (!supabase) return <div>Database configuration error</div>;
-
-    // Direct check for admin access (simple version for now)
-    // In a real app, this would check a 'role' or 'is_admin' field in profiles.
-    const { data: { user } } = await supabase.auth.getUser();
-
-    // For now, let's allow access if the email is @nodoquant.com or if we are in dev mode
-    const isAdmin = user?.email?.endsWith('@nodoquant.com') || process.env.NODE_ENV === 'development';
-
-    // If not admin, return 404 to hide the page existence
-    if (!isAdmin) {
-        // notFound(); // Uncomment for production
-    }
 
     // Fetch stats
     const { data: events, error } = await supabase

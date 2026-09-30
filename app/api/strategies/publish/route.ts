@@ -6,9 +6,9 @@ import { generateUniqueSlug } from "@/lib/slugs";
 export async function POST(req: NextRequest) {
     try {
         const authClient = createClient();
-        const { data: { session } } = await authClient.auth.getSession();
+        const { data: { user } } = await authClient.auth.getUser();
 
-        if (!session) {
+        if (!user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
             .from("public_strategy_profiles")
             .upsert({
                 report_id,
-                user_id: session.user.id,
+                user_id: user.id,
                 slug: finalSlug,
                 strategy_name,
                 description: description || null,

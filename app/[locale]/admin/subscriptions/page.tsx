@@ -1,6 +1,6 @@
 import { getSupabaseServer } from "@/lib/supabase";
 import { createClient } from "@/lib/auth/server";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +9,11 @@ export default async function AdminSubscriptionsPage() {
     const { data: { user } } = await authClient.auth.getUser();
 
     if (!user) redirect("/login");
+
+    const { isUserAdmin } = await import("@/lib/auth/admin");
+    if (!isUserAdmin(user)) {
+        notFound();
+    }
 
     const supabase = getSupabaseServer();
     if (!supabase) return <div>DB Error</div>;
