@@ -64,7 +64,7 @@ export async function middleware(request: NextRequest) {
     const pathWithoutLocale =
         request.nextUrl.pathname.replace(/^\/(en|es)/, "");
 
-    const protectedPaths = ["/dashboard", "/account"];
+    const protectedPaths = ["/dashboard", "/account", "/admin"];
     const isProtected = protectedPaths.some((path) =>
         pathWithoutLocale.startsWith(path)
     );

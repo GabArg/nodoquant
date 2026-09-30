@@ -18,9 +18,9 @@ export async function POST(req: NextRequest) {
         }
 
         const authClient = createClient();
-        const { data: { session } } = await authClient.auth.getSession();
-        const plan = session?.user?.id
-            ? await getUserPlanStatus(session.user.id)
+        const { data: { user } } = await authClient.auth.getUser();
+        const plan = user?.id
+            ? await getUserPlanStatus(user.id)
             : null;
 
         if (!plan?.isPro && trades.length > FREE_PLAN_LIMITS.MAX_TRADES_PER_ANALYSIS) {
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
 
         // 2. Save results to Supabase Strategy Reports (Phase 1 Data Model)
         // Check active session
-        const user_id = session?.user?.id ?? null;
+        const user_id = user?.id ?? null;
 
         const supabase = getSupabaseServer();
         let reportId = null;

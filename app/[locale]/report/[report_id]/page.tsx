@@ -78,6 +78,11 @@ export default async function PublicReportPage({ params }: PageProps) {
     const { data: { user } } = await authClient.auth.getUser();
     const isOwner = Boolean(user && user.id === data.user_id);
 
+    // Si el análisis no es público y el usuario actual no es el dueño, denegar acceso
+    if (!data.is_public && !isOwner) {
+        return notFound();
+    }
+
     return (
         <main className="bg-[#050505]">
             <PublicReportView report={data} isOwner={isOwner} />

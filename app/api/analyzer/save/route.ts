@@ -82,10 +82,10 @@ export async function POST(req: NextRequest) {
         // 2. Auth & ownership
         const authClient = createClient();
         const {
-            data: { session },
-        } = await authClient.auth.getSession();
+            data: { user },
+        } = await authClient.auth.getUser();
 
-        if (!session?.user?.id) {
+        if (!user?.id) {
             return NextResponse.json(
                 {
                     ok: false,
@@ -97,8 +97,8 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const user_id = session.user.id;
-        const sessionEmail = session.user.email ?? null;
+        const user_id = user.id;
+        const sessionEmail = user.email ?? null;
 
         const supabase = getSupabaseServer();
         const entitlement = await getUserEntitlement(supabase, {
@@ -406,8 +406,8 @@ export async function POST(req: NextRequest) {
 
                 if (!claimError && claimed) {
                     const userName =
-                        session.user.user_metadata?.full_name ||
-                        session.user.user_metadata?.name ||
+                        user.user_metadata?.full_name ||
+                        user.user_metadata?.name ||
                         "Trader";
 
                     const reportUrl = `${getBaseUrl()}/report/${reportId}`;
