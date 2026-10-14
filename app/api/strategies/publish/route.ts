@@ -3,6 +3,8 @@ import { createClient } from "@/lib/auth/server";
 import { getSupabaseServer } from "@/lib/supabase";
 import { generateUniqueSlug } from "@/lib/slugs";
 
+const SAFE_ID_REGEX = /^[a-zA-Z0-9_-]+$/;
+
 export async function POST(req: NextRequest) {
     try {
         const authClient = createClient();
@@ -17,7 +19,7 @@ export async function POST(req: NextRequest) {
             report_id,
             strategy_name,
             description,
-            visibility, // 'public' | 'private' | 'unlisted'
+            visibility = "public", // 'public' | 'private' | 'unlisted'
             market,
             symbol,
             score,
@@ -28,25 +30,45 @@ export async function POST(req: NextRequest) {
             trades_count
         } = body;
 
-        if (!report_id || !strategy_name) {
-            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+        if (!report_id || !SAFE_ID_REGEX.test(report_id) || !strategy_name) {
+            return NextResponse.json({ error: "Missing or invalid required fields" }, { status: 400 });
         }
+
+        const safeVisibility: "public" | "private" | "unlisted" =
+            visibility === "private" || visibility === "unlisted" ? visibility : "public";
 
         const supabase = getSupabaseServer();
         if (!supabase) {
             return NextResponse.json({ error: "Database not configured" }, { status: 500 });
         }
 
-        // 1. Generate unique slug
+        // 1. Verify ownership of the source report before any modification
+        const { data: analysis, error: fetchError } = await supabase
+            .from("trade_analysis")
+            .select("id, user_id, is_public")
+            .eq("id", report_id)
+            .single();
+
+        if (fetchError || !analysis) {
+            return NextResponse.json({ error: "Reporte no encontrado" }, { status: 404 });
+        }
+
+        // Strict authorization: report must belong to the authenticated user.
+        // Rejects reports belonging to other users or anonymous reports (user_id === null).
+        if (!analysis.user_id || analysis.user_id !== user.id) {
+            return NextResponse.json({ error: "No autorizado para publicar este reporte" }, { status: 403 });
+        }
+
+        // 2. Generate unique slug
         const finalSlug = await generateUniqueSlug(strategy_name, 'public_strategy_profiles');
 
-        // 2. Determine Tier
+        // 3. Determine Tier
         let tier = "Weak Edge";
         if (score >= 90) tier = "Elite";
         else if (score >= 75) tier = "Strong Edge";
         else if (score >= 60) tier = "Moderate Edge";
 
-        // 3. Upsert into public_strategy_profiles
+        // 4. Upsert into public_strategy_profiles
         const { data, error } = await supabase
             .from("public_strategy_profiles")
             .upsert({
@@ -55,7 +77,7 @@ export async function POST(req: NextRequest) {
                 slug: finalSlug,
                 strategy_name,
                 description: description || null,
-                visibility: visibility || 'public',
+                visibility: safeVisibility,
                 market: market || "Unknown",
                 symbol: symbol || "Unknown",
                 score: score || 0,
@@ -75,11 +97,12 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Failed to save strategy profile" }, { status: 500 });
         }
 
-        // 4. Update the source report accessibility
+        // 5. Update the source report accessibility (scoped strictly to owner)
         await supabase
             .from("trade_analysis")
-            .update({ is_public: visibility !== 'private' })
-            .eq("id", report_id);
+            .update({ is_public: safeVisibility !== 'private' })
+            .eq("id", report_id)
+            .eq("user_id", user.id);
 
         return NextResponse.json({ ok: true, slug: data.slug });
 

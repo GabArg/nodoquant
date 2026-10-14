@@ -1,14 +1,18 @@
 import { ImageResponse } from 'next/og';
 import { getSupabaseServer } from "@/lib/supabase";
+import { createClient } from "@/lib/auth/server";
+import { canAccessStrategyProfile } from "@/lib/auth/reportAccess";
 
 export const runtime = 'edge';
+
+const SAFE_ID_REGEX = /^[a-zA-Z0-9_-]+$/;
 
 export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
         const slug = searchParams.get('slug');
 
-        if (!slug) return new Response('Missing slug', { status: 400 });
+        if (!slug || !SAFE_ID_REGEX.test(slug)) return new Response('Not Found', { status: 404 });
 
         const supabase = getSupabaseServer();
         if (!supabase) return new Response('DB Error', { status: 500 });
@@ -20,6 +24,13 @@ export async function GET(req: Request) {
             .single();
 
         if (error || !strategy) return new Response('Not Found', { status: 404 });
+
+        const authClient = createClient();
+        const { data: { user } } = await authClient.auth.getUser();
+
+        if (!canAccessStrategyProfile(strategy, user?.id)) {
+            return new Response('Not Found', { status: 404 });
+        }
 
         const score = Math.round(strategy.score || 0);
         const wr = strategy.win_rate * (strategy.win_rate <= 1 ? 100 : 1);
@@ -33,6 +44,12 @@ export async function GET(req: Request) {
         let tierColor = "#6366f1"; // indigo-500
         if (score >= 90) tierColor = "#10b981"; // emerald-500
         else if (score < 60) tierColor = "#f43f5e"; // rose-500
+
+        const cacheControl = strategy.visibility === 'private'
+            ? 'private, no-cache, no-store, must-revalidate'
+            : strategy.visibility === 'unlisted'
+                ? 'private, max-age=3600'
+                : 'public, max-age=86400';
 
         return new ImageResponse(
             (
@@ -119,7 +136,7 @@ export async function GET(req: Request) {
                 width: 1200,
                 height: 630,
                 headers: {
-                    'Cache-Control': 'public, max-age=86400',
+                    'Cache-Control': cacheControl,
                 },
             }
         );

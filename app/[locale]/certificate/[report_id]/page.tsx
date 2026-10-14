@@ -5,6 +5,10 @@ import CertificateActions from "@/components/strategy/CertificateActions";
 import Link from "next/link";
 import { Metadata } from "next";
 import { trackEvent } from "@/lib/analytics";
+import { createClient } from "@/lib/auth/server";
+import { canAccessReport } from "@/lib/auth/reportAccess";
+
+export const dynamic = "force-dynamic";
 
 interface Props {
     params: {
@@ -14,16 +18,33 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const id = params.report_id;
+    if (!id || !/^[a-zA-Z0-9_-]+$/.test(id)) {
+        return {
+            title: "Certificate Not Found — NodoQuant",
+            robots: { index: false, follow: false },
+        };
+    }
+
+    const authClient = createClient();
+    const { data: { user } } = await authClient.auth.getUser();
+
     const supabase = getSupabaseServer();
     if (!supabase) return { title: "NodoQuant" };
 
     const { data: report } = await supabase
         .from("trade_analysis")
-        .select("metrics_json")
-        .or(`id.eq.${params.report_id},public_id.eq.${params.report_id}`)
+        .select("metrics_json, is_public, user_id")
+        .or(`id.eq.${id},public_id.eq.${id}`)
         .single();
 
-    if (!report) return { title: "Certificate Not Found — NodoQuant" };
+    if (!report || !canAccessReport(report, user?.id)) {
+        return {
+            title: "Certificate Not Found — NodoQuant",
+            description: "The requested certificate does not exist or is private.",
+            robots: { index: false, follow: false },
+        };
+    }
 
     const metrics = report.metrics_json as any;
     const score = Math.round(metrics?.strategy_score ?? metrics?.quant_score ?? 0);
@@ -32,16 +53,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title: `Strategy Score: ${score} — NodoQuant Certified`,
         description: `Verified trading strategy analysis with a score of ${score}/100. View performance metrics and statistical robustness.`,
         openGraph: {
-            images: [`/api/og/certificate?id=${params.report_id}`],
+            images: [`/api/og/certificate?id=${id}`],
         },
         twitter: {
             card: "summary_large_image",
-            images: [`/api/og/certificate?id=${params.report_id}`],
+            images: [`/api/og/certificate?id=${id}`],
         }
     };
 }
 
 export default async function CertificatePage({ params }: Props) {
+    const id = params.report_id;
+    if (!id || !/^[a-zA-Z0-9_-]+$/.test(id)) notFound();
+
     const supabase = getSupabaseServer();
     if (!supabase) return <div>Database error</div>;
 
@@ -51,6 +75,7 @@ export default async function CertificatePage({ params }: Props) {
         .select(`
             id,
             public_id,
+            user_id,
             dataset_name,
             file_name,
             trades_count,
@@ -60,10 +85,17 @@ export default async function CertificatePage({ params }: Props) {
             is_public,
             strategies ( name )
         `)
-        .or(`id.eq.${params.report_id},public_id.eq.${params.report_id}`)
+        .or(`id.eq.${id},public_id.eq.${id}`)
         .single();
 
     if (error || !report) notFound();
+
+    const authClient = createClient();
+    const { data: { user } } = await authClient.auth.getUser();
+
+    if (!canAccessReport(report, user?.id)) {
+        notFound();
+    }
 
     const metrics = report.metrics_json as any ?? {};
     const score = metrics?.strategy_score ?? metrics?.quant_score ?? 0;
@@ -101,7 +133,7 @@ export default async function CertificatePage({ params }: Props) {
                         <span className="text-xl font-bold text-white tracking-tighter">NodoQuant</span>
                     </Link>
                     <Link
-                        href={`/${params.locale}/report/${report.public_id}`}
+                        href={`/${params.locale}/report/${report.public_id || report.id}`}
                         className="text-xs font-black text-gray-400 hover:text-indigo-400 uppercase tracking-widest transition-colors flex items-center gap-2"
                     >
                         View full strategy analysis

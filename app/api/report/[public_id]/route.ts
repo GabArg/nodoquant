@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServer } from "@/lib/supabase";
 import { createClient } from "@/lib/auth/server";
 import { getUserSubscription, isProUser } from "@/lib/payments/subscription";
+import { canAccessReport } from "@/lib/auth/reportAccess";
 
 export const dynamic = "force-dynamic";
+
+const SAFE_ID_REGEX = /^[a-zA-Z0-9_-]+$/;
 
 interface StrategySummary {
     name: string | null;
@@ -43,6 +46,9 @@ export async function GET(
         }
 
         const { public_id } = params;
+        if (!public_id || !SAFE_ID_REGEX.test(public_id)) {
+            return NextResponse.json({ error: "Report not found" }, { status: 404 });
+        }
 
         const { data, error } = await supabase
             .from("trade_analysis")
@@ -50,6 +56,7 @@ export async function GET(
                 id,
                 public_id,
                 user_id,
+                is_public,
                 dataset_name,
                 file_name,
                 trades_count,
@@ -61,11 +68,17 @@ export async function GET(
                 created_at,
                 strategies ( name, category )
             `)
-            .eq("public_id", public_id)
-            .eq("is_public", true)
+            .or(`public_id.eq.${public_id},id.eq.${public_id}`)
             .single();
 
         if (error || !data) {
+            return NextResponse.json({ error: "Report not found" }, { status: 404 });
+        }
+
+        const authClient = createClient();
+        const { data: { user } } = await authClient.auth.getUser();
+
+        if (!canAccessReport(data, user?.id)) {
             return NextResponse.json({ error: "Report not found" }, { status: 404 });
         }
 
@@ -75,8 +88,6 @@ export async function GET(
         // Build the equity curve from metrics_json if available
         const equityCurve = getNumberArray(metrics, "equity_curve") ?? [];
 
-        const authClient = createClient();
-        const { data: { user } } = await authClient.auth.getUser();
         const can_edit = Boolean(user && user.id === data.user_id);
 
         let reportIsPro = false;
@@ -135,7 +146,18 @@ export async function GET(
             raw_metrics_json: data.metrics_json ?? {},
         };
 
-        return NextResponse.json({ ok: true, data: result });
+        const cacheControl = data.is_public
+            ? "public, s-maxage=3600, stale-while-revalidate=86400"
+            : "private, no-cache, no-store, must-revalidate";
+
+        return NextResponse.json(
+            { ok: true, data: result },
+            {
+                headers: {
+                    "Cache-Control": cacheControl,
+                },
+            }
+        );
     } catch (err: unknown) {
         console.error("[PublicReport] Error:", err);
         return NextResponse.json({ error: "Internal error" }, { status: 500 });

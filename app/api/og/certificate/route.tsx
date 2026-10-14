@@ -1,7 +1,11 @@
 import { ImageResponse } from "next/og";
 import { getSupabaseServer } from "@/lib/supabase";
+import { createClient } from "@/lib/auth/server";
+import { canAccessReport } from "@/lib/auth/reportAccess";
 
 export const runtime = "edge";
+
+const SAFE_ID_REGEX = /^[a-zA-Z0-9_-]+$/;
 
 interface StrategySummary {
     name: string | null;
@@ -23,7 +27,7 @@ export async function GET(req: Request) {
         const { searchParams } = new URL(req.url);
         const id = searchParams.get("id");
 
-        if (!id) return new Response("Missing ID", { status: 400 });
+        if (!id || !SAFE_ID_REGEX.test(id)) return new Response("Not Found", { status: 404 });
 
         const supabase = getSupabaseServer();
         if (!supabase) return new Response("DB Error", { status: 500 });
@@ -33,6 +37,8 @@ export async function GET(req: Request) {
             .select(`
                 id,
                 public_id,
+                user_id,
+                is_public,
                 dataset_name,
                 file_name,
                 trades_count,
@@ -45,6 +51,13 @@ export async function GET(req: Request) {
             .single();
 
         if (error || !report) return new Response("Not Found", { status: 404 });
+
+        const authClient = createClient();
+        const { data: { user } } = await authClient.auth.getUser();
+
+        if (!canAccessReport(report, user?.id)) {
+            return new Response("Not Found", { status: 404 });
+        }
 
         const metrics = isRecord(report.metrics_json) ? report.metrics_json : {};
         const strategy = (report.strategies as StrategySummary[] | null)?.[0] ?? null;
@@ -157,7 +170,9 @@ export async function GET(req: Request) {
                 width: 1200,
                 height: 630,
                 headers: {
-                    "Cache-Control": "public, max-age=86400",
+                    "Cache-Control": report.is_public
+                        ? "public, max-age=86400"
+                        : "private, no-cache, no-store, must-revalidate",
                 },
             }
         );

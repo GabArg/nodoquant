@@ -3,31 +3,53 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import StrategyDetailView from "@/components/strategy/StrategyDetailView";
 import { getTranslations } from "next-intl/server";
+import { createClient } from "@/lib/auth/server";
+import { canAccessStrategyProfile, isStrategyProfileIndexable } from "@/lib/auth/reportAccess";
 
 export const dynamic = "force-dynamic";
+
+const SAFE_SLUG_REGEX = /^[a-zA-Z0-9_-]+$/;
 
 interface Props {
     params: { slug: string; locale: string };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const slug = params.slug;
+    if (!slug || !SAFE_SLUG_REGEX.test(slug)) {
+        return {
+            title: "Strategy Not Found — NodoQuant",
+            robots: { index: false, follow: false },
+        };
+    }
+
+    const authClient = createClient();
+    const { data: { user } } = await authClient.auth.getUser();
+
     const supabase = getSupabaseServer();
     if (!supabase) return { title: "Strategy Analysis" };
 
     const { data: strategy } = await supabase
         .from("public_strategy_profiles")
-        .select("strategy_name, description, symbol, score")
-        .eq("slug", params.slug)
+        .select("strategy_name, description, symbol, score, visibility, user_id")
+        .eq("slug", slug)
         .single();
 
-    if (!strategy) return { title: "Strategy Not Found" };
+    if (!strategy || !canAccessStrategyProfile(strategy, user?.id)) {
+        return {
+            title: "Strategy Not Found — NodoQuant",
+            robots: { index: false, follow: false },
+        };
+    }
 
     const title = `${strategy.strategy_name} (Score ${strategy.score}/100) — Strategy Profile | NodoQuant`;
     const desc = strategy.description || `View quantitative performance analysis and robustness metrics for the ${strategy.strategy_name} trading strategy.`;
+    const isIndexable = isStrategyProfileIndexable(strategy);
 
     return {
         title,
         description: desc,
+        robots: isIndexable ? undefined : { index: false, follow: false },
         openGraph: {
             title,
             description: desc,
@@ -48,15 +70,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             description: desc,
             images: [`https://nodoquant.com/api/og/strategy?slug=${params.slug}`],
         },
-        alternates: {
+        alternates: isIndexable ? {
             canonical: `https://nodoquant.com/${params.locale}/strategy/${params.slug}`,
-        }
+        } : undefined
     };
 }
 
 export default async function StrategyPublicPage({ params }: Props) {
+    const slug = params.slug;
+    if (!slug || !SAFE_SLUG_REGEX.test(slug)) return notFound();
+
     const supabase = getSupabaseServer();
     if (!supabase) return notFound();
+
+    const authClient = createClient();
+    const { data: { user } } = await authClient.auth.getUser();
 
     const t = await getTranslations({ locale: params.locale, namespace: "strategies.profile" });
 
@@ -70,13 +98,16 @@ export default async function StrategyPublicPage({ params }: Props) {
                 created_at
             )
         `)
-        .eq("slug", params.slug)
+        .eq("slug", slug)
         .single();
 
-    if (error || !strategy) return notFound();
+    if (error || !strategy || !canAccessStrategyProfile(strategy, user?.id)) {
+        return notFound();
+    }
 
-    // JSON-LD Structured Data (Dataset)
-    const jsonLd = {
+    // JSON-LD Structured Data (Dataset) - Only emit for indexable/public strategies
+    const isIndexable = isStrategyProfileIndexable(strategy);
+    const jsonLd = isIndexable ? {
         "@context": "https://schema.org",
         "@type": "Dataset",
         "name": strategy.strategy_name,
@@ -98,14 +129,16 @@ export default async function StrategyPublicPage({ params }: Props) {
             { "@type": "PropertyValue", "name": "Profit Factor", "value": strategy.profit_factor },
             { "@type": "PropertyValue", "name": "Strategy Score", "value": strategy.score }
         ]
-    };
+    } : null;
 
     return (
         <>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
+            {jsonLd && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                />
+            )}
             <StrategyDetailView
                 strategy={strategy}
                 locale={params.locale}

@@ -10,12 +10,14 @@ import MonteCarloChart from "./MonteCarloChart";
 import MonteCarloSummary from "./MonteCarloSummary";
 import StrategyEvolution from "./Dashboard/StrategyEvolution";
 import ManualPaymentModal from "./ManualPaymentModal";
+import Link from "next/link";
 import { trackEvent } from "@/lib/trackEvent";
 
 interface Props {
     metrics: FullMetrics;
     analysisId?: string | null;
     isPro?: boolean;
+    isAuthenticated?: boolean;
 }
 
 function PrimaryCTA({ onClick }: { onClick: () => void }) {
@@ -233,7 +235,7 @@ function LockedSection({ title, desc, children, isPro = false, onUnlockClick }: 
     );
 }
 
-export default function FullReport({ metrics, analysisId, isPro }: Props) {
+export default function FullReport({ metrics, analysisId, isPro, isAuthenticated }: Props) {
     const t = useTranslations("analyzer.report");
     const tFunnel = useTranslations("analyzer.funnel");
     const locale = useLocale();
@@ -527,33 +529,57 @@ export default function FullReport({ metrics, analysisId, isPro }: Props) {
 
                 <div className="flex flex-col gap-4">
                     {analysisId && (
-                        <div className="space-y-4">
-                            <button 
-                                onClick={copyPublicLink}
-                                className={`w-full py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-xl ${
-                                    linkCopied
-                                    ? "bg-emerald-500 text-white shadow-emerald-500/20"
-                                    : "bg-indigo-600 text-white hover:bg-indigo-500 shadow-indigo-600/20"
-                                }`}
-                            >
-                                {linkCopied ? t("share.linkCopied") : t("share.copyLink")}
-                            </button>
-                            
-                            <div className="flex gap-4">
+                        isAuthenticated ? (
+                            <div className="space-y-4">
                                 <button 
-                                    onClick={shareWhatsApp} 
-                                    className="flex-1 py-4 rounded-2xl bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 border border-[#25D366]/20 text-[10px] font-black uppercase tracking-widest transition-all"
+                                    onClick={copyPublicLink}
+                                    className={`w-full py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-xl ${
+                                        linkCopied
+                                        ? "bg-emerald-500 text-white shadow-emerald-500/20"
+                                        : "bg-indigo-600 text-white hover:bg-indigo-500 shadow-indigo-600/20"
+                                    }`}
                                 >
-                                    {t("share.whatsapp")}
+                                    {linkCopied ? t("share.linkCopied") : t("share.copyLink")}
                                 </button>
-                                <button 
-                                    onClick={shareTwitter} 
-                                    className="flex-1 py-4 rounded-2xl bg-black border border-white/20 text-white hover:bg-white/10 text-[10px] font-black uppercase tracking-widest transition-all"
-                                >
-                                    {t("share.twitter")}
-                                </button>
+                                
+                                <div className="flex gap-4">
+                                    <button 
+                                        onClick={shareWhatsApp} 
+                                        className="flex-1 py-4 rounded-2xl bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 border border-[#25D366]/20 text-[10px] font-black uppercase tracking-widest transition-all"
+                                    >
+                                        {t("share.whatsapp")}
+                                    </button>
+                                    <button 
+                                        onClick={shareTwitter} 
+                                        className="flex-1 py-4 rounded-2xl bg-black border border-white/20 text-white hover:bg-white/10 text-[10px] font-black uppercase tracking-widest transition-all"
+                                    >
+                                        {t("share.twitter")}
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 text-center space-y-3">
+                                <p className="text-xs text-gray-400 font-medium leading-relaxed">
+                                    {locale === "es"
+                                        ? "Este análisis es anónimo y privado. Para proteger tus datos, no se generan enlaces públicos sin una cuenta registrada."
+                                        : "This analysis is anonymous and private. To protect your data, public links are not generated without a registered account."}
+                                </p>
+                                <div className="flex justify-center gap-3 pt-1">
+                                    <Link
+                                        href={`/${locale}/login`}
+                                        className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-colors shadow-lg shadow-indigo-600/20"
+                                    >
+                                        {locale === "es" ? "Iniciar sesión" : "Log In"}
+                                    </Link>
+                                    <Link
+                                        href={`/${locale}/signup`}
+                                        className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors"
+                                    >
+                                        {locale === "es" ? "Crear cuenta" : "Sign Up"}
+                                    </Link>
+                                </div>
+                            </div>
+                        )
                     )}
                 </div>
             </div>
