@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServer } from "@/lib/supabase";
 import { createClient } from "@/lib/auth/server";
+import { applyReportIdentifierFilter } from "@/lib/auth/reportAccess";
+
+const SAFE_ID_REGEX = /^[a-zA-Z0-9_-]+$/;
 
 export async function PUT(
     req: NextRequest,
@@ -24,11 +27,18 @@ export async function PUT(
 
         const { public_id } = params;
 
+        if (!public_id || !SAFE_ID_REGEX.test(public_id)) {
+            return NextResponse.json({ ok: false, error: "Invalid report identifier" }, { status: 400 });
+        }
+
         // Ensure user owns this report and update it
-        const { data, error } = await supabase
+        let updateQuery = supabase
             .from("trade_analysis")
-            .update({ notes })
-            .eq("public_id", public_id)
+            .update({ notes });
+
+        updateQuery = applyReportIdentifierFilter(updateQuery, public_id);
+
+        const { data, error } = await updateQuery
             .eq("user_id", user.id)
             .select("id")
             .single();

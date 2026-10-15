@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import PublicReportView from "@/components/report/PublicReportView";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/auth/server";
-import { canAccessReport } from "@/lib/auth/reportAccess";
+import { canAccessReport, applyReportIdentifierFilter } from "@/lib/auth/reportAccess";
 
 export const dynamic = "force-dynamic";
 
@@ -28,11 +28,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         const { data: { user } } = await authClient.auth.getUser();
 
         const adminClient = getSupabaseAdmin();
-        const { data } = await adminClient
+        const baseQuery = adminClient
             .from("trade_analysis")
-            .select("metrics_json, file_name, trades_count, is_public, user_id")
-            .or(`id.eq.${id},public_id.eq.${id}`)
-            .single();
+            .select("metrics_json, file_name, trades_count, is_public, user_id");
+
+        const { data } = await applyReportIdentifierFilter(baseQuery, id).single();
 
         if (!data || !canAccessReport(data, user?.id)) {
             return {
@@ -78,11 +78,11 @@ export default async function PublicReportPage({ params }: PageProps) {
 
     // Fetch using Admin Privileges
     const adminClient = getSupabaseAdmin();
-    const { data, error } = await adminClient
+    const baseQuery = adminClient
         .from("trade_analysis")
-        .select("*")
-        .or(`id.eq.${id},public_id.eq.${id}`)
-        .single();
+        .select("*");
+
+    const { data, error } = await applyReportIdentifierFilter(baseQuery, id).single();
 
     if (error || !data) {
         console.warn(`[Public Report] Failed to find id ${params.report_id}:`, error?.message);

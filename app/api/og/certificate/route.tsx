@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { getSupabaseServer } from "@/lib/supabase";
 import { createClient } from "@/lib/auth/server";
-import { canAccessReport } from "@/lib/auth/reportAccess";
+import { canAccessReport, applyReportIdentifierFilter } from "@/lib/auth/reportAccess";
 
 export const runtime = "edge";
 
@@ -32,7 +32,7 @@ export async function GET(req: Request) {
         const supabase = getSupabaseServer();
         if (!supabase) return new Response("DB Error", { status: 500 });
 
-        const { data: report, error } = await supabase
+        const baseQuery = supabase
             .from("trade_analysis")
             .select(`
                 id,
@@ -46,9 +46,9 @@ export async function GET(req: Request) {
                 profit_factor,
                 metrics_json,
                 strategies ( name )
-            `)
-            .or(`id.eq.${id},public_id.eq.${id}`)
-            .single();
+            `);
+
+        const { data: report, error } = await applyReportIdentifierFilter(baseQuery, id).single();
 
         if (error || !report) return new Response("Not Found", { status: 404 });
 

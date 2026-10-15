@@ -62,3 +62,33 @@ export function isStrategyProfileIndexable(
     if (!profile) return false;
     return (profile.visibility || "public") === "public";
 }
+
+/**
+ * Standard canonical 36-character UUID regex (8-4-4-4-12 hex format).
+ */
+export const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Validates whether an identifier string is a canonical 36-character UUID representation.
+ */
+export function isUuid(value: string | null | undefined): boolean {
+    if (!value || typeof value !== "string") return false;
+    return UUID_REGEX.test(value.trim());
+}
+
+/**
+ * Safely applies identifier filtering on a Supabase query builder for trade_analysis:
+ * - If the identifier is a valid UUID, searches BOTH primary key `id` and textual `public_id`.
+ * - If the identifier is a textual slug (not a UUID), ONLY searches `public_id` to prevent
+ *   PostgreSQL type conversion error SQLSTATE 22P02 (`invalid input syntax for type uuid`).
+ */
+export function applyReportIdentifierFilter<T extends { or: (clause: string) => any; eq: (column: string, value: any) => any }>(
+    query: T,
+    identifier: string
+): T {
+    const trimmed = identifier.trim();
+    if (isUuid(trimmed)) {
+        return query.or(`id.eq.${trimmed},public_id.eq.${trimmed}`);
+    }
+    return query.eq("public_id", trimmed);
+}

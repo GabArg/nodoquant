@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServer } from "@/lib/supabase";
 import { createClient } from "@/lib/auth/server";
-import { canAccessReport } from "@/lib/auth/reportAccess";
+import { canAccessReport, applyReportIdentifierFilter } from "@/lib/auth/reportAccess";
 
 const SAFE_ID_REGEX = /^[a-zA-Z0-9_-]+$/;
 
@@ -24,13 +24,20 @@ export async function GET(
             return NextResponse.json({ ok: false, error: "Database not configured" }, { status: 500 });
         }
 
-        const { data: report, error } = await supabase
+        const baseQuery = supabase
             .from("trade_analysis")
-            .select("*")
-            .or(`id.eq.${report_id},public_id.eq.${report_id}`)
-            .single();
+            .select("*");
 
-        if (error || !report) {
+        const { data: report, error } = await applyReportIdentifierFilter(baseQuery, report_id).single();
+
+        if (error) {
+            if (error.code !== "PGRST116") {
+                console.error("[Report API] Query error:", error.code, error.message);
+            }
+            return NextResponse.json({ ok: false, error: "Reporte no encontrado" }, { status: 404 });
+        }
+
+        if (!report) {
             return NextResponse.json({ ok: false, error: "Reporte no encontrado" }, { status: 404 });
         }
 

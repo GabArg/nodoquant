@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/auth/server";
+import { applyReportIdentifierFilter } from "@/lib/auth/reportAccess";
+
+const SAFE_ID_REGEX = /^[a-zA-Z0-9_-]+$/;
 
 function generateSlug(name: string, asset?: string | null, timeframe?: string | null): string {
     const parts = [name, asset, timeframe].filter(Boolean);
@@ -90,11 +93,12 @@ export async function POST(req: Request) {
         }
 
         // Link to analysis if provided
-        if (analysis_id && strategy) {
-            const { error: linkError } = await supabase
+        if (analysis_id && typeof analysis_id === "string" && SAFE_ID_REGEX.test(analysis_id) && strategy) {
+            let linkQuery = supabase
                 .from("trade_analysis")
-                .update({ strategy_id: strategy.id })
-                .eq("id", analysis_id)
+                .update({ strategy_id: strategy.id });
+            linkQuery = applyReportIdentifierFilter(linkQuery, analysis_id);
+            const { error: linkError } = await linkQuery
                 .eq("user_id", user.id); // Security: ensure user owns the analysis
 
             if (linkError) {

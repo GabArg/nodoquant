@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/auth/server";
 import { getSupabaseServer } from "@/lib/supabase";
+import { applyReportIdentifierFilter } from "@/lib/auth/reportAccess";
+
+const SAFE_ID_REGEX = /^[a-zA-Z0-9_-]+$/;
 
 function generatePublicId(length = 10): string {
     const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -20,8 +23,8 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         const { analysis_id, show_strategy_name, show_dataset_name } = body;
 
-        if (!analysis_id) {
-            return NextResponse.json({ error: "Falta analysis_id" }, { status: 400 });
+        if (!analysis_id || !SAFE_ID_REGEX.test(analysis_id)) {
+            return NextResponse.json({ error: "Falta o identificador inválido de analysis_id" }, { status: 400 });
         }
 
         const supabase = getSupabaseServer();
@@ -30,11 +33,11 @@ export async function POST(req: NextRequest) {
         }
 
         // Verify ownership
-        const { data: analysis, error: fetchError } = await supabase
+        let fetchQuery = supabase
             .from("trade_analysis")
-            .select("id, user_id, public_id")
-            .eq("id", analysis_id)
-            .single();
+            .select("id, user_id, public_id");
+        fetchQuery = applyReportIdentifierFilter(fetchQuery, analysis_id);
+        const { data: analysis, error: fetchError } = await fetchQuery.single();
 
         if (fetchError || !analysis) {
             return NextResponse.json({ error: "Análisis no encontrado" }, { status: 404 });
@@ -55,7 +58,7 @@ export async function POST(req: NextRequest) {
                 show_strategy_name: show_strategy_name ?? false,
                 show_dataset_name: show_dataset_name ?? false,
             })
-            .eq("id", analysis_id);
+            .eq("id", analysis.id);
 
         if (updateError) {
             console.error("[Report] Share error:", updateError.message);

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/auth/server";
 import { getSupabaseServer } from "@/lib/supabase";
 import { generateUniqueSlug } from "@/lib/slugs";
+import { applyReportIdentifierFilter } from "@/lib/auth/reportAccess";
 
 const SAFE_ID_REGEX = /^[a-zA-Z0-9_-]+$/;
 
@@ -43,11 +44,11 @@ export async function POST(req: NextRequest) {
         }
 
         // 1. Verify ownership of the source report before any modification
-        const { data: analysis, error: fetchError } = await supabase
+        let reportQuery = supabase
             .from("trade_analysis")
-            .select("id, user_id, is_public")
-            .eq("id", report_id)
-            .single();
+            .select("id, user_id, is_public");
+        reportQuery = applyReportIdentifierFilter(reportQuery, report_id);
+        const { data: analysis, error: fetchError } = await reportQuery.single();
 
         if (fetchError || !analysis) {
             return NextResponse.json({ error: "Reporte no encontrado" }, { status: 404 });

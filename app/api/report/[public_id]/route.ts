@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServer } from "@/lib/supabase";
 import { createClient } from "@/lib/auth/server";
 import { getUserSubscription, isProUser } from "@/lib/payments/subscription";
-import { canAccessReport } from "@/lib/auth/reportAccess";
+import { canAccessReport, applyReportIdentifierFilter } from "@/lib/auth/reportAccess";
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +50,7 @@ export async function GET(
             return NextResponse.json({ error: "Report not found" }, { status: 404 });
         }
 
-        const { data, error } = await supabase
+        const baseQuery = supabase
             .from("trade_analysis")
             .select(`
                 id,
@@ -67,11 +67,18 @@ export async function GET(
                 notes,
                 created_at,
                 strategies ( name, category )
-            `)
-            .or(`public_id.eq.${public_id},id.eq.${public_id}`)
-            .single();
+            `);
 
-        if (error || !data) {
+        const { data, error } = await applyReportIdentifierFilter(baseQuery, public_id).single();
+
+        if (error) {
+            if (error.code !== "PGRST116") {
+                console.error("[PublicReport] Query error:", error.code, error.message);
+            }
+            return NextResponse.json({ error: "Report not found" }, { status: 404 });
+        }
+
+        if (!data) {
             return NextResponse.json({ error: "Report not found" }, { status: 404 });
         }
 

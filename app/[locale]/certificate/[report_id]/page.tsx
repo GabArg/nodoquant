@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { trackEvent } from "@/lib/analytics";
 import { createClient } from "@/lib/auth/server";
-import { canAccessReport } from "@/lib/auth/reportAccess";
+import { canAccessReport, applyReportIdentifierFilter } from "@/lib/auth/reportAccess";
 
 export const dynamic = "force-dynamic";
 
@@ -32,11 +32,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const supabase = getSupabaseServer();
     if (!supabase) return { title: "NodoQuant" };
 
-    const { data: report } = await supabase
+    const baseQuery = supabase
         .from("trade_analysis")
-        .select("metrics_json, is_public, user_id")
-        .or(`id.eq.${id},public_id.eq.${id}`)
-        .single();
+        .select("metrics_json, is_public, user_id");
+
+    const { data: report } = await applyReportIdentifierFilter(baseQuery, id).single();
 
     if (!report || !canAccessReport(report, user?.id)) {
         return {
@@ -70,7 +70,7 @@ export default async function CertificatePage({ params }: Props) {
     if (!supabase) return <div>Database error</div>;
 
     // We support both UUID and short public_id for flexibility
-    const { data: report, error } = await supabase
+    const baseQuery = supabase
         .from("trade_analysis")
         .select(`
             id,
@@ -84,9 +84,9 @@ export default async function CertificatePage({ params }: Props) {
             metrics_json,
             is_public,
             strategies ( name )
-        `)
-        .or(`id.eq.${id},public_id.eq.${id}`)
-        .single();
+        `);
+
+    const { data: report, error } = await applyReportIdentifierFilter(baseQuery, id).single();
 
     if (error || !report) notFound();
 
