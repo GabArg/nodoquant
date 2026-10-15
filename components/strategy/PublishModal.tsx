@@ -10,7 +10,7 @@ interface PublishModalProps {
     metrics: {
         score: number;
         win_rate: number;
-        profit_factor: number;
+        profit_factor: number | null;
         trades: number;
         symbol?: string;
         market?: string;

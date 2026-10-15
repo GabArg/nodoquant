@@ -2,6 +2,7 @@
 
 import type { BasicMetrics, FullMetrics } from "@/lib/analyzer/metrics";
 import type { Trade } from "@/lib/analyzer/parser";
+import { formatNominalOrCurrency } from "@/lib/analyzer/currencyDetector";
 import { useTranslations } from "next-intl";
 import { 
   ResponsiveContainer, 
@@ -88,11 +89,14 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
   const worstSession = sessionStats.length > 0 ? [...sessionStats].sort((a, b) => a.avg - b.avg)[0] : null;
 
   // 3. Drawdown Profile
-  const ddValue = Math.abs(metrics.maxDrawdown);
-  const ddLevel = ddValue <= 15 ? "optimal" : ddValue <= 30 ? "stable" : "larger";
+  const ddValue = metrics.maxDrawdown !== null ? Math.abs(metrics.maxDrawdown) : null;
+  const ddLevel = ddValue === null ? "stable" : ddValue <= 15 ? "optimal" : ddValue <= 30 ? "stable" : "larger";
 
   // 4. Winrate dependency
   const dependency = metrics.winrate >= 55 ? "accuracy" : "rr";
+
+  // Feature toggle: Prop Firm simulator is hidden pending a validated model
+  const SHOW_PROP_FIRM = false;
 
   const diagnostics = [
     {
@@ -121,7 +125,9 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
         id: "drawdown",
         title: t("drawdown.title"),
         level: ddLevel === "optimal" ? "positive" : ddLevel === "stable" ? "neutral" : "negative",
-        headline: t("drawdown.explanation", { level: t(`drawdown.${ddLevel}`) }),
+        headline: ddValue !== null
+          ? t("drawdown.explanation", { level: t(`drawdown.${ddLevel}`) })
+          : `Drawdown nominal: ${formatNominalOrCurrency(metrics.maxDrawdownAbs, (fullMetrics as any)?.account_currency)}`,
         tip: t("drawdown.tip"),
         icon: "📉",
     },
@@ -154,16 +160,11 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
     {
         id: "montecarlo",
         title: mcT("title"),
-        level: (fullMetrics?.monteCarlo?.riskOfRuin || 0) < 5 ? "positive" : (fullMetrics?.monteCarlo?.riskOfRuin || 0) < 15 ? "neutral" : "negative",
-        headline: mcT(`levels.${(fullMetrics?.monteCarlo?.riskOfRuin || 0) < 5 ? "positive" : (fullMetrics?.monteCarlo?.riskOfRuin || 0) < 15 ? "neutral" : "negative"}`),
+        level: "neutral",
+        headline: mcT("levels.neutral") || "Simulación de Robustez",
         tip: mcT("tooltip"),
         icon: "🎲",
-        value: fullMetrics?.monteCarlo?.riskOfRuin || 0,
-        extra: [
-            { label: tFunnel("ruinProbLabel"), value: `??? ${tFunnel("mcPlaceholder")}` },
-            { label: tFunnel("expectedDdLabel"), value: `???%` },
-            { label: tFunnel("timeToBreakLabel"), value: `??? trades` }
-        ]
+        value: "En validación",
     }
   ];
 
@@ -210,9 +211,9 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
                        {"value" in d && <span className="text-xs font-black text-indigo-400">{(d as any).value}</span>}
                    </div>
                    <div className="flex items-center gap-2">
-                        <span className={`w-1.5 h-1.5 rounded-full ${isNoEdge && !isPro ? "bg-red-500" : d.level === "positive" ? "bg-emerald-500" : d.level === "negative" ? "bg-red-500" : d.level === "info" ? "bg-blue-500" : "bg-amber-500"}`} />
-                        <span className={`text-[9px] font-black uppercase tracking-widest ${isNoEdge && !isPro ? "text-red-500" : "text-gray-600"}`}>
-                            {isNoEdge && !isPro ? tFunnel("diagnosticNegative") : tFunnel(`diagnostic${d.level.charAt(0).toUpperCase() + d.level.slice(1)}`)}
+                        <span className={`w-1.5 h-1.5 rounded-full ${d.level === "positive" ? "bg-emerald-500" : d.level === "negative" ? "bg-red-500" : d.level === "info" ? "bg-blue-500" : "bg-amber-500"}`} />
+                        <span className="text-[9px] font-black uppercase tracking-widest text-gray-600">
+                            {tFunnel(`diagnostic${d.level.charAt(0).toUpperCase() + d.level.slice(1)}`)}
                         </span>
                    </div>
                 </div>
@@ -245,7 +246,7 @@ export default function StrategyDiagnostics({ metrics, fullMetrics, trades, onAd
         ))}
       </div>
 
-      {fullMetrics?.propFirm && (
+      {SHOW_PROP_FIRM && fullMetrics?.propFirm && (
         <div className="pt-8 border-t border-white/5 space-y-8">
             <div className="flex flex-col items-center">
                 <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-gray-600 mb-2">{pfT("title")}</h3>

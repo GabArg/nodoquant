@@ -9,8 +9,8 @@ export interface OverfitResult {
 }
 
 export function detectOverfitting(opts: {
-    profitFactor: number;
-    maxDrawdown: number;
+    profitFactor: number | null;
+    maxDrawdown: number | null;
     trades: number;
     datasetsCount: number;
     confidenceScore: number;
@@ -21,14 +21,14 @@ export function detectOverfitting(opts: {
     let riskPoints = 0;
     const triggeredRules: string[] = [];
 
-    // Rule 1 — High PF + Small Sample
-    if (profitFactor > 2.5 && trades < 100) {
+    // Rule 1 — High PF + Small Sample (infinite PF also counts if small sample)
+    if ((profitFactor === null || profitFactor > 2.5) && trades < 100) {
         riskPoints += 2;
-        triggeredRules.push("High PF with small sample size");
+        triggeredRules.push(profitFactor === null ? "Undefined/infinite PF with small sample size" : "High PF with small sample size");
     }
 
     // Rule 2 — High PF + High Drawdown
-    if (profitFactor > 2 && maxDrawdown > 50) {
+    if ((profitFactor === null || profitFactor > 2) && maxDrawdown !== null && maxDrawdown > 50) {
         riskPoints += 1;
         triggeredRules.push("High PF combined with high drawdown");
     }
@@ -58,7 +58,7 @@ export function detectOverfitting(opts: {
     }
 
     // Rule 6 — Too-perfect equity curve
-    if (profitFactor > 2.5 && maxDrawdown < 15 && trades < 200) {
+    if ((profitFactor === null || profitFactor > 2.5) && maxDrawdown !== null && maxDrawdown < 15 && trades < 200) {
         riskPoints += 1;
         triggeredRules.push("Suspiciously perfect curve (high PF, low DD, small sample)");
     }
@@ -70,9 +70,13 @@ export function detectOverfitting(opts: {
     }
 
     // Rule 8 — Extreme Profit Factor
-    if (profitFactor > 4 && trades < 300) {
+    if ((profitFactor === null || profitFactor > 4) && trades < 300) {
         riskPoints += 1;
-        triggeredRules.push(`Extremely high PF (${profitFactor.toFixed(2)}) — rare in live trading`);
+        triggeredRules.push(
+            profitFactor === null
+                ? "Infinite PF (zero losses) — rare in extended live trading"
+                : `Extremely high PF (${profitFactor.toFixed(2)}) — rare in live trading`
+        );
     }
 
     // Classification

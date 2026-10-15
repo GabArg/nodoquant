@@ -9,16 +9,20 @@ interface CertificateCardProps {
         market: string;
         symbol: string;
         win_rate: number;
-        profit_factor: number;
+        profit_factor: number | null;
+        isInfiniteProfitFactor?: boolean;
         trades: number;
         published_at?: string;
     };
 }
 
 export default function CertificateCard({ data }: CertificateCardProps) {
-    const { strategy_name, score, market, symbol, win_rate, profit_factor, trades } = data;
+    const { strategy_name, score, market, symbol, win_rate, profit_factor, isInfiniteProfitFactor, trades } = data;
 
     const wr = win_rate > 1 ? win_rate : win_rate * 100;
+    const pfDisplay = profit_factor != null
+        ? Number(profit_factor).toFixed(2)
+        : (isInfiniteProfitFactor ? "∞" : "—");
 
     let tier = "Weak Edge";
     let tierColor = "text-red-400";
@@ -127,7 +131,7 @@ export default function CertificateCard({ data }: CertificateCardProps) {
                         </div>
                         <div>
                             <span className="block text-[10px] font-black uppercase tracking-widest text-gray-600 mb-1">Profit Factor</span>
-                            <span className="text-3xl font-black text-white tabular-nums">{profit_factor.toFixed(2)}</span>
+                            <span className="text-3xl font-black text-white tabular-nums">{pfDisplay}</span>
                         </div>
                         <div>
                             <span className="block text-[10px] font-black uppercase tracking-widest text-gray-600 mb-1">Trades Analyzed</span>

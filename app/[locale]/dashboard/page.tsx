@@ -14,7 +14,12 @@ import TrialBanner from "@/components/nodoquant/TrialBanner";
 
 export const dynamic = "force-dynamic";
 
-function computeQuantScore100(winrate: number, pf: number, dd: number, trades: number): number {
+function computeQuantScore100(
+    winrate: number,
+    pf: number | null,
+    dd: number | null,
+    trades: number
+): number {
     const edge = calcEdgeScore(winrate, pf, dd, trades);
     const health = calcHealthScore(winrate, pf, dd, trades, edge);
     const quant = calcQuantScoreSimple(edge, health, trades, dd);
@@ -60,10 +65,12 @@ export default async function DashboardPage({ params }: { params: { locale: stri
             const sumWinrate = analyses.reduce((acc, curr) => acc + Number(curr.winrate), 0);
             statsList.winrateAvg = sumWinrate / analyses.length;
 
-            const bestAnalysis = analyses.reduce((best, curr) =>
-                Number(curr.profit_factor) > Number(best.profit_factor) ? curr : best
-                , analyses[0]);
-            statsList.bestPF = Number(bestAnalysis.profit_factor);
+            const bestAnalysis = analyses.reduce((best, curr) => {
+                if (curr.profit_factor === null) return curr;
+                if (best.profit_factor === null) return best;
+                return Number(curr.profit_factor) > Number(best.profit_factor) ? curr : best;
+            }, analyses[0]);
+            statsList.bestPF = bestAnalysis.profit_factor != null ? Number(bestAnalysis.profit_factor) : 0;
             statsList.bestPFName = bestAnalysis.file_name || '';
         }
 
@@ -80,8 +87,8 @@ export default async function DashboardPage({ params }: { params: { locale: stri
         const scores = recentAnalyses.map((a) =>
             computeQuantScore100(
                 Number(a.winrate),
-                Number(a.profit_factor),
-                Number(a.max_drawdown),
+                a.profit_factor != null ? Number(a.profit_factor) : null,
+                a.max_drawdown != null ? Number(a.max_drawdown) : null,
                 Number(a.trades_count ?? 0)
             )
         );
@@ -90,24 +97,39 @@ export default async function DashboardPage({ params }: { params: { locale: stri
 
     const chartData = [...recentAnalyses].reverse().map(a => ({
         date: a.created_at,
-        score: computeQuantScore100(Number(a.winrate), Number(a.profit_factor), Number(a.max_drawdown), Number(a.trades_count || 0))
+        score: computeQuantScore100(
+            Number(a.winrate),
+            a.profit_factor != null ? Number(a.profit_factor) : null,
+            a.max_drawdown != null ? Number(a.max_drawdown) : null,
+            Number(a.trades_count || 0)
+        )
     }));
 
     const latestReport = recentAnalyses[0] ? {
         winrate: Number(recentAnalyses[0].winrate),
-        profit_factor: Number(recentAnalyses[0].profit_factor),
-        max_drawdown: Number(recentAnalyses[0].max_drawdown),
+        profit_factor: recentAnalyses[0].profit_factor != null ? Number(recentAnalyses[0].profit_factor) : null,
+        max_drawdown: recentAnalyses[0].max_drawdown != null ? Number(recentAnalyses[0].max_drawdown) : null,
         trades_count: Number(recentAnalyses[0].trades_count || 0),
-        quant_score: computeQuantScore100(Number(recentAnalyses[0].winrate), Number(recentAnalyses[0].profit_factor), Number(recentAnalyses[0].max_drawdown), Number(recentAnalyses[0].trades_count || 0)),
+        quant_score: computeQuantScore100(
+            Number(recentAnalyses[0].winrate),
+            recentAnalyses[0].profit_factor != null ? Number(recentAnalyses[0].profit_factor) : null,
+            recentAnalyses[0].max_drawdown != null ? Number(recentAnalyses[0].max_drawdown) : null,
+            Number(recentAnalyses[0].trades_count || 0)
+        ),
         metrics_json: recentAnalyses[0].metrics_json
     } : null;
 
     const previousReport = recentAnalyses[1] ? {
         winrate: Number(recentAnalyses[1].winrate),
-        profit_factor: Number(recentAnalyses[1].profit_factor),
-        max_drawdown: Number(recentAnalyses[1].max_drawdown),
+        profit_factor: recentAnalyses[1].profit_factor != null ? Number(recentAnalyses[1].profit_factor) : null,
+        max_drawdown: recentAnalyses[1].max_drawdown != null ? Number(recentAnalyses[1].max_drawdown) : null,
         trades_count: Number(recentAnalyses[1].trades_count || 0),
-        quant_score: computeQuantScore100(Number(recentAnalyses[1].winrate), Number(recentAnalyses[1].profit_factor), Number(recentAnalyses[1].max_drawdown), Number(recentAnalyses[1].trades_count || 0)),
+        quant_score: computeQuantScore100(
+            Number(recentAnalyses[1].winrate),
+            recentAnalyses[1].profit_factor != null ? Number(recentAnalyses[1].profit_factor) : null,
+            recentAnalyses[1].max_drawdown != null ? Number(recentAnalyses[1].max_drawdown) : null,
+            Number(recentAnalyses[1].trades_count || 0)
+        ),
     } : null;
 
     return (
@@ -182,7 +204,12 @@ export default async function DashboardPage({ params }: { params: { locale: stri
                         </div>
                     ) : (
                         recentAnalyses.map(analysis => {
-                            const score = computeQuantScore100(Number(analysis.winrate), Number(analysis.profit_factor), Number(analysis.max_drawdown), Number(analysis.trades_count || 0));
+                            const score = computeQuantScore100(
+                                Number(analysis.winrate),
+                                analysis.profit_factor != null ? Number(analysis.profit_factor) : null,
+                                analysis.max_drawdown != null ? Number(analysis.max_drawdown) : null,
+                                Number(analysis.trades_count || 0)
+                            );
                             return (
                                 <Link href={`/${params.locale}/report/${analysis.id}`} key={analysis.id} className="card rounded-2xl p-5 border border-white/5 bg-[#111118] hover:border-indigo-500/30 transition-all group block">
                                     <div className="flex justify-between items-start mb-4">
@@ -205,7 +232,11 @@ export default async function DashboardPage({ params }: { params: { locale: stri
                                         </div>
                                         <div className="bg-white/5 rounded p-2">
                                             <span className="block text-gray-500 mb-1">{t("history.profitFactor")}</span>
-                                            <span className="text-white font-medium">{Number(analysis.profit_factor).toFixed(2)}</span>
+                                            <span className="text-white font-medium">
+                                                {analysis.profit_factor != null
+                                                    ? Number(analysis.profit_factor).toFixed(2)
+                                                    : (Boolean((analysis.metrics_json as any)?.basic?.profitFactorInfinite || (analysis.metrics_json as any)?.profitFactorInfinite) ? "∞" : "—")}
+                                            </span>
                                         </div>
                                     </div>
                                 </Link>

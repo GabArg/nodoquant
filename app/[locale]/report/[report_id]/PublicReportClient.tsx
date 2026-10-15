@@ -28,8 +28,8 @@ interface ReportData {
         strategy_score: number;
         total_trades: number;
         win_rate: number;
-        profit_factor: number;
-        max_drawdown: number;
+        profit_factor: number | null;
+        max_drawdown: number | null;
         expectancy_r: number;
         average_r: number;
     };
@@ -243,8 +243,17 @@ export default function PublicReportClient({ reportId, locale, initialData }: Pr
     const { metrics, equity_curve, strategy_name, dataset_name, created_at } = data;
     const wr = metrics.win_rate > 1 ? metrics.win_rate : metrics.win_rate * 100;
     const winRateDisplay = `${wr.toFixed(1)}%`;
-    const drawdownAbs = Math.abs(metrics.max_drawdown);
-    const drawdownDisplay = `${drawdownAbs.toFixed(1)}%`;
+
+    const isInfinitePF = Boolean(
+        data.raw_metrics_json?.basic?.profitFactorInfinite ||
+        data.raw_metrics_json?.profitFactorInfinite
+    );
+    const pfDisplay = metrics.profit_factor != null
+        ? Number(metrics.profit_factor).toFixed(2)
+        : (isInfinitePF ? "∞" : "—");
+
+    const drawdownAbs = metrics.max_drawdown != null ? Math.abs(Number(metrics.max_drawdown)) : null;
+    const drawdownDisplay = drawdownAbs != null ? `${drawdownAbs.toFixed(1)}%` : "—";
     const score = Math.round(metrics.strategy_score);
 
     // Build Twitter & WhatsApp share URLs with full report link
@@ -252,7 +261,7 @@ export default function PublicReportClient({ reportId, locale, initialData }: Pr
         t("sharing.shareTextX", {
             score: score,
             wr: wr.toFixed(1),
-            pf: metrics.profit_factor.toFixed(2),
+            pf: pfDisplay,
             count: metrics.total_trades
         })
     );
@@ -425,6 +434,7 @@ export default function PublicReportClient({ reportId, locale, initialData }: Pr
                                 strategyName={strategy_name ?? t("sharing.defaultName")}
                                 winRate={wr}
                                 profitFactor={metrics.profit_factor}
+                                isInfiniteProfitFactor={isInfinitePF}
                                 expectancy={metrics.expectancy_r}
                                 maxDrawdown={drawdownAbs}
                                 totalTrades={metrics.total_trades}
@@ -479,9 +489,9 @@ export default function PublicReportClient({ reportId, locale, initialData }: Pr
                         <ProLockOverlay isPro={data.is_pro} 
                             title="Profit Factor"
                             description="Without this, you don't know if your wins actually outweigh your losses.">
-                            <MetricCard label={t("metrics.profitFactor.label")} value={metrics.profit_factor.toFixed(2)}
-                                sub={metrics.profit_factor > 1.5 ? t("metrics.profitFactor.excellent") : metrics.profit_factor > 1 ? t("metrics.profitFactor.profitable") : t("metrics.profitFactor.losing")}
-                                highlight={metrics.profit_factor >= 1.5 ? "#34d399" : metrics.profit_factor >= 1 ? "#fbbf24" : "#f87171"} />
+                            <MetricCard label={t("metrics.profitFactor.label")} value={pfDisplay}
+                                sub={isInfinitePF || (metrics.profit_factor ?? 0) > 1.5 ? t("metrics.profitFactor.excellent") : (metrics.profit_factor ?? 0) > 1 ? t("metrics.profitFactor.profitable") : t("metrics.profitFactor.losing")}
+                                highlight={isInfinitePF || (metrics.profit_factor ?? 0) >= 1.5 ? "#34d399" : (metrics.profit_factor ?? 0) >= 1 ? "#fbbf24" : "#f87171"} />
                         </ProLockOverlay>
 
                         <ProLockOverlay isPro={data.is_pro} 

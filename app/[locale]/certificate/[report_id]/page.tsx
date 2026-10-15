@@ -100,7 +100,8 @@ export default async function CertificatePage({ params }: Props) {
     const metrics = report.metrics_json as any ?? {};
     const score = metrics?.strategy_score ?? metrics?.quant_score ?? 0;
     const wr = report.winrate ?? metrics?.win_rate ?? metrics?.winrate ?? 0;
-    const pf = report.profit_factor ?? metrics?.profit_factor ?? 0;
+    const isInfinitePF = Boolean(metrics?.basic?.profitFactorInfinite || metrics?.profitFactorInfinite);
+    const pf = report.profit_factor != null ? report.profit_factor : (metrics?.profit_factor ?? null);
     const trades = report.trades_count ?? metrics?.total_trades ?? 0;
     const strategyName = (report.strategies as any)?.name ?? report.dataset_name ?? report.file_name ?? "Report";
 
@@ -111,6 +112,7 @@ export default async function CertificatePage({ params }: Props) {
         symbol: metrics?.symbol ?? "Multi-Asset",
         win_rate: wr,
         profit_factor: pf,
+        isInfiniteProfitFactor: isInfinitePF,
         trades
     };
 

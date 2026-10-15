@@ -143,7 +143,7 @@ export default async function LeaderboardPage({
                                                     {(strategy.win_rate > 1 ? strategy.win_rate : strategy.win_rate * 100).toFixed(1)}%
                                                 </td>
                                                 <td className="px-6 py-6 text-center text-sm font-bold text-gray-300 tabular-nums">
-                                                    {strategy.profit_factor.toFixed(2)}
+                                                    {strategy.profit_factor != null ? Number(strategy.profit_factor).toFixed(2) : "—"}
                                                 </td>
                                                 <td className="px-6 py-6 text-center text-sm font-bold text-gray-300 tabular-nums">
                                                     {strategy.trades}

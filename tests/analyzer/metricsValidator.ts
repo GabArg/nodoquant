@@ -14,15 +14,21 @@ export function validateMetricsSanity(metrics: FullMetrics, trades: Trade[]) {
     expect(metrics.winrate).toBeGreaterThanOrEqual(0);
     expect(metrics.winrate).toBeLessThanOrEqual(100);
 
-    // Profit Factor (>= 0)
-    expect(metrics.profitFactor).toBeGreaterThanOrEqual(0);
+    // Profit Factor (>= 0 or null if infinite)
+    if (metrics.profitFactor !== null) {
+        expect(metrics.profitFactor).toBeGreaterThanOrEqual(0);
+    } else {
+        expect(metrics.profitFactorInfinite).toBe(true);
+    }
     
     // Expectancy (unbound but must be a number)
     expect(metrics.expectancy).not.toBeNaN();
     expect(Number.isFinite(metrics.expectancy)).toBe(true);
 
-    // Drawdown (can exceed 100 if equity goes negative)
-    expect(metrics.maxDrawdown).toBeGreaterThanOrEqual(0);
+    // Drawdown (percentage can be null if no initial capital, but abs must be >= 0)
+    if (metrics.maxDrawdown !== null) {
+        expect(metrics.maxDrawdown).toBeGreaterThanOrEqual(0);
+    }
     expect(metrics.maxDrawdownAbs).toBeGreaterThanOrEqual(0);
 
     // Score Validation (0-100)
@@ -43,8 +49,12 @@ export function validateMetricConsistency(metrics: BasicMetrics, trades: Trade[]
     const grossLoss = Math.abs(losers.reduce((sum, t) => sum + t.profit, 0));
     
     if (grossLoss === 0) {
-        if (grossProfit > 0) expect(metrics.profitFactor).toBe(99.99);
-        else expect(metrics.profitFactor).toBe(0);
+        if (grossProfit > 0) {
+            expect(metrics.profitFactor).toBeNull();
+            expect(metrics.profitFactorInfinite).toBe(true);
+        } else {
+            expect(metrics.profitFactor).toBe(0);
+        }
     } else {
         const expectedPF = Math.round((grossProfit / grossLoss) * 100) / 100;
         expect(metrics.profitFactor).toBeCloseTo(expectedPF, 1);

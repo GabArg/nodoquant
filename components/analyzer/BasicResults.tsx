@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { BasicMetrics, FullMetrics } from "@/lib/analyzer/metrics";
 import type { Trade } from "@/lib/analyzer/parser";
 import { calcEdgeScore } from "@/lib/edgeScore";
+import { formatNominalOrCurrency } from "@/lib/analyzer/currencyDetector";
 import { useTranslations } from "next-intl";
 import { trackEvent } from "@/lib/trackEvent";
 
@@ -41,7 +42,7 @@ function getDiagnosisState(metrics: BasicMetrics, fullMetrics?: FullMetrics): st
         return fullMetrics.advanced.verdict;
     }
 
-    const pf = metrics.profitFactor;
+    const pf = metrics.profitFactorInfinite ? 999 : (metrics.profitFactor ?? 0);
     const exp = metrics.expectancy;
     const n = metrics.totalTrades;
     
@@ -96,11 +97,18 @@ export default function BasicResults({ metrics, fullMetrics, format, fileName, t
     const animatedConfidence = useCountUp(edgeConfidence, 1500, 500);
     
     const copySummary = () => {
+        const pfStr = metrics.profitFactor !== null
+            ? metrics.profitFactor.toFixed(2)
+            : (metrics.profitFactorInfinite ? "∞" : "—");
+        const ddStr = metrics.maxDrawdown !== null
+            ? `${Math.abs(metrics.maxDrawdown).toFixed(1)}%`
+            : `${formatNominalOrCurrency(metrics.maxDrawdownAbs, fullMetrics?.account_currency)} (Abs)`;
+
         const text = `${confT("title")}: ${edgeConfidence}
 ${t("summaryLabels.trades")}: ${metrics.totalTrades}
 ${t("summaryLabels.winRate")}: ${metrics.winrate.toFixed(1)}%
-${t("summaryLabels.pf")}: ${metrics.profitFactor.toFixed(2)}
-${t("summaryLabels.dd")}: ${Math.abs(metrics.maxDrawdown).toFixed(1)}%
+${t("summaryLabels.pf")}: ${pfStr}
+${t("summaryLabels.dd")}: ${ddStr}
 ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProfit.toFixed(2)}`;
 
         navigator.clipboard.writeText(text);
@@ -124,11 +132,13 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
         {
             id: "pf",
             label: t("metrics.profitFactor"),
-            value: metrics.profitFactor.toFixed(2),
+            value: metrics.profitFactor !== null
+                ? metrics.profitFactor.toFixed(2)
+                : (metrics.profitFactorInfinite ? "∞" : "—"),
             color:
-                metrics.profitFactor >= 1.5
+                (metrics.profitFactorInfinite || (metrics.profitFactor ?? 0) >= 1.5)
                     ? "#10b981"
-                    : metrics.profitFactor >= 1
+                    : (metrics.profitFactor ?? 0) >= 1
                       ? "#fb923c"
                       : "#f87171",
             tip: ttT("pf"),
@@ -142,9 +152,14 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
         },
         {
             id: "dd",
-            label: t("metrics.maxDrawdown"),
-            value: `${Math.abs(metrics.maxDrawdown).toFixed(1)}%`,
-            color: Math.abs(metrics.maxDrawdown) <= 15 ? "#10b981" : "#fb923c",
+            label: metrics.maxDrawdown !== null ? t("metrics.maxDrawdown") : `${t("metrics.maxDrawdown")} (Nominal)`,
+            value: metrics.maxDrawdown !== null
+                ? `${Math.abs(metrics.maxDrawdown).toFixed(1)}%`
+                : formatNominalOrCurrency(metrics.maxDrawdownAbs, fullMetrics?.account_currency),
+            subText: metrics.maxDrawdown === null ? "Capital no especificado" : undefined,
+            color: metrics.maxDrawdown !== null
+                ? (Math.abs(metrics.maxDrawdown) <= 15 ? "#10b981" : "#fb923c")
+                : "#a5b4fc",
             tip: ttT("maxDrawdown"),
         },
     ];
@@ -245,6 +260,11 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
                                        style={{ color: m.color, textShadow: `0 10px 30px ${m.color}20` }}>
                                         {m.value}
                                     </p>
+                                    {m.subText && (
+                                        <span className="text-[10px] font-semibold text-gray-500 mt-1">
+                                            {m.subText}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         ))}
@@ -272,8 +292,15 @@ ${t("summaryLabels.pnl")}: ${metrics.sumProfit >= 0 ? "+" : ""}${metrics.sumProf
                                     {/* Monte Carlo Comparison Insight */}
                                     <div className="flex items-center gap-6 pt-4 mt-4 border-t border-white/5">
                                         <div className="space-y-1">
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">{stabT("histDD")}</p>
-                                            <p className="text-lg font-black text-white">{Math.abs(metrics.maxDrawdown).toFixed(1)}%</p>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">
+                                                {metrics.maxDrawdown !== null ? stabT("histDD") : `${stabT("histDD")} (Nominal)`}
+                                            </p>
+                                            <p className="text-lg font-black text-white">
+                                                {metrics.maxDrawdown !== null ? `${Math.abs(metrics.maxDrawdown).toFixed(1)}%` : formatNominalOrCurrency(metrics.maxDrawdownAbs, fullMetrics?.account_currency)}
+                                            </p>
+                                            {metrics.maxDrawdown === null && (
+                                                <p className="text-[9px] text-gray-500 font-medium">Capital no especificado</p>
+                                            )}
                                         </div>
                                         <div className="w-px h-8 bg-white/5" />
                                         <div className="space-y-1">

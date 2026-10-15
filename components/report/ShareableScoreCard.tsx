@@ -7,15 +7,17 @@ interface Props {
     strategyScore: number;
     strategyName: string;
     winRate: number;      // 0-100
-    profitFactor: number;
+    profitFactor: number | null;
+    isInfiniteProfitFactor?: boolean;
     expectancy: number;   // in R
-    maxDrawdown: number;  // positive number, %
+    maxDrawdown: number | null;  // positive number, %
     totalTrades: number;
     reportUrl: string;
 }
 
 export default function ShareableScoreCard({
     strategyScore, strategyName, winRate, profitFactor,
+    isInfiniteProfitFactor = false,
     expectancy, maxDrawdown, totalTrades, reportUrl,
 }: Props) {
     const t = useTranslations("fullReport");
@@ -32,6 +34,15 @@ export default function ShareableScoreCard({
     const tier = scoreTier(strategyScore);
     const score = Math.round(strategyScore);
     const wr = winRate > 1 ? winRate : winRate * 100;
+
+    const pfDisplay = profitFactor !== null && profitFactor !== undefined
+        ? profitFactor.toFixed(2)
+        : (isInfiniteProfitFactor ? "∞" : "—");
+    const isGoodPF = isInfiniteProfitFactor || (profitFactor !== null && profitFactor >= 1.5);
+    const ddDisplay = maxDrawdown !== null && maxDrawdown !== undefined
+        ? `${maxDrawdown.toFixed(1)}%`
+        : "—";
+    const isGoodDD = maxDrawdown !== null ? maxDrawdown <= 20 : true;
 
     const downloadPng = async () => {
         if (!cardRef.current || downloading) return;
@@ -129,9 +140,9 @@ export default function ShareableScoreCard({
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "20px" }}>
                     {[
                         { label: t("metrics.winrate.label"), value: `${wr.toFixed(1)}%`, good: wr >= 50 },
-                        { label: t("metrics.profitFactor.label"), value: profitFactor.toFixed(2), good: profitFactor >= 1.5 },
+                        { label: t("metrics.profitFactor.label"), value: pfDisplay, good: isGoodPF },
                         { label: t("metrics.expectancy.label"), value: `${expectancy >= 0 ? "+" : ""}${expectancy.toFixed(2)}R`, good: expectancy > 0 },
-                        { label: t("metrics.maxDrawdown.label"), value: `${maxDrawdown.toFixed(1)}%`, good: maxDrawdown <= 20 },
+                        { label: t("metrics.maxDrawdown.label"), value: ddDisplay, good: isGoodDD },
                     ].map(m => (
                         <div key={m.label} style={{
                             background: "#f9fafb", borderRadius: "12px", padding: "12px 14px",

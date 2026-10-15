@@ -13,8 +13,8 @@ interface Entry {
     category: string;
     trades_count: number;
     winrate: number;
-    profit_factor: number;
-    max_drawdown: number;
+    profit_factor: number | null;
+    max_drawdown: number | null;
     edge_score: number;
     quant_score: number;
     created_at: string;
@@ -116,8 +116,8 @@ function SpotlightCard({ entry, locale }: { entry: Entry; locale?: string }) {
                 <div className="flex gap-4 flex-wrap">
                     {[
                         { label: "Win Rate", value: `${wr.toFixed(1)}%`, color: "#34d399" },
-                        { label: "Profit Factor", value: entry.profit_factor.toFixed(2), color: "#818cf8" },
-                        { label: "Max DD", value: `${Math.abs(entry.max_drawdown).toFixed(1)}%`, color: "#f87171" },
+                        { label: "Profit Factor", value: entry.profit_factor != null ? entry.profit_factor.toFixed(2) : "—", color: "#818cf8" },
+                        { label: "Max DD", value: entry.max_drawdown != null ? `${Math.abs(entry.max_drawdown).toFixed(1)}%` : "—", color: "#f87171" },
                         { label: "Trades", value: entry.trades_count.toString(), color: "#9ca3af" },
                     ].map(m => (
                         <div key={m.label} className="text-center">
@@ -169,7 +169,11 @@ export default function LeaderboardClient() {
 
     const sorted = useMemo(() =>
         [...entries].sort((a, b) => {
-            const av = a[sortKey] as number, bv = b[sortKey] as number;
+            const av = a[sortKey] as number | null;
+            const bv = b[sortKey] as number | null;
+            if (av === null && bv === null) return 0;
+            if (av === null) return 1; // null values always sorted to bottom
+            if (bv === null) return -1;
             return sortDir === "desc" ? bv - av : av - bv;
         }), [entries, sortKey, sortDir]);
 
@@ -302,9 +306,9 @@ export default function LeaderboardClient() {
                                                     <td className="px-4 py-3.5 text-right">
                                                         <ScorePill score={e.quant_score} />
                                                     </td>
-                                                    <td className="px-4 py-3.5 text-right tabular-nums font-medium text-white">{e.profit_factor.toFixed(2)}</td>
+                                                    <td className="px-4 py-3.5 text-right tabular-nums font-medium text-white">{e.profit_factor != null ? e.profit_factor.toFixed(2) : "—"}</td>
                                                     <td className="px-4 py-3.5 text-right tabular-nums" style={{ color: "#34d399" }}>{wr.toFixed(1)}%</td>
-                                                    <td className="px-4 py-3.5 text-right tabular-nums" style={{ color: "#f87171" }}>{Math.abs(e.max_drawdown).toFixed(1)}%</td>
+                                                    <td className="px-4 py-3.5 text-right tabular-nums" style={{ color: "#f87171" }}>{e.max_drawdown != null ? `${Math.abs(e.max_drawdown).toFixed(1)}%` : "—"}</td>
                                                     <td className="px-4 py-3.5 text-right tabular-nums text-gray-400">{e.trades_count}</td>
                                                     <td className="px-4 py-3.5 text-right">
                                                         {e.public_id && (

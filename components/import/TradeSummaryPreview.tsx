@@ -4,6 +4,8 @@ import type { NormalizedTrade, MarketType } from "@/lib/import/normalizedTrade";
 
 interface Props {
     trades: NormalizedTrade[];
+    capitalInput?: string;
+    onCapitalChange?: (val: string) => void;
     onConfirm: () => void;
     onBack: () => void;
 }
@@ -31,7 +33,7 @@ const MARKET_COLORS: Record<MarketType, string> = {
     unknown: "#9ca3af",
 };
 
-export default function TradeSummaryPreview({ trades, onConfirm, onBack }: Props) {
+export default function TradeSummaryPreview({ trades, capitalInput, onCapitalChange, onConfirm, onBack }: Props) {
     if (trades.length === 0) return null;
 
     // Derive stats
@@ -142,6 +144,29 @@ export default function TradeSummaryPreview({ trades, onConfirm, onBack }: Props
                     </span>
                 </div>
             )}
+
+            {/* Optional Initial Capital */}
+            <div className="rounded-2xl p-4 bg-white/[0.02] border border-white/5 space-y-2">
+                <div className="flex items-center justify-between">
+                    <label htmlFor="previewCapitalInput" className="text-xs font-black uppercase tracking-wider text-gray-300">
+                        Capital inicial de la cuenta (opcional)
+                    </label>
+                    <span className="text-[10px] text-gray-500 font-bold uppercase">Opcional</span>
+                </div>
+                <input
+                    id="previewCapitalInput"
+                    type="number"
+                    min="1"
+                    step="any"
+                    value={capitalInput || ""}
+                    onChange={(e) => onCapitalChange?.(e.target.value)}
+                    placeholder="Ej. 10000"
+                    className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors"
+                />
+                <p className="text-[10px] text-gray-500 leading-relaxed">
+                    Permite calcular el drawdown porcentual exacto sobre tu balance. Si se omite, se medirá en valor nominal.
+                </p>
+            </div>
 
             {/* Actions */}
             <div className="flex items-center gap-3">

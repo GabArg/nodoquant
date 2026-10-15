@@ -80,13 +80,13 @@ export async function POST(req: NextRequest) {
                 visibility: safeVisibility,
                 market: market || "Unknown",
                 symbol: symbol || "Unknown",
-                score: score || 0,
+                score: score != null && Number.isFinite(Number(score)) ? Number(score) : 0,
                 tier,
-                win_rate: win_rate || 0,
-                profit_factor: profit_factor || 0,
-                expectancy: expectancy || 0,
-                max_drawdown: max_drawdown || 0,
-                trades_count: trades_count || 0,
+                win_rate: win_rate != null && Number.isFinite(Number(win_rate)) ? Number(win_rate) : 0,
+                profit_factor: profit_factor != null && Number.isFinite(Number(profit_factor)) ? Number(profit_factor) : null,
+                expectancy: expectancy != null && Number.isFinite(Number(expectancy)) ? Number(expectancy) : 0,
+                max_drawdown: max_drawdown != null && Number.isFinite(Number(max_drawdown)) ? Number(max_drawdown) : null,
+                trades_count: trades_count != null && Number.isFinite(Number(trades_count)) ? Number(trades_count) : 0,
                 published_at: new Date().toISOString()
             }, { onConflict: 'report_id' })
             .select("slug")

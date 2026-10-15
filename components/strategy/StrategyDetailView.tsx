@@ -35,11 +35,19 @@ export default function StrategyDetailView({ strategy, locale }: StrategyDetailV
     const equity_curve = metrics_json?.equity_curve || [];
     const wr = win_rate > 1 ? win_rate : win_rate * 100;
 
+    const isInfinitePF = Boolean(metrics_json?.basic?.profitFactorInfinite || metrics_json?.profitFactorInfinite);
+    const pfDisplay = profit_factor != null
+        ? Number(profit_factor).toFixed(2)
+        : (isInfinitePF ? "∞" : "—");
+    const ddDisplay = max_drawdown != null
+        ? `${Math.abs(Number(max_drawdown)).toFixed(1)}%`
+        : "—";
+
     const shareUrl = typeof window !== 'undefined' ? window.location.href : `https://nodoquant.com/${locale}/strategy/${strategy.slug}`;
     const shareText = t("shareText", {
         score: Math.round(score),
         wr: wr.toFixed(1),
-        pf: profit_factor.toFixed(2),
+        pf: pfDisplay,
         count: trades_count
     });
 
@@ -144,9 +152,9 @@ export default function StrategyDetailView({ strategy, locale }: StrategyDetailV
                 {/* Metrics Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
                     <MetricBox label={tCard("winRate")} value={`${wr.toFixed(1)}%`} sub={t("metrics.accuracy")} color="text-white" />
-                    <MetricBox label={tCard("profitFactor")} value={profit_factor.toFixed(2)} sub={t("metrics.yield")} color="text-emerald-400" />
+                    <MetricBox label={tCard("profitFactor")} value={pfDisplay} sub={t("metrics.yield")} color="text-emerald-400" />
                     <MetricBox label="Expectancy" value={`${expectancy >= 0 ? "+" : ""}${expectancy.toFixed(2)} R`} sub={t("metrics.edge")} color="text-indigo-400" />
-                    <MetricBox label="Max Drawdown" value={`${Math.abs(max_drawdown).toFixed(1)}%`} sub={t("metrics.risk")} color="text-red-400" />
+                    <MetricBox label="Max Drawdown" value={ddDisplay} sub={t("metrics.risk")} color="text-red-400" />
                 </div>
 
                 {/* Main Content Area */}

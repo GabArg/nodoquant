@@ -28,15 +28,21 @@ export default function ComparisonDashboard({ strategies, onRemove, onBack }: Co
         const maxConf = Math.max(...strategies.map(s => s.fullMetrics.advanced?.edgeConfidence || 0));
         const maxSqn = Math.max(...strategies.map(s => s.fullMetrics.advanced?.sqn || 0));
         const maxExp = Math.max(...strategies.map(s => s.metrics.expectancy));
-        // Max Drawdown is best when it's closest to zero (least negative)
-        const minDD = Math.max(...strategies.map(s => s.metrics.maxDrawdown));
+        // Max Drawdown is best when it's closest to zero
+        const validDDs = strategies
+            .map(s => (s.metrics.maxDrawdown !== null ? s.metrics.maxDrawdown : s.metrics.maxDrawdownAbs))
+            .filter((d): d is number => typeof d === "number");
+        const minDD = validDDs.length > 0 ? Math.min(...validDDs) : null;
 
-        return strategies.map(s => ({
-            edgeConfidence: (s.fullMetrics.advanced?.edgeConfidence || 0) === maxConf && maxConf > 0,
-            sqn: (s.fullMetrics.advanced?.sqn || 0) === maxSqn && maxSqn > 0,
-            expectancy: s.metrics.expectancy === maxExp && maxExp > 0,
-            maxDrawdown: s.metrics.maxDrawdown === minDD && minDD < 0
-        }));
+        return strategies.map(s => {
+            const currentDD = s.metrics.maxDrawdown !== null ? s.metrics.maxDrawdown : s.metrics.maxDrawdownAbs;
+            return {
+                edgeConfidence: (s.fullMetrics.advanced?.edgeConfidence || 0) === maxConf && maxConf > 0,
+                sqn: (s.fullMetrics.advanced?.sqn || 0) === maxSqn && maxSqn > 0,
+                expectancy: s.metrics.expectancy === maxExp && maxExp > 0,
+                maxDrawdown: minDD !== null && currentDD === minDD,
+            };
+        });
     }, [strategies]);
 
     return (

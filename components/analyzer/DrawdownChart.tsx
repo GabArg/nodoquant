@@ -5,9 +5,10 @@ import { useTranslations } from "next-intl";
 
 interface Props {
     data: number[];
+    isAbsolute?: boolean;
 }
 
-export default function DrawdownChart({ data }: Props) {
+export default function DrawdownChart({ data, isAbsolute = false }: Props) {
     const t = useTranslations("analyzer.charts");
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -49,7 +50,8 @@ export default function DrawdownChart({ data }: Props) {
             ctx.fillStyle = "#4b5563";
             ctx.font = "10px Inter, sans-serif";
             ctx.textAlign = "right";
-            ctx.fillText(`${val.toFixed(0)}%`, pad.left - 6, y + 4);
+            const labelText = isAbsolute ? `$${val.toFixed(0)}` : `${val.toFixed(0)}%`;
+            ctx.fillText(labelText, pad.left - 6, y + 4);
         }
 
         // X labels
@@ -85,11 +87,13 @@ export default function DrawdownChart({ data }: Props) {
         ctx.lineWidth = 1.5;
         ctx.lineJoin = "round";
         ctx.stroke();
-    }, [processedData, data.length]);
+    }, [processedData, data, isAbsolute]);
 
     return (
         <div className="w-full">
-            <p className="text-xs font-medium mb-2" style={{ color: "#6b7280" }}>{t("drawdownCurve")}</p>
+            <p className="text-xs font-medium mb-2" style={{ color: "#6b7280" }}>
+                {t("drawdownCurve")} {isAbsolute ? "(Nominal / Abs)" : "(%)"}
+            </p>
             <canvas ref={canvasRef} style={{ width: "100%", height: "140px", display: "block" }} />
         </div>
     );

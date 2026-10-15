@@ -184,7 +184,7 @@ export default function ExamplePreview({ onTryWithData }: Props) {
                         {t("uploadPrompt")}
                     </p>
                     <div className="flex flex-wrap gap-2 mb-4">
-                        {[t("winrate"), t("profitFactor"), t("maxDrawdown"), t("monteCarlo"), t("simPropFirm")].map((f) => (
+                        {[t("winrate"), t("profitFactor"), t("maxDrawdown"), t("monteCarlo")].map((f) => (
                             <span key={f} className="text-xs px-2.5 py-1 rounded-full"
                                 style={{
                                     background: "rgba(99,102,241,0.08)",

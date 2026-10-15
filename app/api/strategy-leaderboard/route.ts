@@ -18,8 +18,8 @@ interface TradeAnalysisRow {
 interface EnrichedTradeAnalysis {
     trades_count: number;
     winrate: number;
-    profit_factor: number;
-    max_drawdown: number;
+    profit_factor: number | null;
+    max_drawdown: number | null;
     created_at: string;
     metrics_json: unknown;
     edge: number;
@@ -38,7 +38,7 @@ interface LeaderboardEntry {
     confidence: string;
     overfitting_risk: string;
     datasets_count: number;
-    top_profit_factor: number;
+    top_profit_factor: number | null;
     created_at: string;
 }
 
@@ -105,9 +105,9 @@ export async function GET(request: Request) {
 
             // Normalize numeric fields once and add edge score for quant score calc
             const enriched: EnrichedTradeAnalysis[] = publicDatasets.map((dataset) => {
-                const winrate = Number(dataset.winrate);
-                const profitFactor = Number(dataset.profit_factor);
-                const maxDrawdown = Number(dataset.max_drawdown);
+                const winrate = dataset.winrate != null && Number.isFinite(Number(dataset.winrate)) ? Number(dataset.winrate) : 0;
+                const profitFactor = dataset.profit_factor != null && Number.isFinite(Number(dataset.profit_factor)) ? Number(dataset.profit_factor) : null;
+                const maxDrawdown = dataset.max_drawdown != null && Number.isFinite(Number(dataset.max_drawdown)) ? Number(dataset.max_drawdown) : null;
 
                 return {
                     trades_count: dataset.trades_count,

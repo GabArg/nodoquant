@@ -126,13 +126,13 @@ export async function GET(
                     getNumber(metrics, "winrate") ??
                     0,
                 profit_factor:
-                    data.profit_factor ??
-                    getNumber(metrics, "profit_factor") ??
-                    0,
+                    data.profit_factor != null
+                        ? Number(data.profit_factor)
+                        : (getNumber(metrics, "profit_factor") ?? null),
                 max_drawdown:
-                    data.max_drawdown ??
-                    getNumber(metrics, "max_drawdown") ??
-                    0,
+                    data.max_drawdown != null
+                        ? Number(data.max_drawdown)
+                        : (getNumber(metrics, "max_drawdown") ?? null),
                 expectancy_r:
                     getNumber(metrics, "expectancy_r") ??
                     getNumber(metrics, "expectancy") ??

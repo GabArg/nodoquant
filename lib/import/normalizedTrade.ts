@@ -4,6 +4,7 @@
  */
 
 import type { Trade } from "@/lib/analyzer/parser";
+import { detectCurrency } from "@/lib/analyzer/currencyDetector";
 
 export type ImportSource = "csv" | "mt4" | "mt5" | "binance" | "binance-spot" | "binance-futures" | "generic";
 
@@ -163,6 +164,10 @@ export function buildParseResult(
     const sorted = [...legacyTrades].sort((a, b) => a.datetime.getTime() - b.datetime.getTime());
     const sumProfit = sorted.reduce((s, t) => s + t.profit, 0);
 
+    const detectedCurrency = source.startsWith("binance")
+        ? (trades[0]?.symbol?.toUpperCase().endsWith("USDC") ? "USDC" : "USDT")
+        : detectCurrency(undefined, undefined, trades.map(t => t.symbol).filter(Boolean));
+
     return {
         trades: sorted,
         format: (source.startsWith("binance") ? "csv-generic" : source) as "mt5" | "csv-generic" | "unknown",
@@ -170,6 +175,7 @@ export function buildParseResult(
         dateRangeStart: sorted[0]?.datetime,
         dateRangeEnd: sorted[sorted.length - 1]?.datetime,
         sumProfit,
+        accountCurrency: detectedCurrency,
         importSource: source,
     };
 }

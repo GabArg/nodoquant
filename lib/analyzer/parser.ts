@@ -82,6 +82,8 @@ function findColumn(norm: string[], aliases: string[]): number {
     return -1;
 }
 
+import { detectCurrency } from "./currencyDetector";
+
 // ── Main parser ───────────────────────────────────────────────────────────────
 
 export interface ParseResult {
@@ -91,6 +93,7 @@ export interface ParseResult {
     dateRangeStart?: Date;
     dateRangeEnd?: Date;
     sumProfit: number;
+    accountCurrency?: string | null;
 }
 
 export function parseTrades(raw: string, fileName?: string): ParseResult {
@@ -127,7 +130,7 @@ export function parseTrades(raw: string, fileName?: string): ParseResult {
 
     // ── MT5 format ──
     if (detectMT5(normHeaders)) {
-        return parseMT5(normHeaders, dataLines, fileName);
+        return parseMT5(normHeaders, dataLines, fileName, raw);
     }
 
     // ── Generic CSV ──
@@ -150,12 +153,12 @@ export function parseTrades(raw: string, fileName?: string): ParseResult {
     const symbolIdx = findColumn(normHeaders, ["symbol", "instrument", "pair", "market"]);
     const volumeIdx = findColumn(normHeaders, ["volume", "size", "lots", "qty", "quantity"]);
 
-    return parseGenericCSV(dataLines, { profitIdx, dateIdx, symbolIdx, volumeIdx, entryPriceIdx, exitPriceIdx, fileName });
+    return parseGenericCSV(dataLines, { profitIdx, dateIdx, symbolIdx, volumeIdx, entryPriceIdx, exitPriceIdx, fileName, rawText: raw, headers });
 }
 
 // ── MT5 specific parser ───────────────────────────────────────────────────────
 
-function parseMT5(normHeaders: string[], dataLines: string[], fileName?: string): ParseResult {
+function parseMT5(normHeaders: string[], dataLines: string[], fileName?: string, rawText?: string): ParseResult {
     const timeIdx = normHeaders.indexOf("time");
     const profitIdx = normHeaders.indexOf("profit");
     const symbolIdx = normHeaders.indexOf("symbol");
@@ -201,7 +204,8 @@ function parseMT5(normHeaders: string[], dataLines: string[], fileName?: string)
         );
     }
 
-    return buildResult(trades, "mt5", fileName);
+    const detectedCurrency = detectCurrency(rawText, normHeaders, trades.map(t => t.symbol || ""));
+    return buildResult(trades, "mt5", fileName, detectedCurrency);
 }
 
 // ── Generic CSV parser ────────────────────────────────────────────────────────
@@ -219,6 +223,9 @@ interface ColIndexes {
     takeProfitIdx?: number;
     entryTimeIdx?: number;
     fileName?: string;
+    rawText?: string;
+    headers?: string[];
+    accountCurrency?: string | null;
 }
 
 export function parseGenericCSV(dataLines: string[], cols: ColIndexes): ParseResult {
@@ -279,8 +286,11 @@ export function parseGenericCSV(dataLines: string[], cols: ColIndexes): ParseRes
         );
     }
 
+    const symbols = trades.map(t => t.symbol || "").filter(Boolean);
+    const finalCurrency = cols.accountCurrency ?? detectCurrency(cols.rawText, cols.headers, symbols);
+
     console.debug("Parsed mapped trades:", trades.length);
-    return buildResult(trades, "csv-generic", fileName);
+    return buildResult(trades, "csv-generic", fileName, finalCurrency);
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -288,7 +298,8 @@ export function parseGenericCSV(dataLines: string[], cols: ColIndexes): ParseRes
 function buildResult(
     rawTrades: Trade[],
     format: FormatType,
-    fileName?: string
+    fileName?: string,
+    accountCurrency?: string | null
 ): ParseResult {
     // Sort by date ascending
     const trades = [...rawTrades].sort(
@@ -299,5 +310,5 @@ function buildResult(
     const dateRangeStart = trades[0]?.datetime;
     const dateRangeEnd = trades[trades.length - 1]?.datetime;
 
-    return { trades, format, fileName, dateRangeStart, dateRangeEnd, sumProfit };
+    return { trades, format, fileName, dateRangeStart, dateRangeEnd, sumProfit, accountCurrency: accountCurrency ?? null };
 }

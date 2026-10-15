@@ -5,8 +5,8 @@ import { useTranslations } from "next-intl";
 
 interface ReportMetrics {
     winrate: number;
-    profit_factor: number;
-    max_drawdown: number;
+    profit_factor: number | null;
+    max_drawdown: number | null;
     metrics_json?: {
         edge_location?: {
             bestSession?: string;
@@ -33,7 +33,6 @@ export default function EdgeAlerts({ latestReport }: Props) {
         let msg = t("edge.intro");
         if (edge.bestSymbol) msg += t("edge.symbol", { symbol: edge.bestSymbol });
         if (edge.bestSession) msg += edge.bestSymbol ? t("edge.session", { session: edge.bestSession }) : t("edge.sessionOnly", { session: edge.bestSession });
-
         alerts.push({
             type: "edge",
             message: msg,
@@ -42,7 +41,7 @@ export default function EdgeAlerts({ latestReport }: Props) {
         });
     } else {
         // Fallback generic edge alert based on PF
-        if (latestReport.profit_factor > 1.5) {
+        if (latestReport.profit_factor !== null && latestReport.profit_factor > 1.5) {
             alerts.push({
                 type: "edge",
                 message: t("edge.generic", { pf: latestReport.profit_factor.toFixed(2) }),
@@ -53,7 +52,7 @@ export default function EdgeAlerts({ latestReport }: Props) {
     }
 
     // 2. Risk Alert
-    if (Math.abs(latestReport.max_drawdown) > 20) {
+    if (latestReport.max_drawdown !== null && Math.abs(latestReport.max_drawdown) > 20) {
         alerts.push({
             type: "risk",
             message: t("risk.maxDrawdownWarning", { limit: Math.abs(latestReport.max_drawdown).toFixed(1) }),

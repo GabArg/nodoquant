@@ -32,8 +32,8 @@ interface LeaderboardResult {
     category: string;
     trades_count: number;
     winrate: number;
-    profit_factor: number;
-    max_drawdown: number;
+    profit_factor: number | null;
+    max_drawdown: number | null;
     edge_score: number;
     quant_score: number;
     created_at: string;
@@ -66,10 +66,10 @@ export async function GET(req: NextRequest) {
         const rows = (data ?? []) as LeaderboardAnalysisRow[];
 
         let results: LeaderboardResult[] = rows.map((analysis) => {
-            const wr = Number(analysis.winrate);
-            const pf = Number(analysis.profit_factor);
-            const dd = Number(analysis.max_drawdown);
-            const n = Number(analysis.trades_count);
+            const wr = analysis.winrate != null && Number.isFinite(Number(analysis.winrate)) ? Number(analysis.winrate) : 0;
+            const pf = analysis.profit_factor != null && Number.isFinite(Number(analysis.profit_factor)) ? Number(analysis.profit_factor) : null;
+            const dd = analysis.max_drawdown != null && Number.isFinite(Number(analysis.max_drawdown)) ? Number(analysis.max_drawdown) : null;
+            const n = analysis.trades_count != null && Number.isFinite(Number(analysis.trades_count)) ? Number(analysis.trades_count) : 0;
             const strategy = analysis.strategies?.[0] ?? null;
 
             const edge = calcEdgeScore(wr, pf, dd, n);

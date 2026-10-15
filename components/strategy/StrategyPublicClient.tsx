@@ -128,11 +128,17 @@ export default function StrategyPublicClient({ strategy, datasets, slug }: Props
     const [copied, setCopied] = useState(false);
 
     // Compute edge scores
-    const enriched = datasets.map((d, i) => ({
-        ...d,
-        edge: calcEdgeScore(Number(d.winrate), Number(d.profit_factor), Number(d.max_drawdown), d.trades_count),
-        dsLabel: safeDatasetName(d.dataset_name || d.file_name, i),
-    }));
+    const enriched = datasets.map((d, i) => {
+        const pf = d.profit_factor != null && Number.isFinite(Number(d.profit_factor)) ? Number(d.profit_factor) : null;
+        const dd = d.max_drawdown != null && Number.isFinite(Number(d.max_drawdown)) ? Number(d.max_drawdown) : null;
+        return {
+            ...d,
+            profit_factor: pf,
+            max_drawdown: dd,
+            edge: calcEdgeScore(Number(d.winrate), pf, dd, d.trades_count),
+            dsLabel: safeDatasetName(d.dataset_name || d.file_name, i),
+        };
+    });
 
     const latestPublicId = enriched[0]?.public_id || null;
 
@@ -145,8 +151,16 @@ export default function StrategyPublicClient({ strategy, datasets, slug }: Props
 
     // Summary stats
     const bestEdge = enriched.reduce((a, b) => b.edge > a.edge ? b : a);
-    const lowestDD = enriched.reduce((a, b) => Number(b.max_drawdown) < Number(a.max_drawdown) ? b : a);
-    const highestPF = enriched.reduce((a, b) => Number(b.profit_factor) > Number(a.profit_factor) ? b : a);
+    const lowestDD = enriched.reduce((a, b) => {
+        if (a.max_drawdown === null) return b;
+        if (b.max_drawdown === null) return a;
+        return Number(b.max_drawdown) < Number(a.max_drawdown) ? b : a;
+    });
+    const highestPF = enriched.reduce((a, b) => {
+        if (a.profit_factor === null) return a; // infinite is highest
+        if (b.profit_factor === null) return b;
+        return Number(b.profit_factor) > Number(a.profit_factor) ? b : a;
+    });
     const avgEdge = enriched.reduce((s, d) => s + d.edge, 0) / enriched.length;
 
     // Best indices for table highlighting
@@ -159,16 +173,40 @@ export default function StrategyPublicClient({ strategy, datasets, slug }: Props
 
     // ── Quant Score computation ──
     const healthScore = preview
-        ? calcHealthScore(Number(preview.winrate), Number(preview.profit_factor), Number(preview.max_drawdown), preview.trades_count, preview.edge)
+        ? calcHealthScore(
+            Number(preview.winrate),
+            preview.profit_factor,
+            preview.max_drawdown,
+            preview.trades_count,
+            preview.edge
+        )
         : 0;
     const robustnessScore = calcRobustnessScore(
-        enriched.map((d) => ({ trades_count: d.trades_count, winrate: Number(d.winrate), profit_factor: Number(d.profit_factor), max_drawdown: Number(d.max_drawdown), edge: d.edge }))
+        enriched.map((d) => ({
+            trades_count: d.trades_count,
+            winrate: Number(d.winrate),
+            profit_factor: d.profit_factor,
+            max_drawdown: d.max_drawdown,
+            edge: d.edge,
+        }))
     );
     const evolutionScore = calcEvolutionScore(
-        enriched.map((d) => ({ created_at: d.created_at, winrate: Number(d.winrate), profit_factor: Number(d.profit_factor), max_drawdown: Number(d.max_drawdown), edge: d.edge }))
+        enriched.map((d) => ({
+            created_at: d.created_at,
+            winrate: Number(d.winrate),
+            profit_factor: d.profit_factor,
+            max_drawdown: d.max_drawdown,
+            edge: d.edge,
+        }))
     );
-    const quantResult = calcQuantScore(bestEdge.edge, robustnessScore, healthScore, evolutionScore,
-        preview?.trades_count, preview ? Number(preview.max_drawdown) : undefined);
+    const quantResult = calcQuantScore(
+        bestEdge.edge,
+        robustnessScore,
+        healthScore,
+        evolutionScore,
+        preview?.trades_count,
+        preview?.max_drawdown
+    );
 
     // ── Auto Summary ──
     const confResult = calcConfidence({
@@ -178,8 +216,8 @@ export default function StrategyPublicClient({ strategy, datasets, slug }: Props
         newestDate: enriched[0].created_at,
     });
     const overfitResult = detectOverfitting({
-        profitFactor: preview ? Number(preview.profit_factor) : 0,
-        maxDrawdown: preview ? Number(preview.max_drawdown) : 0,
+        profitFactor: preview?.profit_factor ?? null,
+        maxDrawdown: preview?.max_drawdown ?? null,
         trades: preview?.trades_count ?? 0,
         datasetsCount: enriched.length,
         confidenceScore: confResult.score,

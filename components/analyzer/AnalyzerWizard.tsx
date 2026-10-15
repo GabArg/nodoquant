@@ -98,6 +98,20 @@ export default function AnalyzerWizard() {
     const [triggerUnlock, setTriggerUnlock] = useState(0);
     const [analysisId, setAnalysisId] = useState<string | null>(null);
     const [pendingNormalized, setPendingNormalized] = useState<{ trades: NormalizedTrade[]; source: ImportSource } | null>(null);
+    const [initialCapital, setInitialCapital] = useState<number | null>(null);
+    const [capitalInput, setCapitalInput] = useState<string>("");
+
+    const handleCapitalChange = useCallback((val: string) => {
+        setCapitalInput(val);
+        const cleaned = val.trim().replace(/[^0-9.]/g, "");
+        const parsed = parseFloat(cleaned);
+        if (!isNaN(parsed) && Number.isFinite(parsed) && parsed > 0) {
+            setInitialCapital(parsed);
+        } else {
+            setInitialCapital(null);
+        }
+    }, []);
+
     const [isHydrated, setIsHydrated] = useState(false);
     const searchParams = useSearchParams();
     const uploadRef = useRef<HTMLDivElement>(null);
@@ -257,8 +271,8 @@ export default function AnalyzerWizard() {
                 return true;
             });
             const fakeResult = buildParseResult(trades, source);
-            const basic = calcBasicMetrics(uniqueTrades);
-            const full = calcFullMetrics(uniqueTrades);
+            const basic = calcBasicMetrics(uniqueTrades, initialCapital);
+            const full = calcFullMetrics(uniqueTrades, initialCapital, fakeResult.accountCurrency);
             const normalizedResult: ParseResult = {
                 ...fakeResult,
                 trades: uniqueTrades,
@@ -273,7 +287,7 @@ export default function AnalyzerWizard() {
             setParseError(err instanceof Error ? err.message : "Error calculating metrics.");
             setStep("source");
         }
-    }, [pendingNormalized, isPro]);
+    }, [pendingNormalized, isPro, initialCapital]);
 
     const handleImportComplete = useCallback((result: ParseResult) => {
         try {
@@ -284,8 +298,8 @@ export default function AnalyzerWizard() {
                 seen.add(key);
                 return true;
             });
-            const basic = calcBasicMetrics(uniqueTrades);
-            const full = calcFullMetrics(uniqueTrades);
+            const basic = calcBasicMetrics(uniqueTrades, initialCapital);
+            const full = calcFullMetrics(uniqueTrades, initialCapital, result.accountCurrency);
             setParseResult({ ...result, trades: uniqueTrades });
             setBasicMetrics(basic);
             setFullMetrics(full);
@@ -296,7 +310,7 @@ export default function AnalyzerWizard() {
             setParseError(err instanceof Error ? err.message : "Error calculando métricas.");
             setStep("upload");
         }
-    }, [isPro]);
+    }, [isPro, initialCapital]);
 
     const handleImportCancel = useCallback(() => {
         setFileState(null);
@@ -388,6 +402,27 @@ export default function AnalyzerWizard() {
                         {(!importSource || importSource === "csv" || importSource === "generic") && (
                             <div className="space-y-6">
                                 <OnboardingPanel importSource={importSource as "csv" | "mt4" | "mt5" | "binance" | null} />
+                                <div className="rounded-2xl p-4 bg-white/[0.02] border border-white/5 space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <label htmlFor="uploadCapitalInput" className="text-xs font-black uppercase tracking-wider text-gray-300">
+                                            Capital inicial de la cuenta (opcional)
+                                        </label>
+                                        <span className="text-[10px] text-gray-500 font-bold uppercase">Opcional</span>
+                                    </div>
+                                    <input
+                                        id="uploadCapitalInput"
+                                        type="number"
+                                        min="1"
+                                        step="any"
+                                        value={capitalInput}
+                                        onChange={(e) => handleCapitalChange(e.target.value)}
+                                        placeholder="Ej. 10000"
+                                        className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors"
+                                    />
+                                    <p className="text-[10px] text-gray-500 leading-relaxed">
+                                        Permite calcular el drawdown porcentual exacto sobre tu balance. Si se omite, se medirá en valor nominal.
+                                    </p>
+                                </div>
                                 <div ref={uploadRef} className="relative">
                                     <FileUpload onFile={handleFile} loading={loading} />
                                     {loading && (
@@ -419,7 +454,13 @@ export default function AnalyzerWizard() {
 
                 {step === "confirm" && pendingNormalized && (
                     <div className="rounded-2xl p-6 animate-fade-in" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                        <TradeSummaryPreview trades={pendingNormalized.trades} onConfirm={confirmAndGenerate} onBack={() => { setPendingNormalized(null); setStep("upload"); }} />
+                        <TradeSummaryPreview
+                            trades={pendingNormalized.trades}
+                            capitalInput={capitalInput}
+                            onCapitalChange={handleCapitalChange}
+                            onConfirm={confirmAndGenerate}
+                            onBack={() => { setPendingNormalized(null); setStep("upload"); }}
+                        />
                     </div>
                 )}
 
@@ -469,7 +510,34 @@ export default function AnalyzerWizard() {
                 {step === "gate" && parseResult && basicMetrics && (
                     <div className="space-y-4">
                         <BasicResults metrics={basicMetrics} fullMetrics={fullMetrics || undefined} format={parseResult.format} fileName={parseResult.fileName} trades={parseResult.trades} onReset={resetToSource} onViewFullReport={() => { setTriggerUnlock(prev => prev + 1); window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }} />
-                        <EmailGate metricsPayload={{ basic: basicMetrics, equity_curve: fullMetrics?.equityCurve, drawdown_curve: fullMetrics?.drawdownCurve, trade_histogram: fullMetrics?.tradeHistogram }} basicMetrics={{ trades_count: basicMetrics.totalTrades, winrate: basicMetrics.winrate, profit_factor: basicMetrics.profitFactor, max_drawdown: basicMetrics.maxDrawdown, sum_profit: basicMetrics.sumProfit }} fileName={parseResult.fileName} dateRangeStart={parseResult.dateRangeStart?.toISOString()} dateRangeEnd={parseResult.dateRangeEnd?.toISOString()} strategyId={""} isAuthenticated={isAuthenticated} onUnlocked={handleEmailUnlocked} triggerUnlock={triggerUnlock} />
+                        <EmailGate
+                            metricsPayload={{
+                                basic: basicMetrics,
+                                equity_curve: fullMetrics?.equityCurve,
+                                drawdown_curve: fullMetrics?.drawdownCurve,
+                                trade_histogram: fullMetrics?.tradeHistogram,
+                                initial_capital: basicMetrics.initialCapital,
+                                profit_factor_infinite: basicMetrics.profitFactorInfinite,
+                                account_currency: parseResult.accountCurrency ?? fullMetrics?.account_currency ?? null,
+                            }}
+                            basicMetrics={{
+                                trades_count: basicMetrics.totalTrades,
+                                winrate: basicMetrics.winrate,
+                                profit_factor: basicMetrics.profitFactor,
+                                max_drawdown: basicMetrics.maxDrawdown,
+                                sum_profit: basicMetrics.sumProfit,
+                                initial_capital: basicMetrics.initialCapital,
+                                account_currency: parseResult.accountCurrency ?? fullMetrics?.account_currency ?? null,
+                                profit_factor_infinite: basicMetrics.profitFactorInfinite,
+                            }}
+                            fileName={parseResult.fileName}
+                            dateRangeStart={parseResult.dateRangeStart?.toISOString()}
+                            dateRangeEnd={parseResult.dateRangeEnd?.toISOString()}
+                            strategyId={""}
+                            isAuthenticated={isAuthenticated}
+                            onUnlocked={handleEmailUnlocked}
+                            triggerUnlock={triggerUnlock}
+                        />
                     </div>
                 )}
 

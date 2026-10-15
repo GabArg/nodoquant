@@ -7,7 +7,7 @@ describe('Diagnosis Validation on Synthetic Datasets', () => {
     // Helper to calculate metrics directly from path
     const getMetricsForDataset = (relativePath: string) => {
         const trades = loadDataset(relativePath);
-        return calcFullMetrics(trades);
+        return calcFullMetrics(trades, 10000);
     };
 
     describe('Dataset A: High Drawdown (200 trades)', () => {
@@ -18,7 +18,8 @@ describe('Diagnosis Validation on Synthetic Datasets', () => {
             expect(metrics.advanced?.verdict).not.toBe('noEdge');
             
             // Risk Level: Large Drawdown (expected actual is > 10%)
-            expect(Math.abs(metrics.maxDrawdown)).toBeGreaterThan(10);
+            expect(metrics.maxDrawdown).not.toBeNull();
+            expect(Math.abs(metrics.maxDrawdown!)).toBeGreaterThan(10);
             
             // Probability of Ruin should reflect high volatility
             expect(metrics.riskOfRuin).toBeGreaterThan(0);

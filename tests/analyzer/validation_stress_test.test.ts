@@ -128,7 +128,8 @@ describe("Analytics Engine Stress Tests", () => {
         const metrics = calcFullMetrics(trades);
 
         expect(metrics.totalTrades).toBe(10);
-        expect(metrics.profitFactor).toBeGreaterThan(5);
+        expect(metrics.profitFactor).toBeNull();
+        expect(metrics.profitFactorInfinite).toBe(true);
 
         expect(metrics.advanced?.edgeConfidence).toBeLessThan(30);
         expect(metrics.advanced?.robustnessLevel).toBe("fragile");

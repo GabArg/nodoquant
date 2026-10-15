@@ -687,15 +687,15 @@
             "benefit1": "Vas a ver exactamente cuándo tu estrategia colapsa",
             "benefit2": "Cuánto capital podés perder en el peor escenario",
             "benefit3": "Si realmente podés sobrevivir a largo plazo",
-            "credibilityFooter": "Simulación basada en más de 10,000 escenarios Monte Carlo usando tus datos reales.",
-            "mcPlaceholder": "(calculado con más de 10,000 simulaciones Monte Carlo)",
+            "credibilityFooter": "Simulación basada en 1,000 escenarios Monte Carlo usando tus datos reales.",
+            "mcPlaceholder": "(calculado con 1,000 simulaciones Monte Carlo)",
             "closingLine": "Podés ignorar esto… o seguir operando sin saber cuánto estás arriesgando.",
             "unlockNow": "Desbloquear ahora — 15 USDT",
             "unlockFull": "Ver exactamente cuánto vas a perder — 15 USDT",
             "unlockSubtext": "Pago único · Acceso inmediato · Basado en tus trades reales",
             "shortTermImprovement": "Mejora a corto plazo detectada",
             "longTermStabilityNotProven": "Estabilidad a largo plazo: NO comprobada",
-            "edgeInsightTip": "Este análisis parcial no puede confirmar una ventaja real. Necesitás la simulación completa de 10,000 escenarios para validar tu estrategia.",
+            "edgeInsightTip": "Este análisis parcial no puede confirmar una ventaja real. Necesitás la simulación completa de 1,000 escenarios para validar tu estrategia.",
             "unvalidatedEdge": "Sin ventaja estadística",
             "unvalidatedEdgeDesc": "Estás operando sin una ventaja comprobada",
             "basedOnTrades": "Basado en tus trades reales · Sin suposiciones",
@@ -982,12 +982,12 @@
                 "noDesc": "Tu estrategia no es confiable. Probablemente estás operando sin una ventaja real. Ahora mismo, estás arriesgando capital sin pruebas estadísticas.",
                 "unstableDesc": "La estrategia muestra algunas señales positivas pero la estabilidad del rendimiento es inconsistente.",
                 "insufficientDesc": "Se requieren al menos 30 operaciones para un diagnóstico estadísticamente significativo.",
-                "edgeContext": "La Confianza del Edge estima qué tan probable es que la rentabilidad observada se deba a la habilidad en lugar de la aleatoriedad."
+                "edgeContext": "La Puntuación de Evidencia es un índice cuantitativo que resume la consistencia de la muestra histórica frente a escenarios aleatorizados."
             },
             "summaryBlock": {
                 "title": "Resumen de Análisis",
                 "trades": "Operaciones analizadas",
-                "edgeConfidence": "Confianza del Edge",
+                "edgeConfidence": "Puntuación de evidencia",
                 "diagnosis": "Diagnóstico de la Estrategia",
                 "riskLevel": "Nivel de Riesgo",
                 "riskLow": "Riesgo Bajo",
@@ -996,7 +996,7 @@
             },
             "keySignals": {
                 "title": "Señales Clave",
-                "edgeConfidence": "Confianza del Edge",
+                "edgeConfidence": "Puntuación de evidencia",
                 "expectancy": "Expectativa",
                 "profitFactor": "Profit Factor",
                 "sampleSize": "Muestra",
@@ -1242,18 +1242,18 @@
             },
             "stability": {
                 "title": "Estabilidad Monte Carlo",
-                "confidence": "{val}% Confianza del Edge",
-                "microcopy": "Basado en 1,000 simulaciones de tu secuencia de trades para identificar la probabilidad de supervivencia real.",
+                "confidence": "{val} Puntuación de Evidencia",
+                "microcopy": "Basado en 1,000 permutaciones para proyectar escenarios adversos de drawdown y dispersión en la muestra observada.",
                 "histDD": "DD Histórico",
                 "mcWorstCase": "Peor Caso MC"
             },
             "nextSteps": {
-                "title": "Siguiente Paso Sugerido",
-                "strongEdge": "Ejecuta una simulación de Prop Firm para ver si tu estrategia es escalable a nivel profesional.",
-                "weakEdge": "Realiza una inmersión profunda en las operaciones perdedoras para perfeccionar tus criterios de entrada.",
-                "unstableEdge": "Reduce el tamaño de las posiciones hasta que el rendimiento se estabilice en las próximas 30 operaciones.",
-                "noEdge": "Soluciona esto antes de arriesgar más capital.",
-                "insufficientSample": "Continúa operando con riesgo mínimo hasta alcanzar de 50 a 100 operaciones."
+                "title": "Evaluación de la Muestra",
+                "strongEdge": "La muestra presenta métricas robustas bajo permutación. Conviene monitorear la persistencia del rendimiento en periodos futuros.",
+                "weakEdge": "La ventaja estadística es ajustada; la muestra es sensible a rachas adversas o cambios de régimen de mercado.",
+                "unstableEdge": "Alta dispersión en la distribución de resultados; los retornos dependen de pocas operaciones atípicas.",
+                "noEdge": "La distribución histórica no muestra evidencia cuantitativa de ventaja sobre el ruido del mercado.",
+                "insufficientSample": "El tamaño de la muestra es insuficiente para extraer conclusiones estadísticas confiables."
             },
             "tooltips": {
                 "score": "El Puntaje de Estrategia combina métricas como el Factor de Beneficio y la Expectancia para evaluar la calidad.",
@@ -1263,8 +1263,8 @@
             }
         },
         "edgeConfidence": {
-            "title": "Confianza de Ventaja",
-            "tooltip": "La Confianza de Ventaja estima qué tan confiable es estadísticamente la ventaja de tu estrategia.",
+            "title": "Puntuación de evidencia",
+            "tooltip": "Índice heurístico (escala 0-100) basado en la consistencia de la muestra histórica, expectancia y drawdown. No constituye una probabilidad estadística ni garantía de rentabilidad futura.",
             "levels": {
                 "none": "Sin Ventaja",
                 "inconclusive": "Inconclusa",
@@ -1304,7 +1304,7 @@
         },
         "monteCarlo": {
             "title": "Análisis de Monte Carlo",
-            "tooltip": "Simula miles de variaciones de tu secuencia de trades para identificar resultados en el peor de los casos y la probabilidad de supervivencia.",
+            "tooltip": "Simula permutaciones en la secuencia de trades para identificar dispersión de retornos y escenarios adversos de drawdown.",
             "medianOutcome": "Resultado Mediano",
             "worstCaseDD": "Peor Drawdown (95%)",
             "ruinProb": "Riesgo de Ruina",

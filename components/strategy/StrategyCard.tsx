@@ -11,10 +11,18 @@ interface StrategyCardProps {
         market: string;
         symbol: string;
         win_rate: number;
-        profit_factor: number;
+        profit_factor: number | null;
         trades_count: number;
         tier?: string;
         published_at: string;
+        report?: {
+            metrics_json?: {
+                basic?: {
+                    profitFactorInfinite?: boolean;
+                };
+                profitFactorInfinite?: boolean;
+            };
+        };
     };
     locale: string;
 }
@@ -37,6 +45,14 @@ export default function StrategyCard({ strategy, locale }: StrategyCardProps) {
     } = strategy;
 
     const wr = win_rate > 1 ? win_rate : win_rate * 100;
+
+    const isInfinitePF = Boolean(
+        strategy.report?.metrics_json?.basic?.profitFactorInfinite ||
+        strategy.report?.metrics_json?.profitFactorInfinite
+    );
+    const pfDisplay = profit_factor != null
+        ? Number(profit_factor).toFixed(2)
+        : (isInfinitePF ? "∞" : "—");
 
     let scoreColor = "text-emerald-400";
     let scoreBg = "bg-emerald-500/10";
@@ -82,7 +98,7 @@ export default function StrategyCard({ strategy, locale }: StrategyCardProps) {
                     </div>
                     <div className="text-center border-x border-white/5">
                         <p className="text-[10px] text-gray-500 font-bold uppercase tracking-tighter mb-1">{t("profitFactor")}</p>
-                        <p className="text-sm font-bold text-white tracking-tight">{profit_factor.toFixed(2)}</p>
+                        <p className="text-sm font-bold text-white tracking-tight">{pfDisplay}</p>
                     </div>
                     <div className="text-center">
                         <p className="text-[10px] text-gray-500 font-bold uppercase tracking-tighter mb-1">{t("trades")}</p>

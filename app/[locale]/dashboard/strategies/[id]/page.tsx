@@ -103,10 +103,10 @@ export default async function StrategyDetailPage({
                                                 {Number(a.winrate).toFixed(1)}%
                                             </td>
                                             <td className="px-6 py-4 text-right tabular-nums">
-                                                {Number(a.profit_factor).toFixed(2)}
+                                                {a.profit_factor != null ? Number(a.profit_factor).toFixed(2) : "—"}
                                             </td>
                                             <td className="px-6 py-4 text-right text-red-400 tabular-nums">
-                                                {Number(a.max_drawdown).toFixed(1)}%
+                                                {a.max_drawdown != null ? `${Number(a.max_drawdown).toFixed(1)}%` : "—"}
                                             </td>
                                             <td className="px-6 py-4 text-right text-gray-500 tabular-nums">
                                                 {new Date(a.created_at).toLocaleDateString()}

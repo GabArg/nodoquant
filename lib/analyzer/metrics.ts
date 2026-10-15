@@ -10,21 +10,37 @@ import type { Trade } from "./parser";
 export interface BasicMetrics {
     totalTrades: number;
     winrate: number; // 0-100
-    profitFactor: number;
-    maxDrawdown: number; // 0-100 (percentage)
+    profitFactor: number | null;
+    profitFactorInfinite?: boolean;
+    maxDrawdown: number | null; // 0-100 (percentage), null if no initial capital
     maxDrawdownAbs: number; // in currency units
     expectancy: number; // avg profit per trade
     sumProfit: number;
+    initialCapital?: number | null;
+}
+
+export interface KellyResult {
+    kellyFraction: number;
+    recommendedPct: number;
+    isOperative: boolean;
+}
+
+export interface QuantMetadata {
+    schema_version: string;
+    methodology_version: string;
+    initial_capital: number | null;
+    account_currency: string | null;
 }
 
 export interface FullMetrics extends BasicMetrics {
     equityCurve: number[];
-    drawdownCurve: number[]; // drawdown % at each trade
+    drawdownCurve: number[]; // drawdown % or nominal abs at each trade
     tradeHistogram: number[];
     minProfit: number;
     maxProfit: number;
     longestLosingStreak: number;
     recommendedRiskPct: number; // % of capital per trade (Kelly-based)
+    kelly?: KellyResult;
     riskOfRuin: number; // 0-100
     monteCarlo: MonteCarloResult;
     timeAnalysis: TimeAnalysis;
@@ -40,6 +56,11 @@ export interface FullMetrics extends BasicMetrics {
     propFirm?: PropFirmResult;
     edgeDecay?: EdgeDecay;
     rHistogram?: { counts: number[]; min: number; max: number };
+    metadata?: QuantMetadata;
+    schema_version?: string;
+    methodology_version?: string;
+    initial_capital?: number | null;
+    account_currency?: string | null;
 }
 
 export interface EdgeDecay {
@@ -65,7 +86,7 @@ export interface AdvancedRobustness {
 export interface StabilityAnalysis {
     segments: Array<{
         segment: string;
-        profitFactor: number;
+        profitFactor: number | null;
         winrate: number;
         netProfit: number;
     }>;
@@ -83,7 +104,7 @@ export interface TimeAnalysis {
 }
 
 export interface RiskMetrics {
-    maxDrawdown: number;
+    maxDrawdown: number | null;
     avgDrawdown: number;
     recoveryFactor: number;
     profitToDrawdown: number;
@@ -127,16 +148,18 @@ export interface PropFirmResult {
 
 // ── Basic analysis ────────────────────────────────────────────────────────────
 
-export function calcBasicMetrics(trades: Trade[]): BasicMetrics {
+export function calcBasicMetrics(trades: Trade[], initialCapital?: number | null): BasicMetrics {
     if (trades.length === 0) {
         return {
             totalTrades: 0,
             winrate: 0,
-            profitFactor: 0,
-            maxDrawdown: 0,
+            profitFactor: null,
+            profitFactorInfinite: false,
+            maxDrawdown: null,
             maxDrawdownAbs: 0,
             expectancy: 0,
             sumProfit: 0,
+            initialCapital: initialCapital ?? null,
         };
     }
 
@@ -146,22 +169,45 @@ export function calcBasicMetrics(trades: Trade[]): BasicMetrics {
     const winrate = (winners.length / trades.length) * 100;
     const grossProfit = winners.reduce((s, t) => s + t.profit, 0);
     const grossLoss = Math.abs(losers.reduce((s, t) => s + t.profit, 0));
-    const profitFactor = grossLoss === 0 ? (grossProfit > 0 ? 99.99 : 0) : grossProfit / grossLoss;
+
+    let profitFactor: number | null = null;
+    let profitFactorInfinite = false;
+
+    if (grossLoss === 0) {
+        if (grossProfit > 0) {
+            profitFactor = null;
+            profitFactorInfinite = true;
+        } else {
+            profitFactor = 0;
+            profitFactorInfinite = false;
+        }
+    } else {
+        profitFactor = round(grossProfit / grossLoss, 2);
+        profitFactorInfinite = false;
+    }
+
     const sumProfit = trades.reduce((s, t) => s + t.profit, 0);
     const expectancy = sumProfit / trades.length;
 
     const equityCurve = buildEquityCurve(trades);
-    const maxDrawdown = calcMaxDrawdownFromCurve(equityCurve);
     const { maxDD: maxDDAbs } = calcMaxDrawdownAbs(equityCurve);
+
+    let maxDrawdown: number | null = null;
+    if (typeof initialCapital === "number" && initialCapital > 0) {
+        const ddCurve = buildDrawdownCurve(equityCurve, initialCapital);
+        maxDrawdown = round(Math.max(...ddCurve, 0), 1);
+    }
 
     return {
         totalTrades: trades.length,
         winrate: round(winrate, 1),
-        profitFactor: round(profitFactor, 2),
-        maxDrawdown: round(maxDrawdown, 1),
+        profitFactor,
+        profitFactorInfinite,
+        maxDrawdown,
         maxDrawdownAbs: round(maxDDAbs, 2),
         expectancy: round(expectancy, 2),
         sumProfit: round(sumProfit, 2),
+        initialCapital: initialCapital ?? null,
     };
 }
 
@@ -177,22 +223,33 @@ export function buildEquityCurve(trades: Trade[], initialBalance = 0): number[] 
     return curve;
 }
 
-export function buildDrawdownCurve(equityCurve: number[], baseBalance = 10000): number[] {
+export function buildDrawdownCurve(equityCurve: number[], initialCapital?: number | null): number[] {
     const dd: number[] = [];
-    let peak = -Infinity;
-    for (const val of equityCurve) {
-        // Use a base balance to prevent division by zero or very small numbers
-        const currentEquity = val + baseBalance;
-        if (currentEquity > peak) peak = currentEquity;
-        
-        const drawdown = peak <= 0 ? 0 : ((peak - currentEquity) / peak) * 100;
-        dd.push(round(drawdown, 2));
+
+    if (typeof initialCapital === "number" && initialCapital > 0) {
+        let peak = initialCapital;
+        for (const val of equityCurve) {
+            const currentEquity = initialCapital + val;
+            if (currentEquity > peak) peak = currentEquity;
+            
+            const drawdown = peak <= 0 ? 0 : ((peak - currentEquity) / peak) * 100;
+            dd.push(round(drawdown, 2));
+        }
+    } else {
+        let peak = -Infinity;
+        for (const val of equityCurve) {
+            if (val > peak) peak = val;
+            const ddAbs = peak - val;
+            dd.push(round(ddAbs, 2));
+        }
     }
+
     return dd;
 }
 
-function calcMaxDrawdownFromCurve(equityCurve: number[]): number {
-    const ddCurve = buildDrawdownCurve(equityCurve);
+function calcMaxDrawdownFromCurve(equityCurve: number[], initialCapital?: number | null): number | null {
+    if (typeof initialCapital !== "number" || initialCapital <= 0) return null;
+    const ddCurve = buildDrawdownCurve(equityCurve, initialCapital);
     return Math.max(...ddCurve, 0);
 }
 
@@ -267,19 +324,64 @@ export function calcLongestLosingStreak(trades: Trade[]): number {
     return max;
 }
 
-// ── Recommended risk (simplified Kelly) ──────────────────────────────────────
+// ── Recommended risk (Kelly Criterion) ───────────────────────────────────────
 
-export function calcRecommendedRisk(metrics: BasicMetrics): number {
-    const w = metrics.winrate / 100;
-    const l = 1 - w;
-    if (w === 0 || l === 0) return 1;
+export function calcRecommendedRisk(metrics: BasicMetrics, trades?: Trade[]): KellyResult {
+    // If expectancy <= 0 or winrate <= 0, no edge -> Kelly fraction and recommended risk are 0%
+    if (metrics.expectancy <= 0 || metrics.winrate <= 0) {
+        return {
+            kellyFraction: 0,
+            recommendedPct: 0,
+            isOperative: false,
+        };
+    }
 
-    const winners = metrics.profitFactor > 0 ? metrics.profitFactor : 1;
-    // Kelly: w - (l / winners)
-    const kelly = w - l / winners;
-    // Use half-Kelly for conservatism, cap at 5%
-    const halfKelly = kelly / 2;
-    return round(Math.max(0.5, Math.min(5, halfKelly * 100)), 1);
+    const p = metrics.winrate / 100;
+    const q = 1 - p;
+
+    let b = 1;
+    if (trades && trades.length > 0) {
+        const winners = trades.filter((t) => t.profit > 0);
+        const losers = trades.filter((t) => t.profit < 0);
+        const avgWin = winners.length > 0 ? (winners.reduce((s, t) => s + t.profit, 0) / winners.length) : 0;
+        const avgLoss = losers.length > 0 ? (Math.abs(losers.reduce((s, t) => s + t.profit, 0)) / losers.length) : 0;
+        if (avgLoss > 0) {
+            b = avgWin / avgLoss;
+        } else if (avgWin > 0) {
+            b = 10;
+        }
+    } else if (metrics.profitFactor !== null && metrics.profitFactor > 0 && q > 0) {
+        b = metrics.profitFactor * (q / p);
+    }
+
+    if (b <= 0) {
+        return {
+            kellyFraction: 0,
+            recommendedPct: 0,
+            isOperative: false,
+        };
+    }
+
+    // Kelly criterion: f* = p - (q / b)
+    const fStar = p - (q / b);
+
+    if (fStar <= 0) {
+        return {
+            kellyFraction: 0,
+            recommendedPct: 0,
+            isOperative: false,
+        };
+    }
+
+    // Half-Kelly capped at 5.0%
+    const halfKelly = (fStar / 2) * 100;
+    const recommendedPct = round(Math.min(5.0, Math.max(0, halfKelly)), 1);
+
+    return {
+        kellyFraction: fStar,
+        recommendedPct,
+        isOperative: false,
+    };
 }
 
 // ── Monte Carlo ───────────────────────────────────────────────────────────────
@@ -389,10 +491,14 @@ export function calcMonteCarloSimulation(
 
 // ── Full metrics ──────────────────────────────────────────────────────────────
 
-export function calcFullMetrics(trades: Trade[]): FullMetrics {
-    const basic = calcBasicMetrics(trades);
+export function calcFullMetrics(
+    trades: Trade[],
+    initialCapital?: number | null,
+    accountCurrency?: string | null
+): FullMetrics {
+    const basic = calcBasicMetrics(trades, initialCapital);
     const rawEquity = buildEquityCurve(trades);
-    const rawDrawdown = buildDrawdownCurve(rawEquity);
+    const rawDrawdown = buildDrawdownCurve(rawEquity, initialCapital);
 
     const equityCurve = downsample(rawEquity, 500);
     const drawdownCurve = downsample(rawDrawdown, 500);
@@ -401,11 +507,18 @@ export function calcFullMetrics(trades: Trade[]): FullMetrics {
     const histogramData = calcHistogram(profits, 20);
 
     const longestLosingStreak = calcLongestLosingStreak(trades);
-    const recommendedRiskPct = calcRecommendedRisk(basic);
+    const kelly = calcRecommendedRisk(basic, trades);
     const monteCarlo = calcMonteCarloSimulation(trades, 1000);
     const timeAnalysis = calcTimeAnalysis(trades);
     const stabilityAnalysis = calcStabilityAnalysis(trades);
     const stabilityScore = calcStabilityScore(stabilityAnalysis);
+
+    const metadata: QuantMetadata = {
+        schema_version: "2.0",
+        methodology_version: "v2-contract",
+        initial_capital: initialCapital ?? null,
+        account_currency: accountCurrency ?? null,
+    };
 
     return {
         ...basic,
@@ -415,7 +528,8 @@ export function calcFullMetrics(trades: Trade[]): FullMetrics {
         minProfit: histogramData.min,
         maxProfit: histogramData.max,
         longestLosingStreak,
-        recommendedRiskPct,
+        recommendedRiskPct: kelly.recommendedPct,
+        kelly,
         riskOfRuin: calcProbabilisticRiskOfRuin(basic),
         monteCarlo,
         timeAnalysis,
@@ -423,9 +537,9 @@ export function calcFullMetrics(trades: Trade[]): FullMetrics {
         stabilityAnalysis,
         stabilityScore,
         evolution: {
-            last100: trades.length >= 100 ? calcBasicMetrics(trades.slice(-100)) : undefined,
-            last50: trades.length >= 50 ? calcBasicMetrics(trades.slice(-50)) : undefined,
-            last30: trades.length >= 30 ? calcBasicMetrics(trades.slice(-30)) : undefined,
+            last100: trades.length >= 100 ? calcBasicMetrics(trades.slice(-100), initialCapital) : undefined,
+            last50: trades.length >= 50 ? calcBasicMetrics(trades.slice(-50), initialCapital) : undefined,
+            last30: trades.length >= 30 ? calcBasicMetrics(trades.slice(-30), initialCapital) : undefined,
         },
         advanced: calcAdvancedRobustness(trades, basic, monteCarlo),
         propFirm: calcPropFirmChallenge(trades, {
@@ -435,7 +549,12 @@ export function calcFullMetrics(trades: Trade[]): FullMetrics {
             maxDrawdownPct: 10
         }),
         edgeDecay: calcEdgeDecay(trades),
-        rHistogram: calcRHistogram(trades)
+        rHistogram: calcRHistogram(trades),
+        metadata,
+        schema_version: metadata.schema_version,
+        methodology_version: metadata.methodology_version,
+        initial_capital: metadata.initial_capital,
+        account_currency: metadata.account_currency,
     };
 }
 
@@ -583,12 +702,13 @@ export function calcAdvancedRobustness(
         ) * 100
     );
 
+    const effectivePF = basic.profitFactorInfinite ? 5 : (basic.profitFactor ?? 0);
     const pfScore = Math.min(
         100,
         Math.pow(
             Math.max(
                 0,
-                (basic.profitFactor - 1) / 1.5
+                (effectivePF - 1) / 1.5
             ),
             1.2
         ) * 100
@@ -687,6 +807,7 @@ export function calcAdvancedRobustness(
     }
 
     if (
+        basic.maxDrawdown !== null &&
         mc.drawdownAt5Pct >
         basic.maxDrawdown * 2
     ) {
@@ -709,24 +830,25 @@ export function calcAdvancedRobustness(
     // positive characteristics but do not meet the minimum
     // confidence / robustness requirements for weakEdge.
     let verdict: DiagnosisVerdict = "unstableEdge";
+    const pfVal = basic.profitFactorInfinite ? 999 : (basic.profitFactor ?? 0);
 
     if (n < 30) {
         verdict = "insufficientSample";
     } else if (
-        basic.profitFactor < 1 ||
+        pfVal < 1 ||
         edgeConfidence < 40 ||
         basic.expectancy <= 0
     ) {
         verdict = "noEdge";
     } else if (
         edgeConfidence >= 75 &&
-        basic.profitFactor >= 1.3 &&
+        pfVal >= 1.3 &&
         n >= 100
     ) {
         verdict = "strongEdge";
     } else if (
         edgeConfidence >= 55 &&
-        basic.profitFactor >= 1.1 &&
+        pfVal >= 1.1 &&
         n >= 30
     ) {
         verdict = "weakEdge";
@@ -801,9 +923,12 @@ export function calcStabilityAnalysis(trades: Trade[]): StabilityAnalysis {
 export function calcStabilityScore(analysis: StabilityAnalysis): number {
     if (analysis.segments.length < 4) return 0;
 
-    const pfs = analysis.segments.map(s => s.profitFactor);
-    const mean = pfs.reduce((a, b) => a + b, 0) / pfs.length;
-    const variance = pfs.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / pfs.length;
+    const validPfs = analysis.segments
+        .map(s => s.profitFactor)
+        .filter((pf): pf is number => pf !== null);
+    if (validPfs.length < 2) return 50;
+    const mean = validPfs.reduce((a, b) => a + b, 0) / validPfs.length;
+    const variance = validPfs.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / validPfs.length;
     
     // Convert variance to 0-100 score. Low variance (stable PF) -> 100.
     // PF variance usually is small, e.g. 0.1 to 1.0. 
@@ -1008,14 +1133,15 @@ export function interpretEdge(metrics: BasicMetrics): {
     label: string;
     color: "green" | "yellow" | "red";
 } {
-    const { winrate, profitFactor, totalTrades } = metrics;
+    const { winrate, profitFactor, profitFactorInfinite, totalTrades } = metrics;
     if (totalTrades < 20) {
         return { label: "Muestra insuficiente (menos de 20 trades).", color: "yellow" };
     }
-    if (profitFactor >= 1.5 && winrate >= 45) {
+    const pf = profitFactorInfinite ? 999 : (profitFactor ?? 0);
+    if (pf >= 1.5 && winrate >= 45) {
         return { label: "Tu estrategia muestra señales claras de edge estadístico.", color: "green" };
     }
-    if (profitFactor >= 1.1) {
+    if (pf >= 1.1) {
         return { label: "Tu estrategia muestra señales iniciales de edge.", color: "yellow" };
     }
     return {

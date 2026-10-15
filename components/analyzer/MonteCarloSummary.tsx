@@ -47,12 +47,12 @@ export default function MonteCarloSummary({ worstCase, averageCase, bestCase, ri
                 </p>
             </div>
 
-            <div className="card rounded-xl p-5" style={{ background: riskOfRuin > 10 ? "rgba(239,68,68,0.08)" : "var(--bg-card)", border: riskOfRuin > 10 ? "1px solid rgba(239,68,68,0.2)" : "1px solid var(--border)" }}>
-                <p className="text-xs font-medium uppercase tracking-wider mb-2" style={{ color: riskOfRuin > 10 ? "#fca5a5" : "#6b7280" }}>
+            <div className="card rounded-xl p-5" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+                <p className="text-xs font-medium uppercase tracking-wider mb-2" style={{ color: "#6b7280" }}>
                     {t("riskOfRuin")}
                 </p>
-                <p className="text-xl font-bold tabular-nums" style={{ color: riskOfRuin > 10 ? "#f87171" : "#e5e7eb" }}>
-                    {riskOfRuin.toFixed(1)}%
+                <p className="text-base font-bold tabular-nums text-gray-400">
+                    No disponible
                 </p>
             </div>
         </div>

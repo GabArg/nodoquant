@@ -12,6 +12,7 @@ import StrategyEvolution from "./Dashboard/StrategyEvolution";
 import ManualPaymentModal from "./ManualPaymentModal";
 import Link from "next/link";
 import { trackEvent } from "@/lib/trackEvent";
+import { formatNominalOrCurrency } from "@/lib/analyzer/currencyDetector";
 
 interface Props {
     metrics: FullMetrics;
@@ -92,15 +93,18 @@ function StrategyDiagnosis({ metrics, isPro }: { metrics: FullMetrics; isPro?: b
 
     const verdict = config[verdictKey as keyof typeof config] || config.unstableEdge;
     const score = metrics.advanced?.edgeConfidence ?? 0;
-    
-    // Credible reinterpretation labels
-    const getReinterpretedValue = (label: string, value: string) => {
-        if (!isNoEdge || isPro) return value;
-        if (label === tSignals("winRate") && metrics.winrate > 55) return tFunnel("shortTermHighWinrate");
-        if (label === tSignals("maxDrawdown") && metrics.maxDrawdown < 10) return tFunnel("shortTermLowDrawdown");
-        if (label === tSignals("profitFactor") && metrics.profitFactor > 1.2) return tFunnel("shortTermProfitability");
-        return value;
-    };
+
+    const formattedPf = metrics.profitFactor !== null
+        ? metrics.profitFactor.toFixed(2)
+        : (metrics.profitFactorInfinite ? "∞" : "—");
+
+    const formattedDd = metrics.maxDrawdown !== null
+        ? `${metrics.maxDrawdown.toFixed(1)}%`
+        : formatNominalOrCurrency(metrics.maxDrawdownAbs, (metrics as any).account_currency);
+
+    const ddLabel = metrics.maxDrawdown !== null
+        ? tSignals("maxDrawdown")
+        : `${tSignals("maxDrawdown")} (Nominal)`;
 
     return (
         <div className="space-y-6">
@@ -148,31 +152,28 @@ function StrategyDiagnosis({ metrics, isPro }: { metrics: FullMetrics; isPro?: b
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <SignalCard 
                     label={tSignals("expectancy")} 
-                    value={getReinterpretedValue(tSignals("expectancy"), `$${(metrics.expectancy || 0).toFixed(1)}`)} 
+                    value={`$${(metrics.expectancy || 0).toFixed(2)}`} 
                     icon="💰" 
                     tooltip={tSignals("tooltips.expectancy")}
-                    isNoEdge={isNoEdge && !isPro}
                 />
                 <SignalCard 
                     label={tSignals("profitFactor")} 
-                    value={getReinterpretedValue(tSignals("profitFactor"), (metrics.profitFactor || 0).toFixed(2))} 
+                    value={formattedPf} 
                     icon="⚖️" 
                     tooltip={tSignals("tooltips.profitFactor")}
-                    isNoEdge={isNoEdge && !isPro}
                 />
                 <SignalCard 
                     label={tSignals("winRate")} 
-                    value={getReinterpretedValue(tSignals("winRate"), `${(metrics.winrate || 0).toFixed(1)}%`)} 
+                    value={`${(metrics.winrate || 0).toFixed(1)}%`} 
                     icon="🎯" 
                     tooltip={tSignals("tooltips.winRate")}
-                    isNoEdge={isNoEdge && !isPro}
                 />
                 <SignalCard 
-                    label={tSignals("maxDrawdown")} 
-                    value={getReinterpretedValue(tSignals("maxDrawdown"), `${(metrics.maxDrawdown || 0).toFixed(1)}%`)} 
+                    label={ddLabel} 
+                    value={formattedDd} 
                     icon="📉" 
-                    tooltip={tSignals("tooltips.maxDrawdown")}
-                    isNoEdge={isNoEdge && !isPro}
+                    tooltip={metrics.maxDrawdown !== null ? tSignals("tooltips.maxDrawdown") : "Drawdown máximo en valor nominal absoluto (capital inicial no especificado)."}
+                    subText={metrics.maxDrawdown === null ? "Capital no especificado" : undefined}
                 />
                 <SignalCard 
                     label={tSignals("sampleSize")} 
@@ -185,7 +186,7 @@ function StrategyDiagnosis({ metrics, isPro }: { metrics: FullMetrics; isPro?: b
     );
 }
 
-function SignalCard({ label, value, icon, tooltip, isNoEdge = false }: { label: string; value: string; icon: string; tooltip?: string; isNoEdge?: boolean }) {
+function SignalCard({ label, value, icon, tooltip, isNoEdge = false, subText }: { label: string; value: string; icon: string; tooltip?: string; isNoEdge?: boolean; subText?: string }) {
     return (
         <div className="group relative card rounded-2xl p-4 border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all hover:border-white/10">
             <div className="flex items-center justify-between mb-2">
@@ -203,6 +204,9 @@ function SignalCard({ label, value, icon, tooltip, isNoEdge = false }: { label: 
             <span className={`text-lg font-black italic transition-colors ${isNoEdge ? "text-red-400 block leading-tight text-xs" : "text-white"}`}>
                 {value}
             </span>
+            {subText && (
+                <span className="text-[10px] text-gray-500 block mt-1 font-medium">{subText}</span>
+            )}
         </div>
     );
 }
@@ -342,7 +346,9 @@ export default function FullReport({ metrics, analysisId, isPro, isAuthenticated
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
                             <div className="space-y-1">
                                 <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block">{t("riskOverview.maxDrawdown")}</span>
-                                <span className="text-2xl font-black text-white italic">{(metrics.maxDrawdown || 0).toFixed(1)}%</span>
+                                <span className="text-2xl font-black text-white italic">
+                                    {metrics.maxDrawdown !== null ? `${metrics.maxDrawdown.toFixed(1)}%` : formatNominalOrCurrency(metrics.maxDrawdownAbs, (metrics as any).account_currency)}
+                                </span>
                             </div>
                             <div className="space-y-1">
                                 <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block">{t("riskOverview.sharpe")}</span>
@@ -350,7 +356,7 @@ export default function FullReport({ metrics, analysisId, isPro, isAuthenticated
                             </div>
                             <div className="space-y-1">
                                 <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block">{t("riskOverview.riskOfRuin")}</span>
-                                <span className="text-2xl font-black text-white italic">{(metrics.riskOfRuin || 0).toFixed(1)}%</span>
+                                <span className="text-sm font-black text-gray-400 italic">No disponible</span>
                             </div>
                             <div className="space-y-1">
                                 <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block">{t("riskOverview.skewness")}</span>
@@ -373,7 +379,7 @@ export default function FullReport({ metrics, analysisId, isPro, isAuthenticated
                             {t("visualizations.title")}
                         </p>
                         {metrics.equityCurve && <EquityChart data={metrics.equityCurve} />}
-                        {metrics.drawdownCurve && <DrawdownChart data={metrics.drawdownCurve} />}
+                        {metrics.drawdownCurve && <DrawdownChart data={metrics.drawdownCurve} isAbsolute={metrics.maxDrawdown === null} />}
                         {metrics.tradeHistogram && (
                             <TradeHistogram
                                 histogram={metrics.tradeHistogram}
@@ -519,7 +525,9 @@ export default function FullReport({ metrics, analysisId, isPro, isAuthenticated
                     </div>
                     <div className="text-center space-y-1">
                         <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest block">{t("keySignals.profitFactor")}</span>
-                        <span className="text-xl font-black text-white italic">{(metrics.profitFactor || 0).toFixed(2)}</span>
+                        <span className="text-xl font-black text-white italic">
+                            {metrics.profitFactor !== null ? metrics.profitFactor.toFixed(2) : (metrics.profitFactorInfinite ? "∞" : "—")}
+                        </span>
                     </div>
                     <div className="text-center space-y-1">
                         <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest block">{t("keySignals.sampleSize")}</span>

@@ -9,9 +9,12 @@ interface Props {
     basicMetrics: {
         trades_count: number;
         winrate: number;
-        profit_factor: number;
-        max_drawdown: number;
+        profit_factor: number | null;
+        max_drawdown: number | null;
         sum_profit: number;
+        initial_capital?: number | null;
+        account_currency?: string | null;
+        profit_factor_infinite?: boolean;
     };
     fileName?: string;
     dateRangeStart?: string;
@@ -91,6 +94,9 @@ export default function EmailGate({
                     date_range_end: dateRangeEnd,
                     sum_profit: basicMetrics.sum_profit,
                     strategy_id: strategyId || null,
+                    initial_capital: basicMetrics.initial_capital ?? null,
+                    account_currency: basicMetrics.account_currency ?? (metricsPayload as any)?.account_currency ?? null,
+                    profitFactorInfinite: basicMetrics.profit_factor_infinite ?? false,
                 }),
             });
 

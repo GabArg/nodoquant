@@ -5,8 +5,8 @@ import { useTranslations } from "next-intl";
 
 interface ReportMetrics {
     winrate: number;
-    profit_factor: number;
-    max_drawdown: number;
+    profit_factor: number | null;
+    max_drawdown: number | null;
     metrics_json?: {
         expectancy?: number;
     };
@@ -23,7 +23,8 @@ export default function WeeklySummary({ latestReport }: Props) {
 
     // In a full implementation, we would filter raw trades by the last 7 days.
     // For this light version based on analysis metrics, we display the summary of the latest batch.
-    const expectancy = latestReport.metrics_json?.expectancy || (latestReport.profit_factor > 1 ? 0.5 : -0.2); // Fallback estimate
+    const pf = latestReport.profit_factor;
+    const expectancy = latestReport.metrics_json?.expectancy || (pf !== null ? (pf > 1 ? 0.5 : -0.2) : 0.5); // Fallback estimate
 
     return (
         <div className="card rounded-2xl p-6 border border-emerald-500/20 bg-emerald-500/5 mt-6">
@@ -38,7 +39,7 @@ export default function WeeklySummary({ latestReport }: Props) {
                 </div>
                 <div>
                     <span className="text-xs text-gray-500 block">{t("drawdown")}</span>
-                    <span className="text-sm font-bold text-red-400">{Math.abs(latestReport.max_drawdown).toFixed(1)}%</span>
+                    <span className="text-sm font-bold text-red-400">{latestReport.max_drawdown !== null ? `${Math.abs(latestReport.max_drawdown).toFixed(1)}%` : "—"}</span>
                 </div>
             </div>
         </div>

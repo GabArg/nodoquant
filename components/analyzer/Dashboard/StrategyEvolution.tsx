@@ -3,6 +3,7 @@
 import React from "react";
 import { useTranslations } from "next-intl";
 import { BasicMetrics } from "@/lib/analyzer/metrics";
+import { formatNominalOrCurrency } from "@/lib/analyzer/currencyDetector";
 
 interface Props {
     evolution?: {
@@ -31,7 +32,9 @@ function EvolColumn({ label, metrics, req }: { label: string; metrics?: BasicMet
             <div className="space-y-2 w-full">
                 <div className="flex justify-between items-center text-[10px]">
                     <span className="text-gray-500 font-bold">PF</span>
-                    <span className={`font-black ${metrics.profitFactor >= 1 ? 'text-green-400' : 'text-red-400'}`}>{metrics.profitFactor}</span>
+                    <span className={`font-black ${metrics.profitFactorInfinite || (metrics.profitFactor ?? 0) >= 1 ? 'text-green-400' : 'text-red-400'}`}>
+                        {metrics.profitFactor !== null ? metrics.profitFactor : (metrics.profitFactorInfinite ? "∞" : "—")}
+                    </span>
                 </div>
                 <div className="flex justify-between items-center text-[10px]">
                     <span className="text-gray-500 font-bold">WR</span>
@@ -39,7 +42,9 @@ function EvolColumn({ label, metrics, req }: { label: string; metrics?: BasicMet
                 </div>
                 <div className="flex justify-between items-center text-[10px]">
                     <span className="text-gray-500 font-bold">DD</span>
-                    <span className="text-red-400 font-black">{metrics.maxDrawdown}%</span>
+                    <span className="text-red-400 font-black">
+                        {metrics.maxDrawdown !== null ? `${metrics.maxDrawdown}%` : formatNominalOrCurrency(metrics.maxDrawdownAbs)}
+                    </span>
                 </div>
             </div>
         </div>

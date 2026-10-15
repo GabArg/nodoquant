@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import type { ComparisonStrategy } from "@/hooks/useComparison";
+import { formatNominalOrCurrency } from "@/lib/analyzer/currencyDetector";
 
 interface ComparisonCardProps {
     strategy: ComparisonStrategy;
@@ -59,7 +60,7 @@ export default function ComparisonCard({ strategy, bestFlags, onRemove }: Compar
                     <div className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">{confT("title")}</div>
                     <div className="flex items-end justify-between">
                         <span className={`text-2xl font-black ${confidence >= 70 ? "text-emerald-400" : confidence >= 30 ? "text-amber-400" : "text-red-400"}`}>
-                            {confidence}%
+                            {confidence}
                         </span>
                     </div>
                 </div>
@@ -95,8 +96,12 @@ export default function ComparisonCard({ strategy, bestFlags, onRemove }: Compar
                     {/* Max Drawdown */}
                     <div className="relative p-3 rounded-2xl bg-white/[0.01] border border-white/5">
                         {bestFlags.maxDrawdown && <BestBadge />}
-                        <div className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mb-1">{t("metrics.maxDrawdown")}</div>
-                        <div className="text-sm font-black text-red-400">{Math.abs(metrics.maxDrawdown).toFixed(1)}%</div>
+                        <div className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mb-1">
+                            {metrics.maxDrawdown !== null ? t("metrics.maxDrawdown") : `${t("metrics.maxDrawdown")} (Nominal)`}
+                        </div>
+                        <div className="text-sm font-black text-red-400">
+                            {metrics.maxDrawdown !== null ? `${Math.abs(metrics.maxDrawdown).toFixed(1)}%` : formatNominalOrCurrency(metrics.maxDrawdownAbs)}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -27,9 +27,12 @@ import { getBaseUrl } from "@/lib/url";
 export interface SaveAnalysisBody {
     trades_count: number;
     winrate: number;
-    profit_factor: number;
-    max_drawdown: number;
-    metrics_json: object;
+    profit_factor: number | null;
+    max_drawdown: number | null;
+    profitFactorInfinite?: boolean;
+    initial_capital?: number | null;
+    account_currency?: string | null;
+    metrics_json: Record<string, any>;
     file_name?: string;
     date_range_start?: string;
     date_range_end?: string;
@@ -56,17 +59,34 @@ export async function POST(req: NextRequest) {
             strategy_id,
         } = body;
 
-        // 1. Basic validation
+        // 1. Strict validation (allows null for PF/DD, rejects non-finite, NaN, out-of-domain)
+        const isPFValid =
+            profit_factor === null ||
+            (typeof profit_factor === "number" &&
+                Number.isFinite(profit_factor) &&
+                profit_factor >= 0);
+        const isDDValid =
+            max_drawdown === null ||
+            (typeof max_drawdown === "number" &&
+                Number.isFinite(max_drawdown) &&
+                max_drawdown >= 0);
+
         if (
             typeof trades_count !== "number" ||
+            !Number.isInteger(trades_count) ||
+            trades_count <= 0 ||
+            trades_count > 1000 ||
             typeof winrate !== "number" ||
-            typeof profit_factor !== "number" ||
-            typeof max_drawdown !== "number"
+            !Number.isFinite(winrate) ||
+            winrate < 0 ||
+            winrate > 100 ||
+            !isPFValid ||
+            !isDDValid
         ) {
             return NextResponse.json(
                 {
                     ok: false,
-                    error: "Métricas requeridas incompletas",
+                    error: "Métricas numéricas requeridas inválidas o fuera de límites",
                 },
                 {
                     status: 400,
@@ -124,8 +144,46 @@ export async function POST(req: NextRequest) {
             metrics_json &&
             typeof metrics_json === "object" &&
             !Array.isArray(metrics_json)
-                ? metrics_json
+                ? { ...metrics_json }
                 : {};
+
+        const isInfinite = Boolean(
+            body.profitFactorInfinite ||
+            normalizedMetrics.profitFactorInfinite ||
+            normalizedMetrics.basic?.profitFactorInfinite
+        );
+        if (isInfinite) {
+            normalizedMetrics.profitFactorInfinite = true;
+            if (normalizedMetrics.basic && typeof normalizedMetrics.basic === "object") {
+                normalizedMetrics.basic.profitFactorInfinite = true;
+            }
+        }
+        const effectiveInitialCapital =
+            body.initial_capital !== undefined
+                ? body.initial_capital
+                : normalizedMetrics.initial_capital !== undefined
+                ? normalizedMetrics.initial_capital
+                : normalizedMetrics.basic?.initialCapital !== undefined
+                ? normalizedMetrics.basic.initialCapital
+                : null;
+
+        const effectiveCurrency =
+            typeof body.account_currency === "string" && body.account_currency.trim().length > 0
+                ? body.account_currency.trim().slice(0, 10).toUpperCase()
+                : typeof normalizedMetrics.account_currency === "string" && normalizedMetrics.account_currency.trim().length > 0
+                ? normalizedMetrics.account_currency.trim().slice(0, 10).toUpperCase()
+                : null;
+
+        normalizedMetrics.schema_version = "2.0";
+        normalizedMetrics.methodology_version = "v2-contract";
+        normalizedMetrics.initial_capital = effectiveInitialCapital;
+        normalizedMetrics.account_currency = effectiveCurrency;
+        normalizedMetrics.metadata = {
+            schema_version: "2.0",
+            methodology_version: "v2-contract",
+            initial_capital: effectiveInitialCapital,
+            account_currency: effectiveCurrency,
+        };
 
         const fingerprintPayload = {
             user_id,

@@ -4,9 +4,9 @@ import type { Trade } from "@/lib/analyzer/parser";
 import { useTranslations } from "next-intl";
 
 interface InsightProps {
-    profitFactor: number;
+    profitFactor: number | null;
     winrate: number;      // 0-100
-    maxDrawdown: number;  // positive %
+    maxDrawdown: number | null;  // positive % or null
     totalTrades: number;
     trades?: Trade[];
     onViewFullReport?: () => void;
@@ -174,39 +174,43 @@ export default function StrategyInsight({ profitFactor, winrate, maxDrawdown, to
     const t = useTranslations("analyzer.insights");
     const tFunnel = useTranslations("analyzer.funnel");
 
+    const pfVal = profitFactor ?? 999;
+
     // Card 1: Edge Quality
-    const edgeLevel: CardProps["level"] = isNoEdge ? "negative" : (profitFactor >= 1.5 && winrate >= 50 ? "positive" : (profitFactor >= 1.0 ? "neutral" : "negative"));
+    const edgeLevel: CardProps["level"] = isNoEdge ? "negative" : (pfVal >= 1.5 && winrate >= 50 ? "positive" : (pfVal >= 1.0 ? "neutral" : "negative"));
     const edgeCard: CardProps = {
         icon: "📊",
         title: t("edgeQuality.title"),
         level: edgeLevel,
         headline: isNoEdge 
             ? tFunnel("longTermStabilityNotProven")
-            : (profitFactor >= 1.5 && winrate >= 50
+            : (pfVal >= 1.5 && winrate >= 50
                 ? tFunnel("shortTermImprovement")
-                : profitFactor >= 1.0
+                : pfVal >= 1.0
                     ? tFunnel("shortTermImprovement")
                     : tFunnel("longTermStabilityNotProven")),
         tip: isNoEdge ? tFunnel("edgeInsightTip") : tFunnel("edgeInsightTip"),
     };
 
     // Card 2: Risk Profile
-    const ddAbs = Math.abs(maxDrawdown);
-    const riskLevel: CardProps["level"] = ddAbs <= 15 ? "positive" : ddAbs <= 30 ? "neutral" : "negative";
+    const ddAbs = maxDrawdown !== null ? Math.abs(maxDrawdown) : null;
+    const riskLevel: CardProps["level"] = ddAbs === null ? "neutral" : ddAbs <= 15 ? "positive" : ddAbs <= 30 ? "neutral" : "negative";
     const riskCard: CardProps = {
         icon: "🛡️",
         title: t("riskProfile.title"),
         level: isNoEdge ? "negative" : riskLevel,
         headline: isNoEdge 
             ? t("riskProfile.high")
-            : (ddAbs <= 15
-                ? t("riskProfile.controlled")
-                : ddAbs <= 30
-                    ? t("riskProfile.moderate")
-                    : t("riskProfile.high")),
+            : (ddAbs === null
+                ? t("riskProfile.moderate")
+                : ddAbs <= 15
+                    ? t("riskProfile.controlled")
+                    : ddAbs <= 30
+                        ? t("riskProfile.moderate")
+                        : t("riskProfile.high")),
         tip: isNoEdge
             ? t("riskProfile.tipHigh")
-            : (ddAbs <= 15
+            : (ddAbs === null || ddAbs <= 15
                 ? t("riskProfile.tipControlled")
                 : ddAbs <= 30
                     ? t("riskProfile.tipModerate")
